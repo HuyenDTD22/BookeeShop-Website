@@ -3,7 +3,7 @@ const Book = require("../../models/book.model");
 const paginationHelper = require("../../helpers/pagination");
 const searchHelper = require("../../helpers/search");
 
-// [GET] /book - lấy tất cả sách
+// [GET] /admin/book - lấy tất cả sách
 module.exports.index = async (req, res) => {
   try {
     let find = {
@@ -25,7 +25,7 @@ module.exports.index = async (req, res) => {
     //Pagination - Phân trang
     let initPagination = {
       currentPage: 1,
-      limitItems: 10,
+      limitItems: 4,
     };
 
     const countBook = await Book.countDocuments(find); //Đếm số lượng sản phẩm có trong database
@@ -73,11 +73,17 @@ module.exports.index = async (req, res) => {
     res.json({
       code: 200,
       books: books,
+      pagination: {
+        totalItems: countBook,
+        currentPage: objectPagination.currentPage,
+        limitItems: objectPagination.limitItems,
+        totalPages: objectPagination.totalPage,
+      },
     });
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: error.message || "Đã xảy ra lỗi",
     });
   }
 };
@@ -101,16 +107,16 @@ module.exports.detail = async (req, res) => {
   }
 };
 
-// [PATCH] /book/change-status/:id - Thay đổi trạng thái 1 sách
+// [PATCH] /admin/book/change-status/:id - Thay đổi trạng thái 1 sách
 module.exports.changeStatus = async (req, res) => {
   try {
     const id = req.params.id;
     const status = req.body.status;
 
-    const updatedBy = {
-      account_id: res.locals.user.id,
-      updatedAt: new Date(),
-    };
+    // const updatedBy = {
+    //   account_id: res.locals.user.id,
+    //   updatedAt: new Date(),
+    // };
 
     await Book.updateOne(
       {
@@ -118,31 +124,31 @@ module.exports.changeStatus = async (req, res) => {
       },
       {
         status: status,
-        $push: { updatedBy: updatedBy },
+        // $push: { updatedBy: updatedBy },
       }
     );
 
     res.json({
       code: 200,
-      messange: "Cập nhật trạng thái thành công!",
+      message: "Cập nhật trạng thái thành công!",
     });
   } catch (error) {
     res.json({
       code: 400,
-      messange: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
     });
   }
 };
 
-// [PATCH] /book/change-multi - Thay đổi trạng thái nhiều sách
+// [PATCH] /admin/book/change-multi - Thay đổi trạng thái nhiều sách
 module.exports.changeMulti = async (req, res) => {
   try {
     const { ids, key, value } = req.body;
 
-    const updatedBy = {
-      account_id: res.locals.user.id,
-      updatedAt: new Date(),
-    };
+    // const updatedBy = {
+    //   account_id: res.locals.user.id,
+    //   updatedAt: new Date(),
+    // };
 
     switch (key) {
       case "status":
@@ -154,7 +160,7 @@ module.exports.changeMulti = async (req, res) => {
           },
           {
             status: value,
-            $push: { updatedBy: updatedBy },
+            // $push: { updatedBy: updatedBy },
           }
         );
         res.json({
@@ -235,23 +241,20 @@ module.exports.edit = async (req, res) => {
   try {
     const id = req.params.id;
 
-    // req.body.price = parseInt(req.body.price);
-    // req.body.discountPercentage = parseInt(req.body.discountPercentage);
-    // req.body.stock = parseInt(req.body.stock);
-    // req.body.position = parseInt(req.body.position);
+    req.body.price = parseInt(req.body.price);
+    req.body.discountPercentage = parseInt(req.body.discountPercentage);
+    req.body.stock = parseInt(req.body.stock);
+    req.body.position = parseInt(req.body.position);
 
-    // if (req.file) {
-    //   req.body.thumbnail = `/uploads/${req.file.filename}`;
-    // }
-
-    const updatedBy = {
-      account_id: res.locals.user.id,
-      updatedAt: new Date(),
-    };
+    // const updatedBy = {
+    //   account_id: res.locals.user.id,
+    //   updatedAt: new Date(),
+    // };
 
     await Book.updateOne(
       { _id: id },
-      { ...req.body, $push: { updatedBy: updatedBy } }
+      req.body
+      //   { ...req.body, $push: { updatedBy: updatedBy } }
     );
 
     res.json({

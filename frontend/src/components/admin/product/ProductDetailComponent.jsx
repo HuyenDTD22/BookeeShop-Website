@@ -2,27 +2,47 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Image, Badge, Card } from "react-bootstrap";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
-import { getCategory } from "../../services/admin/categoryService";
-import sanitizeHtml from "../../utils/sanitizeHtml";
+import { getCategory } from "../../../services/admin/categoryService";
+import sanitizeHtml from "../../../utils/sanitizeHtml";
 
 const ProductDetailComponent = ({ book }) => {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const data = await getCategory();
-        setCategories(data);
+        console.log("Categories response:", data);
+        setCategories(Array.isArray(data.categories) ? data.categories : []);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
+      } finally {
+        setLoading(false); // Đánh dấu đã tải xong
       }
     };
     fetchCategories();
   }, []);
 
-  const findCategoryTitle = (categoryId) => {
-    const category = categories.find((cat) => cat._id === categoryId);
-    return category ? category.title : "N/A";
+  const findCategoryTitle = (categoryId, categoriesList = categories) => {
+    if (!Array.isArray(categoriesList)) {
+      return "Không có danh mục";
+    }
+
+    // Tìm ở cấp hiện tại
+    for (const category of categoriesList) {
+      if (category._id === categoryId) {
+        return category.title;
+      }
+      // Tìm trong children (đệ quy)
+      if (category.children && category.children.length > 0) {
+        const childResult = findCategoryTitle(categoryId, category.children);
+        if (childResult !== "N/A") {
+          return childResult;
+        }
+      }
+    }
+    return "N/A";
   };
 
   // Tính giá sau giảm giá

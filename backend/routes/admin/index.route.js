@@ -12,16 +12,27 @@ const myAccountRoutes = require("./my-account.route");
 module.exports = (app) => {
   const PATH_ADMIN = systemConfig.prefixAdmin;
 
-  //   app.use(PATH_ADMIN + "/book", authMiddleware.requireAuthAdmin, bookRoutes); - Nhớ thêm authMiddleware.requireAuthAdmin cho những route khác bên dưới
-  app.use(PATH_ADMIN + "/book", bookRoutes);
+  app.use(PATH_ADMIN + "/book", authMiddleware.requireAuthAdmin, bookRoutes);
 
-  app.use(PATH_ADMIN + "/category", categoryRoutes);
+  app.use(
+    PATH_ADMIN + "/category",
+    authMiddleware.requireAuthAdmin,
+    categoryRoutes
+  );
 
-  app.use(PATH_ADMIN + "/role", roleRoutes);
+  app.use(PATH_ADMIN + "/role", authMiddleware.requireAuthAdmin, roleRoutes);
 
-  app.use(PATH_ADMIN + "/account", accountRoutes);
+  app.use(
+    PATH_ADMIN + "/account",
+    authMiddleware.requireAuthAdmin,
+    accountRoutes
+  );
 
   app.use(PATH_ADMIN + "/auth", authRoutes);
 
-  app.use(PATH_ADMIN + "/my-account", myAccountRoutes);
+  app.use(
+    PATH_ADMIN + "/my-account",
+    authMiddleware.requireAuthAdmin,
+    myAccountRoutes
+  );
 };

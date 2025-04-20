@@ -6,7 +6,9 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getBooks = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/book`, { params });
+    const response = await axiosInstance.get(`/book`, {
+      params,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching books:", error);
@@ -62,7 +64,6 @@ export const createBook = async (bookData) => {
         withCredentials: true,
       }
     );
-    console.log("Create book response:", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -75,7 +76,16 @@ export const createBook = async (bookData) => {
 
 export const editBook = async (id, bookData) => {
   try {
-    const response = await axiosInstance.patch(`/book/edit/${id}`, bookData);
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/book/edit/${id}`,
+      bookData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error editing book:", error);

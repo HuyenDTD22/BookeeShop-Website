@@ -36,17 +36,23 @@ app.use(
     },
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
 );
+
+// Đảm bảo header Access-Control-Allow-Credentials được gửi
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 //parse application/json
 app.use(bodyParser.json());
 
 app.use(methodOverride("_method"));
 
-// // parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
 
 //Sử dụng cookie-parser
 app.use(cookieParser());

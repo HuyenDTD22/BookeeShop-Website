@@ -3,16 +3,15 @@ import { Form, Button, Row, Col, Image, Card } from "react-bootstrap";
 import { FiSave, FiX, FiUpload, FiPackage } from "react-icons/fi";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import InputComponent from "../common/InputComponent";
-import FormGroupComponent from "../common/FormGroupComponent";
-import quillConfig from "../../utils/quillConfig";
-import SelectTreeComponent from "../common/SelectTreeComponent";
-import "../../assets/styles/CreateProductComponent.css";
-import { getCategory } from "../../services/admin/categoryService";
-import UploadImageComponent from "../common/UploadImageComponent";
-import CategorySelectComponent from "../common/CategorySelectComponent";
+import InputComponent from "../../common/InputComponent";
+import FormGroupComponent from "../../common/FormGroupComponent";
+import quillConfig from "../../../utils/quillConfig";
+import UploadImageComponent from "../../common/UploadImageComponent";
+import CategorySelectComponent from "../../common/CategorySelectComponent";
+import sanitizeHtml from "../../../utils/sanitizeHtml";
+import "../../../assets/styles/EditProductComponent.css";
 
-const CreateProductComponent = ({ onSubmit }) => {
+const EditProductComponent = ({ book, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: "",
     price: "",
@@ -35,13 +34,40 @@ const CreateProductComponent = ({ onSubmit }) => {
   });
   const [imagePreview, setImagePreview] = useState("");
 
+  // Điền dữ liệu sản phẩm vào form khi component mount
+  useEffect(() => {
+    if (book) {
+      setFormData({
+        title: book.title || "",
+        price: book.price || "",
+        position: book.position || "",
+        status: book.status || "active",
+        discountPercentage: book.discountPercentage || "",
+        stock: book.stock || "",
+        book_category_id: book.book_category_id || "",
+        description: book.description ? sanitizeHtml(book.description) : "",
+        thumbnail: null,
+        feature: book.featured ? "1" : "0",
+        author: book.author || "",
+        supplier: book.supplier || "",
+        publisher: book.publisher || "",
+        publish_year: book.publish_year || "",
+        language: book.language || "",
+        size: book.size || "",
+        weight: book.weight || "",
+        page_count: book.page_count || "",
+      });
+      setImagePreview(book.thumbnail || "");
+    }
+  }, [book]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleDescriptionChange = (content) => {
-    setFormData({ ...formData, description: content });
+    setFormData((prev) => ({ ...prev, description: content }));
   };
 
   const handleFileChange = (file) => {
@@ -62,7 +88,7 @@ const CreateProductComponent = ({ onSubmit }) => {
     formDataToSubmit.append("book_category_id", formData.book_category_id);
     formDataToSubmit.append("description", formData.description);
     formDataToSubmit.append("feature", formData.feature);
-    formDataToSubmit.append("author", formData.author); // Thêm các trường mới
+    formDataToSubmit.append("author", formData.author);
     formDataToSubmit.append("supplier", formData.supplier);
     formDataToSubmit.append("publisher", formData.publisher);
     formDataToSubmit.append("publish_year", formData.publish_year);
@@ -93,7 +119,7 @@ const CreateProductComponent = ({ onSubmit }) => {
       <Card.Header className="bg-primary text-white">
         <div className="d-flex align-items-center">
           <FiPackage className="me-2" size={24} />
-          <h2 className="m-0 fs-4">Thêm mới sản phẩm</h2>
+          <h2 className="m-0 fs-4">Chỉnh sửa sản phẩm</h2>
         </div>
       </Card.Header>
       <Card.Body className="bg-light">
@@ -328,7 +354,7 @@ const CreateProductComponent = ({ onSubmit }) => {
                   type="submit"
                   className="py-2 fw-bold shadow"
                 >
-                  <FiSave className="me-2" /> Tạo mới
+                  <FiSave className="me-2" /> Lưu thay đổi
                 </Button>
                 <Button
                   variant="danger"
@@ -346,4 +372,4 @@ const CreateProductComponent = ({ onSubmit }) => {
   );
 };
 
-export default CreateProductComponent;
+export default EditProductComponent;

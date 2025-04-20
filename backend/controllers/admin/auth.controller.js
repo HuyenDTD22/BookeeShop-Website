@@ -1,8 +1,11 @@
 const md5 = require("md5");
+const jwt = require("jsonwebtoken");
 const Account = require("../../models/account.model");
 const Role = require("../../models/role.model");
 
 const systemConfig = require("../../config/system");
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 //[POST] /admin/auth/login - Tính năng đăng nhập
 module.exports.login = async (req, res) => {
@@ -39,8 +42,25 @@ module.exports.login = async (req, res) => {
       return;
     }
 
-    const token = user.tokenUser;
-    res.cookie("token", token);
+    // Tạo payload cho JWT
+    const payload = {
+      id: user._id,
+      email: user.email,
+      role_id: user.role_id,
+    };
+
+    // Tạo JWT
+    const token = jwt.sign(payload, JWT_SECRET, {
+      expiresIn: "1d", // Token hết hạn sau 1 ngày
+    });
+
+    // Lưu JWT vào cookie với httpOnly
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS trong production
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax", // Dùng Lax trong development
+      maxAge: 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       code: 200,
@@ -58,7 +78,12 @@ module.exports.login = async (req, res) => {
 
 //[GET] /admin/auth/logout - Tính năng đăng xuất
 module.exports.logout = (req, res) => {
-  res.clearCookie("token"); //Xoá token trong cookie
+  // Xóa cookie jwt
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  });
   res.json({
     code: 200,
     message: "Đăng xuất thành công!",

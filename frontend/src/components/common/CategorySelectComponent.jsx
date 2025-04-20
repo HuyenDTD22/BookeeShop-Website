@@ -16,9 +16,11 @@ const CategorySelectComponent = ({
     const fetchCategories = async () => {
       try {
         const data = await getCategory();
-        setCategories(data);
+        if (data.code === 200) {
+          setCategories(data.categories);
+        }
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Lỗi khi lấy danh mục:", error);
       }
     };
     fetchCategories();

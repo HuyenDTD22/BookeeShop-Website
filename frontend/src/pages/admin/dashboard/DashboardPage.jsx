@@ -1,6 +1,6 @@
 import React from "react";
-import HeaderComponent from "../../components/admin/HeaderComponent";
-import SiderComponent from "../../components/admin/SiderComponent";
+import HeaderComponent from "../../../components/admin/layout/HeaderComponent";
+import SiderComponent from "../../../components/admin/layout/SiderComponent";
 
 const DashboardPage = () => {
   const handleLogout = () => {

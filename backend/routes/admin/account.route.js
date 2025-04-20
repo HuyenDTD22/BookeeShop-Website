@@ -10,13 +10,19 @@ const uploadCloud = require("../../middlewares/uploadCloud.middleware");
 
 router.get("/", controller.index);
 
+router.get("/detail/:id", controller.detail);
+
+router.patch("/change-status/:id", controller.changeStatus);
+
+router.patch("/change-multi", controller.changeMulti);
+
 router.post(
   "/create",
   upload.single("avatar"),
   uploadCloud.upload,
   validate.create,
   controller.create
-); //Thêm mới tài khoản
+);
 
 router.patch(
   "/edit/:id",
@@ -24,6 +30,8 @@ router.patch(
   uploadCloud.upload,
   validate.edit,
   controller.edit
-); //Tính năng chỉnh sửa tài khoản
+);
+
+router.delete("/delete/:id", controller.delete);
 
 module.exports = router;

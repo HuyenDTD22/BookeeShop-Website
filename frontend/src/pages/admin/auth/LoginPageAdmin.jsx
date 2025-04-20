@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "../../components/common/LoginComponent";
-import authService from "../../services/admin/authService";
+import LoginForm from "../../../components/common/LoginComponent";
+import authService from "../../../services/admin/authService";
+import { AuthContext } from "../../../context/AuthContext";
+import { getMyAccount } from "../../../services/admin/accountService";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
@@ -9,6 +11,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const { setUser, setRole, setPermissions } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (username, password) => {
@@ -21,7 +24,20 @@ const LoginPage = () => {
 
       if (response.code === 200) {
         setSuccess(response.message);
-        localStorage.setItem("token", response.token);
+        // localStorage.setItem("token", response.token);
+        //     navigate(`/${ADMIN}`);
+        //   } else {
+        //     setError(response.message);
+        //   }
+        try {
+          const data = await getMyAccount();
+          setUser(data.user);
+          setRole(data.role);
+          setPermissions(data.role?.permissions || []);
+        } catch (fetchError) {
+          console.error("Failed to fetch user data:", fetchError);
+          // Nếu getMyAccount thất bại, vẫn chuyển hướng
+        }
         navigate(`/${ADMIN}`);
       } else {
         setError(response.message);

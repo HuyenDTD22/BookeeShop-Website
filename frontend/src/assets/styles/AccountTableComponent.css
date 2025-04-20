@@ -1,0 +1,9 @@
+.account-avatar {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease;
+}

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Container, Spinner, Alert, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import ProductDetailComponent from "../../components/admin/ProductDetailComponent";
-import { getBookDetail } from "../../services/admin/bookService";
+import ProductDetailComponent from "../../../components/admin/product/ProductDetailComponent";
+import { getBookDetail } from "../../../services/admin/bookService";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 

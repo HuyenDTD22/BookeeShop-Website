@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Container, Toast, ToastContainer } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import CreateProductComponent from "../../components/admin/CreateProductComponent";
-import { createBook } from "../../services/admin/bookService";
+import CreateProductComponent from "../../../components/admin/product/CreateProductComponent";
+import { createBook } from "../../../services/admin/bookService";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
