@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import InputComponent from "../common/InputComponent";
-import ButtonComponent from "../common/ButtonComponent";
+import InputComponent from "../../common/InputComponent";
+import ButtonComponent from "../../common/ButtonComponent";
 
 const RegisterComponent = ({ onSubmit, loading, error, success }) => {
   const [formData, setFormData] = useState({

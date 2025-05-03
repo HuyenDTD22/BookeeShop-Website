@@ -1,9 +1,13 @@
-import LoginPage from "../pages/client/LoginPage";
-import HomePage from "../pages/client/HomePage";
-import RegisterPage from "../pages/client/RegisterPage";
-import NotFoundPage from "../pages/client/NotFoundPage";
-import ForgotPasswordPage from "../pages/client/ForgotPasswordPage";
-import OTPVertificationPage from "../pages/client/OTPVertificationPage";
+//client
+import LoginPage from "../pages/client/auth/LoginPage";
+import HomePage from "../pages/client/home/HomePage";
+import RegisterPage from "../pages/client/auth/RegisterPage";
+import NotFoundPage from "../pages/client/auth/NotFoundPage";
+import ForgotPasswordPage from "../pages/client/auth/ForgotPasswordPage";
+import OTPVertificationPage from "../pages/client/auth/OTPVertificationPage";
+import BookDetailPage from "../pages/client/product/BookDetailPage";
+
+//admin
 import LoginPageAdmin from "../pages/admin/auth/LoginPageAdmin";
 import DashboardPage from "../pages/admin/dashboard/DashboardPage";
 import ProductsPage from "../pages/admin/product/ProductsPage";
@@ -28,6 +32,11 @@ export const routes = [
   {
     path: "/",
     page: HomePage,
+    isShowHeader: true,
+  },
+  {
+    path: "/book/detail/:slugBook",
+    page: BookDetailPage,
     isShowHeader: true,
   },
   {

@@ -1,9 +1,31 @@
 const User = require("../../models/user.model");
+const Cart = require("../../models/cart.model");
 const ForgotPassword = require("../../models/forgot-password.model");
 const md5 = require("md5");
+const jwt = require("jsonwebtoken");
 
 const generateHelper = require("../../helpers/generate");
 const sendMailHelper = require("../../helpers/sendMail");
+
+// Hàm tạo JWT và lưu vào cookie
+const setAuthCookie = (res, userId) => {
+  const token = jwt.sign(
+    { _id: userId },
+    process.env.JWT_SECRET || "your-secret-key",
+    {
+      expiresIn: "7d", // Token hết hạn sau 7 ngày
+    }
+  );
+
+  res.cookie("token", token, {
+    httpOnly: true, // Cookie chỉ có thể được đọc bởi server, không thể truy cập qua JavaScript
+    secure: process.env.NODE_ENV === "production", // Chỉ gửi cookie qua HTTPS trong môi trường production
+    sameSite: "strict", // Bảo vệ chống CSRF
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày (tính bằng milliseconds)
+  });
+
+  return token;
+};
 
 // [POST] /user/register - Đăng kí
 module.exports.register = async (req, res) => {
@@ -50,8 +72,8 @@ module.exports.register = async (req, res) => {
 
     user.save();
 
-    const token = user.tokenUser;
-    res.cookie("token", token);
+    // Tạo JWT và lưu vào cookie
+    const token = setAuthCookie(res, user._id);
 
     res.json({
       code: 200,
@@ -63,38 +85,82 @@ module.exports.register = async (req, res) => {
 
 // [POST] /user/login - Đăng nhập
 module.exports.login = async (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
 
-  const user = await User.findOne({
-    email: email,
-    deleted: false,
-  });
-
-  if (!user) {
-    res.json({
-      code: 400,
-      message: "Email không tồn tại!",
+    const user = await User.findOne({
+      email: email,
+      deleted: false,
     });
-    return;
-  }
 
-  if (md5(password) !== user.password) {
+    if (!user) {
+      return res.json({
+        code: 400,
+        message: "Email không tồn tại!",
+      });
+    }
+
+    if (md5(password) !== user.password) {
+      return res.json({
+        code: 400,
+        message: "Sai mật khẩu!",
+      });
+    }
+
+    // Tạo JWT và lưu vào cookie
+    const token = setAuthCookie(res, user._id);
+
+    // Lưu user_id vào collection cart
+    await Cart.updateOne(
+      {
+        _id: req.cookies.cartId,
+      },
+      {
+        user_id: user.id,
+      }
+    );
+
     res.json({
-      code: 400,
-      message: "Sai mật khẩu!",
+      code: 200,
+      message: "Đăng nhập thành công!",
+      token,
     });
-    return;
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi",
+    });
   }
+};
 
-  const token = user.tokenUser;
-  res.cookie("token", token);
+// [POST] /user/logout - Đăng xuất
+module.exports.logout = (req, res) => {
+  try {
+    // Xóa cookie "token"
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
-  res.json({
-    code: 200,
-    message: "Đăng nhập thành công!",
-    token: token,
-  });
+    // Xóa cookie "cartId"
+    res.clearCookie("cartId", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.json({
+      code: 200,
+      message: "Đăng xuất thành công!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi",
+    });
+  }
 };
 
 // [POST] /user/password/forgot - Quên mật khẩu
@@ -166,8 +232,8 @@ module.exports.otpPassword = async (req, res) => {
     email: email,
   });
 
-  const token = user.tokenUser;
-  res.cookie("token", token);
+  // Tạo JWT và lưu vào cookie
+  const token = setAuthCookie(res, user._id);
 
   res.json({
     code: 200,
@@ -178,44 +244,69 @@ module.exports.otpPassword = async (req, res) => {
 
 // [POST] /user/password/reset - reset lại mật khẩu
 module.exports.resetPassword = async (req, res) => {
-  const token = req.cookies.token;
-  const password = req.body.password;
-
-  const user = await User.findOne({
-    tokenUser: token,
-  });
-
-  if (md5(password) === user.password) {
-    res.json({
-      code: 400,
-      message: "Vui lòng nhập mật khẩu mới khác mật khẩu cũ.",
-    });
-    return;
-  }
-
-  await User.updateOne(
-    {
-      tokenUser: token,
-    },
-    {
-      password: md5(password),
-    }
-  );
-
-  res.json({
-    code: 200,
-    message: "Đổi mật khẩu thành công!",
-  });
-};
-
-// [GET] /user/detail - Lấy ra thông tin cá nhân
-module.exports.detail = async (req, res) => {
   try {
     const token = req.cookies.token;
+    const password = req.body.password;
 
-    const user = await User.findOne({
-      tokenUser: token,
-    }).select("-password -tokenUser -deleted");
+    // Giải mã token để lấy user_id
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your-secret-key"
+    );
+    const user = await User.findById(decoded._id);
+
+    if (!user) {
+      return res.json({
+        code: 400,
+        message: "Người dùng không tồn tại!",
+      });
+    }
+
+    if (md5(password) === user.password) {
+      return res.json({
+        code: 400,
+        message: "Vui lòng nhập mật khẩu mới khác mật khẩu cũ.",
+      });
+    }
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        password: md5(password),
+      }
+    );
+
+    res.json({
+      code: 200,
+      message: "Đổi mật khẩu thành công!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi",
+    });
+  }
+};
+
+// [GET] /user/info - Lấy ra thông tin cá nhân
+module.exports.info = async (req, res) => {
+  try {
+    // req.user đã được gán trong middleware
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({
+        code: 401,
+        message: "Không tìm thấy thông tin người dùng trong request!",
+      });
+    }
+    // req.user đã được gán trong middleware
+    const user = await User.findById(req.user._id).select("-password -deleted");
+
+    if (!user) {
+      return res.status(401).json({
+        code: 401,
+        message: "Người dùng không tồn tại",
+      });
+    }
 
     res.json({
       code: 200,
@@ -223,9 +314,10 @@ module.exports.detail = async (req, res) => {
       info: user,
     });
   } catch (error) {
-    res.json({
-      code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+    console.error("Error in /user/info:", error); // Thêm log để debug
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi",
     });
   }
 };

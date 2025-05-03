@@ -89,3 +89,23 @@ module.exports.logout = (req, res) => {
     message: "Đăng xuất thành công!",
   });
 };
+
+//[GET] /admin/auth/info
+module.exports.getAuthInfo = async (req, res) => {
+  try {
+    const user = await Account.findById(res.locals.user.id).select(
+      "-password -token"
+    );
+    const role = await Role.findById(res.locals.role.id);
+    res.json({
+      code: 200,
+      user,
+      role,
+    });
+  } catch (error) {
+    res.status(401).json({
+      code: 401,
+      message: "Không được phép truy cập",
+    });
+  }
+};

@@ -1,0 +1,16 @@
+.card-body {
+    transition: max-height 0.3s ease-in-out;
+}
+
+.card-footer {
+    text-align: right;
+}
+
+.card-footer .btn-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.card-footer .btn-link:hover {
+    text-decoration: underline;
+}

@@ -106,12 +106,12 @@ export const deleteAccount = async (id) => {
   }
 };
 
-export const getMyAccount = async () => {
-  try {
-    const response = await axiosInstance.get(`/my-account`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching my account:", error);
-    throw error;
-  }
-};
+// export const getMyAccount = async () => {
+//   try {
+//     const response = await axiosInstance.get(`/my-account`);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching my account:", error);
+//     throw error;
+//   }
+// };

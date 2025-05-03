@@ -6,9 +6,9 @@ const cartSchema = new mongoose.Schema(
     books: [
       {
         book_id: String,
-        quantity: Number
-      }
-    ]
+        quantity: Number,
+      },
+    ],
   },
   { timestamps: true }
 );

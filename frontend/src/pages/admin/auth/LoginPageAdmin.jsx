@@ -1,18 +1,85 @@
+// import React, { useState, useContext } from "react";
+// import { useNavigate } from "react-router-dom";
+// import LoginForm from "../../../components/common/LoginComponent";
+// import authService from "../../../services/admin/authService";
+// import { AuthContext } from "../../../context/AuthContext";
+
+// const ADMIN = process.env.REACT_APP_ADMIN;
+
+// const LoginPage = () => {
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState(null);
+//   const [success, setSuccess] = useState(null);
+//   const { setUser, setRole, setPermissions } = useContext(AuthContext);
+//   const navigate = useNavigate();
+
+//   const handleLogin = async (username, password) => {
+//     try {
+//       setLoading(true);
+//       setError(null);
+//       setSuccess("");
+
+//       const response = await authService.login(username, password);
+
+//       if (response.code === 200) {
+//         setSuccess(response.message);
+//         try {
+//           const data = await authService.getAuthInfo();
+//           setUser(data.user);
+//           setRole(data.role);
+//           setPermissions(data.role?.permissions || []);
+//         } catch (fetchError) {
+//           console.error("Failed to fetch user data:", fetchError);
+//         }
+//         navigate(`/${ADMIN}`);
+//       } else {
+//         setError(response.message);
+//       }
+//     } catch (err) {
+//       setError("Có lỗi xảy ra khi đăng nhập. Vui lòng thử lại sau.");
+//       console.error("Login error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="container">
+//       <div className="row">
+//         <div className="col-md-6 offset-md-3">
+//           <LoginForm onSubmit={handleLogin} loading={loading} error={error} />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default LoginPage;
+
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "../../../components/common/LoginComponent";
 import authService from "../../../services/admin/authService";
 import { AuthContext } from "../../../context/AuthContext";
-import { getMyAccount } from "../../../services/admin/accountService";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
-const LoginPage = () => {
+const LoginPageAdmin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const { setUser, setRole, setPermissions } = useContext(AuthContext);
+  const context = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // Kiểm tra an toàn cho context
+  if (!context) {
+    console.error(
+      "AuthContext is undefined. Ensure LoginPageAdmin is wrapped by AuthProvider."
+    );
+    return <div>Error: AuthContext is not available.</div>;
+  }
+
+  const { setUser, setRole, setPermissions } = context;
 
   const handleLogin = async (username, password) => {
     try {
@@ -24,21 +91,20 @@ const LoginPage = () => {
 
       if (response.code === 200) {
         setSuccess(response.message);
-        // localStorage.setItem("token", response.token);
-        //     navigate(`/${ADMIN}`);
-        //   } else {
-        //     setError(response.message);
-        //   }
         try {
-          const data = await getMyAccount();
-          setUser(data.user);
-          setRole(data.role);
-          setPermissions(data.role?.permissions || []);
+          const data = await authService.getAuthInfo();
+          if (data.code === 200) {
+            setUser(data.user);
+            setRole(data.role);
+            setPermissions(data.role?.permissions || []);
+          } else {
+            throw new Error("Failed to fetch user info");
+          }
         } catch (fetchError) {
           console.error("Failed to fetch user data:", fetchError);
-          // Nếu getMyAccount thất bại, vẫn chuyển hướng
+          // Nếu getAuthInfo thất bại, vẫn chuyển hướng
         }
-        navigate(`/${ADMIN}`);
+        navigate(`/${ADMIN}/`);
       } else {
         setError(response.message);
       }
@@ -61,4 +127,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginPageAdmin;

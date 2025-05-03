@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import RegisterForm from "../../components/client/RegisterComponent";
-import authService from "../../services/client/authService";
+import RegisterForm from "../../../components/client/user/RegisterComponent";
+import authService from "../../../services/client/authService";
 
 const RegisterPage = () => {
   const [loading, setLoading] = useState(false);

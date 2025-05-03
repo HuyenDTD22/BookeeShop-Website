@@ -10,12 +10,17 @@ module.exports.index = async (req, res) => {
     const books = await Book.find({
       status: "active",
       deleted: false,
-    }).sort({ position: "desc" });
+    })
+      .lean()
+      .sort({ position: "desc" });
 
     //Tính giá mới cho sản phẩm
     const newBooks = bookHelper.priceNewBooks(books);
 
-    res.json(newBooks);
+    res.json({
+      code: 200,
+      books: newBooks,
+    });
   } catch (error) {
     res.json({
       code: 400,
@@ -38,12 +43,12 @@ module.exports.category = async (req, res) => {
 
     const lisSubcategoryId = lisSubcategory.map((item) => item.id);
 
-    console.log(lisSubcategoryId);
-
     const books = await Book.find({
       book_category_id: { $in: [category.id, ...lisSubcategoryId] },
       deleted: false,
-    }).sort({ position: "desc" });
+    })
+      .lean()
+      .sort({ position: "desc" });
 
     const newBooks = bookHelper.priceNewBooks(books);
 
@@ -65,21 +70,31 @@ module.exports.detail = async (req, res) => {
       status: "active",
     };
 
-    const book = await Book.findOne(find);
+    const book = await Book.findOne(find).lean();
+
+    if (!book) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy sách",
+      });
+    }
 
     if (book.book_category_id) {
       const category = await Category.findOne({
         _id: book.book_category_id,
         status: "active",
         deleted: false,
-      });
+      }).lean();
 
       book.category = category;
     }
 
     bookHelper.priceNewBook(book); //Tự động thêm key priceNew
 
-    res.json(book);
+    res.json({
+      code: 200,
+      book: book,
+    });
   } catch (error) {
     res.json({
       code: 400,

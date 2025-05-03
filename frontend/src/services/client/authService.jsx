@@ -98,36 +98,52 @@ const authService = {
     }
   },
 
-  //Đăng xuất
-  logout: () => {
-    localStorage.removeItem("token");
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  },
-
-  // Kiểm tra người dùng đã đăng nhập chưa
-  isLoggedIn: () => {
-    return (
-      !!localStorage.getItem("token") || !!authService.getTokenFromCookie()
-    );
-  },
-
-  // Lấy token từ cookie nếu có
-  getTokenFromCookie: () => {
-    const cookies = document.cookie.split(";");
-
-    for (const cookie of cookies) {
-      const trimmedCookie = cookie.trim();
-
-      if (trimmedCookie.startsWith("token=")) {
-        return trimmedCookie.substring("token=".length);
-      }
+  logout: async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/user/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Auth service logout error:", error);
+      throw error;
     }
-    return null;
   },
 
-  // Lấy token từ localStorage hoặc cookie
-  getToken: () => {
-    return localStorage.getItem("token") || authService.getTokenFromCookie();
+  // Kiểm tra đăng nhập và lấy thông tin user
+  getUserInfo: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/user/info`, {
+        withCredentials: true,
+      });
+      return response.data; // Trả về trực tiếp response.data
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      throw error; // Ném lỗi để xử lý ở tầng trên
+    }
+  },
+
+  // Kiểm tra trạng thái đăng nhập
+  checkAuth: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/user/info`, {
+        withCredentials: true,
+      });
+      return {
+        isAuthenticated: response.data.code === 200,
+        user: response.data.info,
+      };
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+      return {
+        isAuthenticated: false,
+        user: null,
+      };
+    }
   },
 };
 

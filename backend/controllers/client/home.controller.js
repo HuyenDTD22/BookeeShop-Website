@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
     feature: "1",
     status: "active",
     deleted: false,
-  }).limit(6);
+  }).lean();
 
   const newBooksFeatured = bookHelper.priceNewBooks(booksFeatured);
 
@@ -26,7 +26,8 @@ module.exports.index = async (req, res) => {
     deleted: false,
   })
     .sort({ position: "desc" })
-    .limit(6);
+    .limit(12)
+    .lean();
 
   const newBooksNew = bookHelper.priceNewBooks(booksNew);
 

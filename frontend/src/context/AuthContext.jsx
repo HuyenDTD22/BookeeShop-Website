@@ -1,8 +1,80 @@
+// import React, { createContext, useState, useEffect } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { getMyAccount } from "../services/admin/accountService";
+
+// export const AuthContext = createContext();
+
+// export const AuthProvider = ({ children }) => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const [user, setUser] = useState(null);
+//   const [role, setRole] = useState(null);
+//   const [permissions, setPermissions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       try {
+//         const data = await getMyAccount();
+//         setUser(data.user);
+//         setRole(data.role);
+//         setPermissions(data.role?.permissions || []);
+//       } catch (error) {
+//         setUser(null);
+//         setRole(null);
+//         setPermissions([]);
+//         if (
+//           error.response?.data?.code === 400 &&
+//           location.pathname !== "/admin/auth/login"
+//         ) {
+//           navigate("/admin/auth/login");
+//         }
+//         console.error("Failed to fetch user:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchUser();
+//   }, [navigate, location.pathname]);
+
+//   const hasPermission = (permission) => {
+//     return permissions.includes(permission);
+//   };
+
+//   return (
+//     <AuthContext.Provider
+//       value={{
+//         user,
+//         setUser,
+//         role,
+//         setRole,
+//         permissions,
+//         setPermissions,
+//         loading,
+//         hasPermission,
+//       }}
+//     >
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getMyAccount } from "../services/admin/accountService";
+import authService from "../services/admin/authService";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: null,
+  setUser: () => {},
+  role: null,
+  setRole: () => {},
+  permissions: [],
+  setPermissions: () => {},
+  loading: true,
+  hasPermission: () => false,
+  login: () => Promise.resolve(),
+  logout: () => Promise.resolve(),
+});
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -13,32 +85,72 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const checkAuthStatus = async () => {
       try {
-        const data = await getMyAccount();
-        setUser(data.user);
-        setRole(data.role);
-        setPermissions(data.role?.permissions || []);
+        const response = await authService.getAuthInfo();
+        if (response.code === 200) {
+          setUser(response.user);
+          setRole(response.role);
+          setPermissions(response.role?.permissions || []);
+        } else {
+          setUser(null);
+          setRole(null);
+          setPermissions([]);
+          if (
+            location.pathname.startsWith("/admin") &&
+            location.pathname !== "/admin/auth/login"
+          ) {
+            navigate("/admin/auth/login");
+          }
+        }
       } catch (error) {
         setUser(null);
         setRole(null);
         setPermissions([]);
         if (
-          error.response?.data?.code === 400 &&
+          location.pathname.startsWith("/admin") &&
           location.pathname !== "/admin/auth/login"
         ) {
           navigate("/admin/auth/login");
         }
-        console.error("Failed to fetch user:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchUser();
+
+    checkAuthStatus();
   }, [navigate, location.pathname]);
 
   const hasPermission = (permission) => {
     return permissions.includes(permission);
+  };
+
+  const login = async (email, password) => {
+    try {
+      const response = await authService.login(email, password);
+      if (response.code === 200) {
+        const authData = await authService.getAuthInfo();
+        setUser(authData.user);
+        setRole(authData.role);
+        setPermissions(authData.role?.permissions || []);
+        navigate(`/${process.env.REACT_APP_ADMIN}/`);
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await authService.logout();
+      setUser(null);
+      setRole(null);
+      setPermissions([]);
+      navigate("/admin/auth/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
@@ -52,6 +164,8 @@ export const AuthProvider = ({ children }) => {
         setPermissions,
         loading,
         hasPermission,
+        login,
+        logout,
       }}
     >
       {children}

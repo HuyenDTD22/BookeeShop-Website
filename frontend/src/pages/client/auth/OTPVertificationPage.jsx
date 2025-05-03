@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import OTPVertificationComponent from "../../components/common/OTPVertificationComponent";
-import authService from "../../services/client/authService";
+import OTPVertificationComponent from "../../../components/common/OTPVertificationComponent";
+import authService from "../../../services/client/authService";
 
 const OTPVertificationPage = () => {
   const navigate = useNavigate();

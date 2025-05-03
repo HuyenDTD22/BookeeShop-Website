@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginForm from "../../components/common/LoginComponent";
-import authService from "../../services/client/authService";
+import LoginForm from "../../../components/common/LoginComponent";
+import authService from "../../../services/client/authService";
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);

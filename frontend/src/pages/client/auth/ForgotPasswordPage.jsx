@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ForgotPasswordComponent from "../../components/common/ForgotPasswordComponent";
-import authService from "../../services/client/authService";
+import ForgotPasswordComponent from "../../../components/common/ForgotPasswordComponent";
+import authService from "../../../services/client/authService";
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();

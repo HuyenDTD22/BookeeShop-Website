@@ -1,0 +1,37 @@
+.book-detail-page h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.book-detail-page img {
+    transition: transform 0.3s ease;
+}
+
+.book-detail-page img:hover {
+    transform: scale(1.05);
+}
+
+.book-detail-page .text-danger {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.book-detail-page .add-to-cart-btn {
+    transition: all 0.3s ease;
+}
+
+.book-detail-page .add-to-cart-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.comments-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.related-books h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}

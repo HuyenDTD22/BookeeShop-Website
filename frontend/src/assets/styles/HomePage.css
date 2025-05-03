@@ -1,0 +1,132 @@
+.homepage {
+    background-color: #f8f9fa;
+}
+
+.banner-content {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.category-card {
+    transition: transform 0.3s;
+}
+
+.category-card:hover {
+    transform: scale(1.05);
+}
+
+.book-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 450px;
+    /* Tăng chiều cao để chứa thêm thông tin */
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.book-card-img {
+    height: 200px;
+    /* Chiều cao cố định cho ảnh */
+    object-fit: cover;
+}
+
+.book-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.book-card-title {
+    font-size: 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    /* Giới hạn tiêu đề 2 dòng */
+    -webkit-box-orient: vertical;
+    height: 48px;
+    /* Chiều cao cố định cho tiêu đề */
+}
+
+.book-card-price {
+    font-size: 0.9rem;
+    height: 24px;
+    /* Chiều cao cố định cho giá */
+}
+
+.book-card-sold {
+    font-size: 0.85rem;
+    color: #666;
+    height: 20px;
+    /* Chiều cao cố định cho số lượng đã bán */
+}
+
+.book-card-rating {
+    height: 20px;
+    /* Chiều cao cố định cho đánh giá sao */
+}
+
+.book-card-buttons {
+    height: 40px;
+    /* Chiều cao cố định cho nút */
+}
+
+.book-card-buttons .btn {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.book-card:hover .btn {
+    opacity: 1;
+}
+
+.horizontal-scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.horizontal-scroll {
+    display: flex;
+    overflow: hidden;
+    /* Ẩn các sản phẩm không nằm trong nhóm hiện tại */
+    width: 100%;
+}
+
+.scroll-button {
+    position: absolute;
+    z-index: 1;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.scroll-button.left {
+    left: 0;
+}
+
+.scroll-button.right {
+    right: 0;
+}
+
+.section-block {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 15px;
+    text-align: left;
+}

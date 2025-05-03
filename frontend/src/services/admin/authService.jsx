@@ -40,37 +40,17 @@ const authService = {
     }
   },
 
-  //   //Đăng xuất
-  //   logout: () => {
-  //     localStorage.removeItem("token");
-  //     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  //   },
-
-  //   // Kiểm tra người dùng đã đăng nhập chưa
-  //   isLoggedIn: () => {
-  //     return (
-  //       !!localStorage.getItem("token") || !!authService.getTokenFromCookie()
-  //     );
-  //   },
-
-  //   // Lấy token từ cookie nếu có
-  //   getTokenFromCookie: () => {
-  //     const cookies = document.cookie.split(";");
-
-  //     for (const cookie of cookies) {
-  //       const trimmedCookie = cookie.trim();
-
-  //       if (trimmedCookie.startsWith("token=")) {
-  //         return trimmedCookie.substring("token=".length);
-  //       }
-  //     }
-  //     return null;
-  //   },
-
-  //   // Lấy token từ localStorage hoặc cookie
-  //   getToken: () => {
-  //     return localStorage.getItem("token") || authService.getTokenFromCookie();
-  //   },
+  // Kiểm tra đăng nhập và lấy thông tin user
+  getAuthInfo: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/${ADMIN}/auth/info`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default authService;
