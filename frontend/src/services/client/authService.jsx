@@ -114,7 +114,7 @@ const authService = {
     }
   },
 
-  // Kiểm tra đăng nhập và lấy thông tin user
+  // Lấy thông tin user
   getUserInfo: async () => {
     try {
       const response = await axios.get(`${API_URL}/user/info`, {
@@ -124,6 +124,20 @@ const authService = {
     } catch (error) {
       console.error("Error fetching user info:", error);
       throw error; // Ném lỗi để xử lý ở tầng trên
+    }
+  },
+
+  //Cập nhật thông tin người dùng
+  updateUserInfo: async (data) => {
+    try {
+      const response = await axios.patch(`${API_URL}/user/info`, data, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating user info:", error);
+      throw error;
     }
   },
 

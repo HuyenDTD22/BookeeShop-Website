@@ -27,4 +27,12 @@ router.post(
 
 router.get("/info", authMiddleware.requireAuth, controller.info);
 
+router.patch(
+  "/update",
+  authMiddleware.requireAuth,
+  upload.single("avatar"),
+  uploadCloud.upload,
+  controller.update
+);
+
 module.exports = router;

@@ -6,6 +6,8 @@ import NotFoundPage from "../pages/client/auth/NotFoundPage";
 import ForgotPasswordPage from "../pages/client/auth/ForgotPasswordPage";
 import OTPVertificationPage from "../pages/client/auth/OTPVertificationPage";
 import BookDetailPage from "../pages/client/product/BookDetailPage";
+import CheckoutPage from "../pages/client/checkout/CheckoutPage";
+import MyAccountPage from "../pages/client/user/MyAccountPage";
 
 //admin
 import LoginPageAdmin from "../pages/admin/auth/LoginPageAdmin";
@@ -37,6 +39,16 @@ export const routes = [
   {
     path: "/book/detail/:slugBook",
     page: BookDetailPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/order",
+    page: CheckoutPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/user",
+    page: MyAccountPage,
     isShowHeader: true,
   },
   {

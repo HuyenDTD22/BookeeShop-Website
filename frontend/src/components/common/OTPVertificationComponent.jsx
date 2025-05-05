@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import InputComponent from "./InputComponent";
 import ButtonComponent from "./ButtonComponent";
-import "../../assets/styles/OTPVertificationComponent.css";
+import "../../styles/client/component/OTPVertificationComponent.css";
 
 const OTPVertificationComponent = ({
   onSubmit,

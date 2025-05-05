@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import InputComponent from "./InputComponent";
 import ButtonComponent from "./ButtonComponent";
-import "../../assets/styles/LoginComponent.css";
+import "../../styles/client/component/LoginComponent.css";
 
 const LoginForm = ({ onSubmit, loading, error, success }) => {
   const [email, setEmail] = useState("");

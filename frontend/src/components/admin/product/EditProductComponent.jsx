@@ -9,7 +9,7 @@ import quillConfig from "../../../utils/quillConfig";
 import UploadImageComponent from "../../common/UploadImageComponent";
 import CategorySelectComponent from "../../common/CategorySelectComponent";
 import sanitizeHtml from "../../../utils/sanitizeHtml";
-import "../../../assets/styles/EditProductComponent.css";
+import "../../../styles/admin/component/EditProductComponent.css";
 
 const EditProductComponent = ({ book, onSubmit }) => {
   const [formData, setFormData] = useState({

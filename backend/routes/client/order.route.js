@@ -8,6 +8,8 @@ router.get("/", authMiddleware.requireAuth, controller.index);
 
 router.post("/create", authMiddleware.requireAuth, controller.create);
 
+router.post("/buy-now", authMiddleware.requireAuth, controller.buyNow);
+
 router.get("/success/:orderId", authMiddleware.requireAuth, controller.success);
 
 router.get("/my-orders", authMiddleware.requireAuth, controller.getMyOrders);

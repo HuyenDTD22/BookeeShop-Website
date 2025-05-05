@@ -12,11 +12,12 @@ import {
 import bookService from "../../../services/client/bookService";
 import cartService from "../../../services/client/cartService"; // Thêm import cartService
 import commentService from "../../../services/client/commentService";
+import ratingService from "../../../services/client/ratingService";
 import StarRatingComponent from "../../../components/common/StarRatingComponent";
 import CommentFormComponent from "../../../components/client/comment/CommentFormComponent";
 import CommentItemComponent from "../../../components/client/comment/CommentItemComponent";
 import BookCardComponent from "../../../components/client/product/BookCardComponent";
-import "../../../assets/styles/client/BookDetailPage.css";
+import "../../../styles/client/pages/BookDetailPage.css";
 
 const BookDetailPage = () => {
   const { slugBook } = useParams();
@@ -25,6 +26,14 @@ const BookDetailPage = () => {
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [comments, setComments] = useState([]);
   const [totalComments, setTotalComments] = useState(0);
+  const [ratings, setRatings] = useState([]);
+  const [ratingPercentages, setRatingPercentages] = useState({
+    5: 0,
+    4: 0,
+    3: 0,
+    2: 0,
+    1: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
@@ -51,6 +60,26 @@ const BookDetailPage = () => {
         const commentData = await commentService.getComments(bookData.book._id);
         setComments(commentData.comments || []);
         setTotalComments(commentData.total || 0);
+
+        // [CHANGED] Lấy danh sách đánh giá
+        const ratingData = await ratingService.getRatings(bookData.book._id);
+        setRatings(ratingData.ratings || []);
+
+        // [CHANGED] Tính toán tỷ lệ phần trăm cho từng mức sao
+        const totalRatings = ratingData.totalRatings || 0;
+        if (totalRatings > 0) {
+          const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+          ratingData.ratings.forEach((rating) => {
+            counts[rating.rating]++;
+          });
+          setRatingPercentages({
+            5: (counts[5] / totalRatings) * 100,
+            4: (counts[4] / totalRatings) * 100,
+            3: (counts[3] / totalRatings) * 100,
+            2: (counts[2] / totalRatings) * 100,
+            1: (counts[1] / totalRatings) * 100,
+          });
+        }
       } catch (error) {
         setError(
           error.response?.data?.message || "Đã xảy ra lỗi khi tải dữ liệu!"
@@ -89,14 +118,7 @@ const BookDetailPage = () => {
 
   // [CHANGED] Hàm xử lý nút "Mua ngay"
   const handleBuyNow = async () => {
-    try {
-      await cartService.addToCart(book._id, 1); // Thêm vào giỏ hàng trước
-      navigate("/cart"); // Chuyển hướng đến trang giỏ hàng
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Đã xảy ra lỗi khi mua ngay!";
-      setCartError(errorMessage);
-    }
+    navigate("/order", { state: { slug: slugBook, quantity: 1 } });
   };
 
   const handleCommentAdded = (newComment) => {
@@ -191,23 +213,27 @@ const BookDetailPage = () => {
                   <h3 className="me-2 mb-0">{book.rating_mean || 0}/5</h3>
                   <StarRatingComponent rating={book.rating_mean || 0} />
                   <span className="text-muted ms-2">
-                    ({totalComments} đánh giá)
+                    ({ratings.length} đánh giá){" "}
+                    {/* [CHANGED] Sử dụng ratings.length */}
                   </span>
                 </div>
                 <div className="rating-bars">
+                  {/* [CHANGED] Cập nhật tỷ lệ phần trăm cho từng mức sao */}
                   <div className="d-flex align-items-center mb-1">
                     <span className="me-2">5 sao</span>
                     <div className="progress w-50">
                       <div
                         className="progress-bar bg-success"
                         role="progressbar"
-                        style={{ width: "0%" }}
-                        aria-valuenow="0"
+                        style={{ width: `${ratingPercentages[5]}%` }}
+                        aria-valuenow={ratingPercentages[5]}
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
                     </div>
-                    <span className="ms-2">0%</span>
+                    <span className="ms-2">
+                      {Math.round(ratingPercentages[5])}%
+                    </span>
                   </div>
                   <div className="d-flex align-items-center mb-1">
                     <span className="me-2">4 sao</span>
@@ -215,13 +241,15 @@ const BookDetailPage = () => {
                       <div
                         className="progress-bar bg-success"
                         role="progressbar"
-                        style={{ width: "0%" }}
-                        aria-valuenow="0"
+                        style={{ width: `${ratingPercentages[4]}%` }}
+                        aria-valuenow={ratingPercentages[4]}
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
                     </div>
-                    <span className="ms-2">0%</span>
+                    <span className="ms-2">
+                      {Math.round(ratingPercentages[4])}%
+                    </span>
                   </div>
                   <div className="d-flex align-items-center mb-1">
                     <span className="me-2">3 sao</span>
@@ -229,13 +257,15 @@ const BookDetailPage = () => {
                       <div
                         className="progress-bar bg-warning"
                         role="progressbar"
-                        style={{ width: "0%" }}
-                        aria-valuenow="0"
+                        style={{ width: `${ratingPercentages[3]}%` }}
+                        aria-valuenow={ratingPercentages[3]}
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
                     </div>
-                    <span className="ms-2">0%</span>
+                    <span className="ms-2">
+                      {Math.round(ratingPercentages[3])}%
+                    </span>
                   </div>
                   <div className="d-flex align-items-center mb-1">
                     <span className="me-2">2 sao</span>
@@ -243,13 +273,15 @@ const BookDetailPage = () => {
                       <div
                         className="progress-bar bg-warning"
                         role="progressbar"
-                        style={{ width: "0%" }}
-                        aria-valuenow="0"
+                        style={{ width: `${ratingPercentages[2]}%` }}
+                        aria-valuenow={ratingPercentages[2]}
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
                     </div>
-                    <span className="ms-2">0%</span>
+                    <span className="ms-2">
+                      {Math.round(ratingPercentages[2])}%
+                    </span>
                   </div>
                   <div className="d-flex align-items-center">
                     <span className="me-2">1 sao</span>
@@ -257,13 +289,15 @@ const BookDetailPage = () => {
                       <div
                         className="progress-bar bg-danger"
                         role="progressbar"
-                        style={{ width: "0%" }}
-                        aria-valuenow="0"
+                        style={{ width: `${ratingPercentages[1]}%` }}
+                        aria-valuenow={ratingPercentages[1]}
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
                     </div>
-                    <span className="ms-2">0%</span>
+                    <span className="ms-2">
+                      {Math.round(ratingPercentages[1])}%
+                    </span>
                   </div>
                 </div>
                 <p className="text-muted mt-3">

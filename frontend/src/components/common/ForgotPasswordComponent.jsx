@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import InputComponent from "./InputComponent";
 import ButtonComponent from "./ButtonComponent";
-import "../../assets/styles/ForgotPasswordComponent.css";
+import "../../styles/client/component/ForgotPasswordComponent.css";
 
 const ForgotPasswordComponent = ({ onSubmit, loading, error, success }) => {
   const [email, setEmail] = useState("");

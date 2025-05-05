@@ -10,7 +10,7 @@ import SelectTreeComponent from "../../common/SelectTreeComponent";
 import { getCategory } from "../../../services/admin/categoryService";
 import UploadImageComponent from "../../common/UploadImageComponent";
 import CategorySelectComponent from "../../common/CategorySelectComponent";
-import "../../../assets/styles/CreateProductComponent.css";
+import "../../../styles/admin/component/CreateProductComponent.css";
 
 const CreateProductComponent = ({ onSubmit }) => {
   const [formData, setFormData] = useState({

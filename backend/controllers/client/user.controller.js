@@ -321,3 +321,42 @@ module.exports.info = async (req, res) => {
     });
   }
 };
+
+// [PATCH] /user/update - Cập nhật thông tin cá nhân
+module.exports.update = async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    const { fullName, phone, address, avatar } = req.body;
+
+    const user = await User.findById(user_id);
+    if (!user) {
+      return res.status(404).json({
+        code: 404,
+        message: "Người dùng không tồn tại!",
+      });
+    }
+
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = address;
+    if (avatar) updateData.avatar = avatar;
+
+    await User.updateOne({ _id: user_id }, updateData);
+
+    const updatedUser = await User.findById(user_id).select(
+      "-password -deleted"
+    );
+
+    res.json({
+      code: 200,
+      message: "Cập nhật thông tin thành công!",
+      info: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi",
+    });
+  }
+};

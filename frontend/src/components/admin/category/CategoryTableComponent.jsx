@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Table, Button, Modal, Spinner } from "react-bootstrap";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../../../assets/styles/ProductTableComponent.css";
+import "../../../styles/admin/component/ProductTableComponent.css";
 import ConfirmModalComponent from "../../common/ConfirmModalComponent";
 import { AuthContext } from "../../../context/AuthContext";
 

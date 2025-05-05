@@ -132,7 +132,7 @@ import {
   FaBookOpen,
 } from "react-icons/fa";
 import { api } from "../../../services/client/bookService";
-import "../../../assets/styles/DefaultComponent.css";
+import "../../../styles/client/component/DefaultComponent.css";
 import FooterComponent from "./FooterComponent";
 
 const DefaultComponent = ({ children }) => {

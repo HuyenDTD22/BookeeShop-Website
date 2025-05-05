@@ -5,7 +5,7 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { api } from "../../../services/client/bookService";
 import BookCardComponent from "../../../components/client/product/BookCardComponent";
 import CategoryCardComponent from "../../../components/client/category/CategoryCardComponent";
-import "../../../assets/styles/HomePage.css";
+import "../../../styles/client/pages/HomePage.css";
 
 const HomePage = () => {
   const [booksFeatured, setBooksFeatured] = useState([]);

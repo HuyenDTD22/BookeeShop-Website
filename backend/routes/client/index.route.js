@@ -10,6 +10,7 @@ const cartRoutes = require("./cart.route");
 const orderRoutes = require("./order.route");
 const commentRoutes = require("./comment.route");
 const ratingRoutes = require("./rating.route");
+const notificationRoutes = require("./notification.route");
 
 module.exports = (app) => {
   app.use(categoryMiddleware.category);
@@ -33,4 +34,6 @@ module.exports = (app) => {
   app.use("/comment", commentRoutes);
 
   app.use("/rating", ratingRoutes);
+
+  app.use("/notification", notificationRoutes);
 };

@@ -4,7 +4,7 @@ import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import ConfirmModalComponent from "../../common/ConfirmModalComponent";
 import { AuthContext } from "../../../context/AuthContext";
-import "../../../assets/styles/AccountTableComponent.css";
+import "../../../styles/admin/component/AccountTableComponent.css";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
