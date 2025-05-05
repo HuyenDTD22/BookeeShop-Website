@@ -9,6 +9,7 @@ const cartService = {
       const response = await axios.get(`${API_URL}/cart`, {
         withCredentials: true,
       });
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching cart details:", error);
@@ -17,16 +18,16 @@ const cartService = {
   },
 
   // Thêm sách vào giỏ hàng
-  addToCart: async (bookId, quantity) => {
+  addToCart: async (slug, quantity) => {
     try {
       const response = await axios.post(
-        `${API_URL}/cart/add/${bookId}`,
+        `${API_URL}/cart/add/${slug}`,
         { quantity },
         { withCredentials: true }
       );
       return response.data;
     } catch (error) {
-      console.error(`Error adding book ${bookId} to cart:`, error);
+      console.error(`Error adding book ${slug} to cart:`, error);
       throw error;
     }
   },

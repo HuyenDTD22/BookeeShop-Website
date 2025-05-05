@@ -42,7 +42,6 @@ const bookService = {
     try {
       const response = await axios.get(`${API_URL}/book/detail/${slugBook}`);
       return response.data;
-      console.log(response.data);
     } catch (error) {
       console.error(`Error fetching book details for ${slugBook}:`, error);
       throw error;

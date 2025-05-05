@@ -128,10 +128,10 @@ const authService = {
   },
 
   //Cập nhật thông tin người dùng
-  updateUserInfo: async (data) => {
+  updateUserInfo: async (formData) => {
     try {
-      const response = await axios.patch(`${API_URL}/user/info`, data, {
-        headers: { "Content-Type": "application/json" },
+      const response = await axios.patch(`${API_URL}/user/update`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }, // Sửa Content-Type
         withCredentials: true,
       });
       return response.data;

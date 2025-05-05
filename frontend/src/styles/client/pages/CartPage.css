@@ -1,0 +1,11 @@
+.card {
+    border-radius: 10px;
+}
+
+.card img {
+    object-fit: cover;
+}
+
+.btn-danger {
+    margin-left: 10px;
+}

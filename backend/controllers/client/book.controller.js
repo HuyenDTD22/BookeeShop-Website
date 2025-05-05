@@ -52,7 +52,10 @@ module.exports.category = async (req, res) => {
 
     const newBooks = bookHelper.priceNewBooks(books);
 
-    res.json(newBooks);
+    res.json({
+      newBooks,
+      category,
+    });
   } catch (error) {
     res.json({
       code: 400,

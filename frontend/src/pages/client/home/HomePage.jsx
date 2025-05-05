@@ -166,11 +166,11 @@ const HomePage = () => {
                 </Button>
               </div>
             )}
-            <div className="text-center mt-4">
+            {/* <div className="text-center mt-4">
               <Button variant="primary" as={Link} to="/categories">
-                Xem thêm danh mục
+                Xem thêm
               </Button>
-            </div>
+            </div> */}
           </div>
         </section>
 
@@ -218,7 +218,7 @@ const HomePage = () => {
             )}
             <div className="text-center mt-4">
               <Button variant="primary" as={Link} to="/book">
-                Xem thêm sản phẩm nổi bật
+                Xem thêm
               </Button>
             </div>
           </div>
@@ -267,7 +267,7 @@ const HomePage = () => {
             )}
             <div className="text-center mt-4">
               <Button variant="primary" as={Link} to="/book">
-                Xem thêm sản phẩm mới
+                Xem thêm
               </Button>
             </div>
           </div>

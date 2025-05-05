@@ -9,6 +9,7 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
     phone: user?.phone || "",
     gender: user?.gender || "other",
     email: user?.email || "",
+    address: user?.address || "",
     oldPassword: "",
     password: "",
     confirmPassword: "",
@@ -25,6 +26,7 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
         phone: user.phone || "",
         gender: user.gender || "other",
         email: user.email || "",
+        address: user?.address || "",
         oldPassword: "",
         password: "",
         confirmPassword: "",
@@ -42,6 +44,7 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
     setFormData({ ...formData, avatar: file || "" });
   };
 
+  // *** ĐÃ SỬA: Chuyển formData thành đối tượng FormData để gửi multipart/form-data ***
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -53,7 +56,23 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
     }
 
     try {
-      const response = await authService.updateUserInfo(formData);
+      // Tạo đối tượng FormData
+      const data = new FormData();
+      data.append("fullName", formData.fullName);
+      data.append("phone", formData.phone);
+      data.append("gender", formData.gender);
+      data.append("email", formData.email);
+      data.append("address", formData.address);
+      if (formData.oldPassword)
+        data.append("oldPassword", formData.oldPassword);
+      if (formData.password) data.append("password", formData.password);
+      if (formData.confirmPassword)
+        data.append("confirmPassword", formData.confirmPassword);
+      if (formData.avatar && formData.avatar instanceof File) {
+        data.append("avatar", formData.avatar);
+      }
+
+      const response = await authService.updateUserInfo(data);
       setUserInfo(response.info);
       setSuccess("Cập nhật thông tin thành công!");
     } catch (error) {
@@ -109,6 +128,15 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
             value={formData.email}
             onChange={handleChange}
             disabled
+          />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Địa chỉ</Form.Label>
+          <Form.Control
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
           />
         </Form.Group>
         <Form.Group className="mb-3">

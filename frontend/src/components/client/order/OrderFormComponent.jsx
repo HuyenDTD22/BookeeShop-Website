@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Row, Col } from "react-bootstrap";
 
-const CheckoutFormComponent = ({ onSubmit, section = "shipping", data }) => {
+const OrderFormComponent = ({ onSubmit, section = "shipping", data }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const newData = { ...data, [name]: value };
@@ -91,4 +91,4 @@ const CheckoutFormComponent = ({ onSubmit, section = "shipping", data }) => {
   );
 };
 
-export default CheckoutFormComponent;
+export default OrderFormComponent;

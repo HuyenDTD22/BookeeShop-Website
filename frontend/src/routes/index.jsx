@@ -6,7 +6,9 @@ import NotFoundPage from "../pages/client/auth/NotFoundPage";
 import ForgotPasswordPage from "../pages/client/auth/ForgotPasswordPage";
 import OTPVertificationPage from "../pages/client/auth/OTPVertificationPage";
 import BookDetailPage from "../pages/client/product/BookDetailPage";
-import CheckoutPage from "../pages/client/checkout/CheckoutPage";
+import CategoryBooksPage from "../pages/client/category/CategoryBooksPage";
+import OrderPage from "../pages/client/order/OrderPage";
+import CartPage from "../pages/client/cart/CartPage";
 import MyAccountPage from "../pages/client/user/MyAccountPage";
 
 //admin
@@ -42,13 +44,23 @@ export const routes = [
     isShowHeader: true,
   },
   {
+    path: "/book/:slugCategory",
+    page: CategoryBooksPage,
+    isShowHeader: true,
+  },
+  {
     path: "/order",
-    page: CheckoutPage,
+    page: OrderPage,
     isShowHeader: true,
   },
   {
     path: "/user",
     page: MyAccountPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/cart",
+    page: CartPage,
     isShowHeader: true,
   },
   {

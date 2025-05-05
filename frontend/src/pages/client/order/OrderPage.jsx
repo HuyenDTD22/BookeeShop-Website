@@ -11,16 +11,17 @@ import {
 } from "react-bootstrap";
 import bookService from "../../../services/client/bookService";
 import orderService from "../../../services/client/orderService";
-import CheckoutProductInfoComponent from "../../../components/client/checkout/CheckoutProductInfoComponent";
-import CheckoutFormComponent from "../../../components/client/checkout/CheckoutFormComponent";
+import authService from "../../../services/client/authService";
+import OrderProductInfoComponent from "../../../components/client/order/OrderProductInfoComponent";
+import OrderFormComponent from "../../../components/client/order/OrderFormComponent";
 import "../../../styles/client/pages/CheckoutPage.css";
 
-const CheckoutPage = () => {
+const OrderPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { slug, quantity: initialQuantity } = location.state || {};
-  const [book, setBook] = useState(null);
-  const [quantity, setQuantity] = useState(initialQuantity || 1);
+  const { cart: initialCart, slug, total: initialTotal } = location.state || {};
+  const [books, setBooks] = useState([]);
+  const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -32,26 +33,52 @@ const CheckoutPage = () => {
   const [paymentData, setPaymentData] = useState({ paymentMethod: "cod" });
 
   useEffect(() => {
-    const fetchBookData = async () => {
-      if (!slug) {
-        setError("Không tìm thấy thông tin sản phẩm!");
-        setLoading(false);
-        return;
-      }
+    const fetchData = async () => {
       try {
-        const bookData = await bookService.getBookDetail(slug);
-        setBook(bookData.book);
+        let fetchedBooks = [];
+        let initialQuantities = {};
+
+        if (slug) {
+          const bookData = await bookService.getBookDetail(slug);
+          fetchedBooks = [bookData.book];
+          initialQuantities[bookData.book._id] = 1;
+        } else if (initialCart && initialCart.length > 0) {
+          if (initialCart.every((item) => item.bookInfo)) {
+            fetchedBooks = initialCart.map((item) => item.bookInfo);
+            initialCart.forEach((item) => {
+              initialQuantities[item.book_id] = item.quantity || 1;
+            });
+          } else {
+            setError("Dữ liệu giỏ hàng không chứa thông tin chi tiết sách!");
+            setLoading(false);
+            return;
+          }
+        } else {
+          setError("Không tìm thấy thông tin sản phẩm!");
+          setLoading(false);
+          return;
+        }
+
+        const userData = await authService.getUserInfo();
+        setShippingData({
+          fullName: userData.info.fullName || "",
+          phone: userData.info.phone || "",
+          address: userData.info.address || "",
+        });
+
+        setBooks(fetchedBooks);
+        setQuantities(initialQuantities);
       } catch (error) {
         setError(
-          error.response?.data?.message || "Đã xảy ra lỗi khi tải dữ liệu sách!"
+          error.response?.data?.message || "Đã xảy ra lỗi khi tải dữ liệu!"
         );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchBookData();
-  }, [slug]);
+    fetchData();
+  }, [initialCart, slug]);
 
   if (loading) {
     return (
@@ -61,7 +88,7 @@ const CheckoutPage = () => {
     );
   }
 
-  if (error || !book) {
+  if (error || books.length === 0) {
     return (
       <Container className="my-5">
         <Alert variant="danger">{error || "Không tìm thấy sản phẩm!"}</Alert>
@@ -69,8 +96,15 @@ const CheckoutPage = () => {
     );
   }
 
-  const subtotal = book.priceNew * quantity;
-  const discount = (book.price - book.priceNew) * quantity;
+  const subtotal = books.reduce(
+    (sum, book) => sum + book.priceNew * (quantities[book._id] || 1),
+    0
+  );
+  const discount = books.reduce(
+    (sum, book) =>
+      sum + (book.price - book.priceNew) * (quantities[book._id] || 1),
+    0
+  );
   const total = subtotal;
 
   const handleCheckout = async () => {
@@ -78,9 +112,13 @@ const CheckoutPage = () => {
     setError("");
 
     try {
-      const response = await orderService.buyNow({
+      const orderItems = books.map((book) => ({
         book_id: book._id,
-        quantity,
+        quantity: quantities[book._id] || 1,
+      }));
+
+      const response = await orderService.buyNow({
+        items: orderItems,
         fullName: shippingData.fullName,
         phone: shippingData.phone,
         address: shippingData.address,
@@ -89,10 +127,7 @@ const CheckoutPage = () => {
 
       if (response.code === 200) {
         setSuccess(true);
-        setTimeout(
-          () => navigate(`/order/success/${response.order._id}`),
-          2000
-        );
+        setTimeout(() => navigate(`/user`), 2000);
       }
     } catch (error) {
       setError(
@@ -111,22 +146,36 @@ const CheckoutPage = () => {
         </h2>
         {success ? (
           <Alert variant="success" className="text-center py-4">
-            <h4>Thanh toán thành công!</h4>
+            <h4>Đặt hàng thành công!</h4>
             <p>Chuyển hướng sau 2 giây...</p>
           </Alert>
         ) : (
           <>
-            {/* Phần 1: Thông tin sản phẩm và Thông tin giao hàng */}
             <Row className="mb-5">
               <Col md={6} className="mb-4 mb-md-0">
                 <Card className="h-100 shadow-sm border-0 rounded-3">
                   <Card.Body>
                     <h4 className="mb-4 text-success">Thông tin sản phẩm</h4>
-                    <CheckoutProductInfoComponent
-                      book={book}
-                      quantity={quantity}
-                      setQuantity={setQuantity}
-                    />
+                    {books.map((book, index) => (
+                      <div key={book._id}>
+                        <OrderProductInfoComponent
+                          book={book}
+                          quantity={quantities[book._id] || 1}
+                          setQuantity={(newQty) =>
+                            setQuantities((prev) => ({
+                              ...prev,
+                              [book._id]: newQty,
+                            }))
+                          }
+                        />
+                        {index < books.length - 1 && (
+                          <hr
+                            className="my-3"
+                            style={{ borderTop: "1px solid #dee2e6" }}
+                          />
+                        )}
+                      </div>
+                    ))}
                   </Card.Body>
                 </Card>
               </Col>
@@ -134,7 +183,7 @@ const CheckoutPage = () => {
                 <Card className="h-100 shadow-sm border-0 rounded-3">
                   <Card.Body>
                     <h4 className="mb-4 text-success">Thông tin giao hàng</h4>
-                    <CheckoutFormComponent
+                    <OrderFormComponent
                       onSubmit={setShippingData}
                       section="shipping"
                       data={shippingData}
@@ -144,7 +193,6 @@ const CheckoutPage = () => {
               </Col>
             </Row>
 
-            {/* Phần 2: Phương thức thanh toán và Chi tiết thanh toán */}
             <Row>
               <Col md={6} className="mb-4 mb-md-0">
                 <Card className="h-100 shadow-sm border-0 rounded-3">
@@ -152,7 +200,7 @@ const CheckoutPage = () => {
                     <h4 className="mb-4 text-success">
                       Phương thức thanh toán
                     </h4>
-                    <CheckoutFormComponent
+                    <OrderFormComponent
                       onSubmit={setPaymentData}
                       section="payment"
                       data={paymentData}
@@ -193,7 +241,7 @@ const CheckoutPage = () => {
                       className="w-100 py-2 rounded-3"
                       onClick={handleCheckout}
                     >
-                      Hoàn tất thanh toán
+                      Đặt hàng
                     </Button>
                   </Card.Body>
                 </Card>
@@ -211,4 +259,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default OrderPage;

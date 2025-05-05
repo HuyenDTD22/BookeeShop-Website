@@ -1,15 +1,19 @@
 import React from "react";
 import { Row, Col, Form } from "react-bootstrap";
 
-const CheckoutProductInfoComponent = ({ book, quantity, setQuantity }) => {
+const OrderProductInfoComponent = ({ book, quantity, setQuantity }) => {
   return (
     <Row className="align-items-center">
       <Col md={3}>
         <img
           src={book.thumbnail}
           alt={book.title}
-          className="img-fluid rounded-3"
-          style={{ maxHeight: "120px", objectFit: "cover" }}
+          style={{
+            width: "120px",
+            height: "60px",
+            objectFit: "cover",
+            borderRadius: "5px",
+          }}
         />
       </Col>
       <Col md={4}>
@@ -38,4 +42,4 @@ const CheckoutProductInfoComponent = ({ book, quantity, setQuantity }) => {
   );
 };
 
-export default CheckoutProductInfoComponent;
+export default OrderProductInfoComponent;

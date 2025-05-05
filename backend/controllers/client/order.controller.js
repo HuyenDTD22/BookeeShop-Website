@@ -205,48 +205,63 @@ module.exports.create = async (req, res) => {
 // [POST] /order/buy-now
 module.exports.buyNow = async (req, res) => {
   try {
-    const { book_id, quantity, fullName, phone, address } = req.body;
+    const { items, fullName, phone, address, paymentMethod } = req.body;
     const user_id = req.user._id;
     const cart_id = req.cookies.cartId;
 
     // Kiểm tra dữ liệu đầu vào
-    if (!book_id || !quantity || !fullName || !phone || !address) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         code: 400,
-        message: "book_id, quantity, fullName, phone và address là bắt buộc",
+        message: "Danh sách items là bắt buộc và phải là mảng không rỗng",
       });
     }
-
-    if (quantity <= 0) {
+    if (!fullName || !phone || !address || !paymentMethod) {
       return res.status(400).json({
         code: 400,
-        message: "Số lượng phải lớn hơn 0",
+        message: "fullName, phone, address và paymentMethod là bắt buộc",
       });
     }
 
-    // Kiểm tra book_id hợp lệ
-    if (!mongoose.Types.ObjectId.isValid(book_id)) {
-      return res.status(400).json({
-        code: 400,
-        message: "book_id không hợp lệ",
+    // Kiểm tra các item
+    let books = [];
+    let totalPrice = 0;
+    for (const item of items) {
+      const { book_id, quantity } = item;
+
+      if (!mongoose.Types.ObjectId.isValid(book_id)) {
+        return res.status(400).json({
+          code: 400,
+          message: `book_id ${book_id} không hợp lệ`,
+        });
+      }
+
+      if (!quantity || quantity <= 0) {
+        return res.status(400).json({
+          code: 400,
+          message: `Số lượng cho book_id ${book_id} phải lớn hơn 0`,
+        });
+      }
+
+      const book = await Book.findOne({ _id: book_id }).lean();
+      if (!book) {
+        return res.status(404).json({
+          code: 404,
+          message: `Không tìm thấy sách với ID: ${book_id}`,
+        });
+      }
+
+      bookHelper.priceNewBook(book);
+      const bookTotalPrice = Number(book.priceNew) * quantity;
+
+      books.push({
+        book_id,
+        price: book.price,
+        discountPercentage: book.discountPercentage || 0,
+        quantity,
       });
+      totalPrice += bookTotalPrice;
     }
-
-    // Kiểm tra sách tồn tại
-    const book = await Book.findOne({
-      _id: book_id,
-    });
-
-    if (!book) {
-      return res.status(404).json({
-        code: 404,
-        message: "Không tìm thấy sách",
-      });
-    }
-
-    // Tính giá mới
-    bookHelper.priceNewBook(book);
-    const totalPrice = Number(book.priceNew) * quantity;
 
     // Tạo đơn hàng
     const objectOrder = {
@@ -257,23 +272,17 @@ module.exports.buyNow = async (req, res) => {
         phone,
         address,
       },
-      books: [
-        {
-          book_id,
-          price: book.price,
-          discountPercentage: book.discountPercentage || 0,
-          quantity,
-        },
-      ],
+      books,
       totalPrice,
+      paymentMethod,
       status: "pending",
     };
 
     const order = new Order(objectOrder);
     await order.save();
 
-    // [CHANGED] Không ảnh hưởng đến giỏ hàng
-    // Giỏ hàng vẫn giữ nguyên để khách hàng tiếp tục mua
+    // Không xóa giỏ hàng để khách hàng tiếp tục mua
+    // Nếu muốn xóa, có thể thêm logic tương tự như /order/create
 
     // Populate thông tin
     const populatedOrder = await Order.findById(order._id)

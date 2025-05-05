@@ -10,28 +10,40 @@ module.exports.index = async (req, res) => {
 
     const cart = await Cart.findOne({
       _id: cartId,
-    });
+    }).lean();
 
-    if (cart.books.length > 0) {
+    if (!cart) {
+      return res.json({
+        code: 404,
+        message: "Giỏ hàng không tồn tại.",
+        cartDetail: { books: [], totalPrice: 0 },
+      });
+    }
+
+    let totalPrice = 0;
+
+    if (cart.books && cart.books.length > 0) {
       for (const item of cart.books) {
         const bookId = item.book_id;
 
         const bookInfo = await Book.findOne({
           _id: bookId,
-        });
+        }).lean();
 
-        bookInfo.priceNew = booksHelper.priceNewBook(bookInfo);
-
-        item.bookInfo = bookInfo;
-
-        item.totalPrice = item.quantity * bookInfo.priceNew;
+        if (bookInfo) {
+          // *** ĐÃ SỬA: Sử dụng bookHelper thay vì booksHelper ***
+          bookHelper.priceNewBook(bookInfo); // Tính priceNew
+          item.bookInfo = bookInfo;
+          item.totalPrice = item.quantity * bookInfo.priceNew;
+          totalPrice += item.totalPrice;
+        } else {
+          item.bookInfo = null;
+          item.totalPrice = 0;
+        }
       }
     }
 
-    cart.totalPrice = cart.books.reduce(
-      (sum, item) => sum + item.totalPrice,
-      0
-    );
+    cart.totalPrice = totalPrice;
 
     res.json({
       code: 200,
@@ -49,12 +61,36 @@ module.exports.index = async (req, res) => {
 module.exports.add = async (req, res) => {
   try {
     const cartId = req.cookies.cartId;
-    const bookId = req.params.bookId;
-    const quantity = parseInt(req.body.quantity);
+    const slug = req.params.slug;
+    const quantity = parseInt(req.body.quantity) || 1;
+
+    if (!cartId) {
+      return res.json({
+        code: 400,
+        message: "Không tìm thấy giỏ hàng. Vui lòng thử lại.",
+      });
+    }
+
+    const book = await Book.findOne({ slug }).lean();
+    if (!book) {
+      return res.json({
+        code: 404,
+        message: "Không tìm thấy sách với slug này.",
+      });
+    }
+
+    const bookId = book._id;
 
     const cart = await Cart.findOne({
       _id: cartId,
     });
+
+    if (!cart) {
+      return res.json({
+        code: 404,
+        message: "Giỏ hàng không tồn tại.",
+      });
+    }
 
     const existBookInCart = cart.books.find((item) => item.book_id == bookId);
 
