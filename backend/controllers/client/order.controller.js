@@ -377,7 +377,7 @@ module.exports.getMyOrders = async (req, res) => {
       deleted: false,
     })
       .populate("user_id", "fullName email")
-      .populate("books.book_id", "title");
+      .populate("books.book_id", "title thumbnail");
 
     const totalOrders = orders.length;
     const totalSpent = orders.reduce((sum, order) => sum + order.totalPrice, 0);
@@ -414,7 +414,11 @@ module.exports.detail = async (req, res) => {
     // Tìm đơn hàng
     const order = await Order.findById(orderId)
       .populate("user_id", "fullName email")
-      .populate("books.book_id", "title price discountPercentage");
+      .populate(
+        "books.book_id",
+        "title price discountPercentage thumbnail slug"
+      )
+      .lean();
 
     if (!order) {
       return res.status(404).json({
@@ -434,8 +438,16 @@ module.exports.detail = async (req, res) => {
     // Tính giá mới và tổng giá cho từng sách
     for (const item of order.books) {
       const bookInfo = item.book_id;
-      bookInfo.priceNew = bookHelper.priceNewBook(bookInfo);
-      item.totalPrice = item.quantity * bookInfo.priceNew;
+      if (bookInfo) {
+        bookInfo.priceNew =
+          (bookInfo.price * (100 - (bookInfo.discountPercentage || 0))) / 100;
+
+        item.totalPrice =
+          item.quantity * (bookInfo.priceNew || bookInfo.price || 0);
+      } else {
+        item.book_id = { title: "Sách không tồn tại", priceNew: 0 };
+        item.totalPrice = 0;
+      }
     }
 
     res.status(200).json({

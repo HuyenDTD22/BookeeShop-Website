@@ -299,3 +299,30 @@ module.exports.delete = async (req, res) => {
     });
   }
 };
+
+// [GET] /rating/user-ratings - Thêm mới
+module.exports.getUserRatings = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    // Lấy danh sách đánh giá của người dùng
+    const ratings = await Rating.find({
+      user_id: userId,
+      status: "active",
+      deleted: false,
+    })
+      .populate("book_id", "title thumbnail slug")
+      .sort({ createdAt: -1 }); // Sắp xếp theo thời gian giảm dần
+
+    res.status(200).json({
+      code: 200,
+      message: "Lấy danh sách đánh giá của người dùng thành công!",
+      ratings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi khi lấy danh sách đánh giá",
+    });
+  }
+};

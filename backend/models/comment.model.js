@@ -14,10 +14,9 @@ const commentSchema = new mongoose.Schema(
     },
     content: String,
     thumbnail: String,
-    parentCommentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
-      default: null,
+    parent_id: {
+      type: String,
+      default: "",
     },
     status: {
       type: String,

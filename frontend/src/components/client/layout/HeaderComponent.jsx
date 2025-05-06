@@ -26,16 +26,16 @@ import {
 import "../../../styles/client/component/DefaultComponent.css"; // Đảm bảo import CSS
 import authService from "../../../services/client/authService";
 import { useNavigate } from "react-router-dom";
+import CartItemCountComponent from "../cart/CartItemCountComponent";
 
 const HeaderComponent = ({
-  cartItemCount,
-  setCartItemCount,
   notificationCount,
   setNotificationCount,
   categories,
   setCategories,
 }) => {
   const [user, setUser] = useState(null);
+  const [cartItemCount, setCartItemCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -225,6 +225,7 @@ const HeaderComponent = ({
             )}
           </Nav>
         </Navbar.Collapse>
+        <CartItemCountComponent setCartItemCount={setCartItemCount} />
       </Container>
     </Navbar>
   );

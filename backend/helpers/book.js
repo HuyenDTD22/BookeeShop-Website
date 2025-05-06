@@ -1,7 +1,9 @@
 //Tính giá mới cho nhiều sản phẩm
 module.exports.priceNewBooks = (books) => {
   const newBooks = books.map((item) => {
-    item.priceNew = (item.price * (100 - item.discountPercentage)) / 100;
+    item.priceNew = Math.round(
+      (item.price * (100 - item.discountPercentage)) / 100
+    );
     return item;
   });
 
@@ -10,5 +12,7 @@ module.exports.priceNewBooks = (books) => {
 
 //Tính giá mới cho 1 sản phẩm
 module.exports.priceNewBook = (book) => {
-  book.priceNew = (book.price * (100 - book.discountPercentage)) / 100;
+  book.priceNew = Math.round(
+    (book.price * (100 - book.discountPercentage)) / 100
+  );
 };

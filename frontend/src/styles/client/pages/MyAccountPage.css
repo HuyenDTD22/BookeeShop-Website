@@ -14,3 +14,82 @@
 .list-group-item .d-flex {
     align-items: center;
 }
+
+.custom-modal .modal-content {
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.custom-modal .modal-header {
+    border-bottom: none;
+    position: relative;
+}
+
+.custom-modal .modal-body {
+    background-color: #f8f9fa;
+}
+
+.text-primary {
+    color: #007bff !important;
+}
+
+.text-success {
+    color: #28a745 !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.custom-modal .btn-danger {
+    color: #fff !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+}
+
+.custom-modal .btn-danger:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+.custom-modal .modal-header.bg-danger {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.custom-modal .modal-body p {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.custom-modal .modal-footer {
+    border-top: none;
+    justify-content: center;
+}
+
+.custom-modal .modal-footer .btn {
+    width: 100px;
+    margin: 0 5px;
+}
+
+/* Style cho danh sách đơn hàng */
+.list-group-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.list-group-item strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.list-group-item p {
+    margin-bottom: 5px;
+}
+
+.list-group-item .btn {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}

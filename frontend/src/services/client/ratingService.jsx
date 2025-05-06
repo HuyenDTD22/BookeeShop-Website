@@ -67,6 +67,18 @@ const ratingService = {
       throw error;
     }
   },
+
+  getUserRatings: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/rating/user-ratings`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user ratings:", error);
+      throw error;
+    }
+  },
 };
 
 export default ratingService;

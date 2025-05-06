@@ -17,7 +17,6 @@ const CartPage = () => {
       try {
         const response = await cartService.getCart();
         if (response.code === 200) {
-          console.log(response.cartDetail);
           setCart(response.cartDetail);
         } else {
           setError("Không thể tải giỏ hàng.");

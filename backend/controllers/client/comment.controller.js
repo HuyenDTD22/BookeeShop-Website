@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Book = require("../../models/book.model");
 const Comment = require("../../models/comment.model");
+const Order = require("../../models/order.model");
+
+const createTreeHelper = require("../../helpers/createTree");
 
 //[GET] /comment/:bookId - Hiển thị bình luận của 1 cuốn sách
 module.exports.index = async (req, res) => {
@@ -19,61 +22,21 @@ module.exports.index = async (req, res) => {
     // Lấy danh sách bình luận gốc (parentCommentId = null)
     const comments = await Comment.find({
       book_id: bookId,
-      parentCommentId: null,
       status: "active",
       deleted: false,
     })
-      .populate("user_id", "name email")
+      .populate("user_id", "name fullName avatar")
       .populate("book_id", "title")
       .sort({ createdAt: -1 });
 
+    const newComments = createTreeHelper.tree(comments);
+
     // Lấy tổng số bình luận gốc
-    const total = await Comment.countDocuments({
-      book_id: bookId,
-      parentCommentId: null,
-      status: "active",
-      deleted: false,
-    });
-
-    // Lấy danh sách bình luận con (nếu có)
-    const commentIds = comments.map((comment) => comment._id);
-    const replies = await Comment.find({
-      parentCommentId: { $in: commentIds },
-      status: "active",
-      deleted: false,
-    })
-      .populate("user_id", "name email")
-      .sort({ createdAt: 1 });
-
-    // // Gộp bình luận con vào bình luận gốc
-    // const commentsWithReplies = comments.map((comment) => {
-    //   const commentReplies = replies.filter(
-    //     (reply) => reply.parentCommentId.toString() === comment._id.toString()
-    //   );
-    //   return { ...comment._doc, replies: commentReplies };
-    // });
-
-    // Gộp bình luận con vào bình luận gốc và thêm trường canDelete
-    const commentsWithReplies = comments.map((comment) => {
-      const commentReplies = replies.filter(
-        (reply) => reply.parentCommentId.toString() === comment._id.toString()
-      );
-      const commentData = {
-        ...comment._doc,
-        replies: commentReplies.map((reply) => ({
-          ...reply._doc,
-          canDelete:
-            user && reply.user_id?._id.toString() === user._id.toString(),
-        })),
-        canDelete:
-          user && comment.user_id?._id.toString() === user._id.toString(),
-      };
-      return commentData;
-    });
+    const total = comments.length;
 
     res.json({
       code: 200,
-      comments: commentsWithReplies,
+      comments: newComments,
       total: total,
     });
   } catch (error) {
@@ -87,7 +50,7 @@ module.exports.index = async (req, res) => {
 // [POST] /comment/create
 module.exports.create = async (req, res) => {
   try {
-    const { book_id, content, thumbnail, parentCommentId } = req.body;
+    const { book_id, content, parentCommentId } = req.body;
     const user_id = req.user._id;
 
     // Kiểm tra dữ liệu đầu vào
@@ -114,6 +77,22 @@ module.exports.create = async (req, res) => {
       });
     }
 
+    // Kiểm tra người dùng đã mua sách này chưa
+    const purchasedOrder = await Order.findOne({
+      user_id: user_id,
+      "books.book_id": book_id,
+      status: "completed",
+      deleted: false,
+    });
+
+    if (!purchasedOrder) {
+      return res.status(403).json({
+        code: 403,
+        message:
+          "Bạn cần mua và hoàn thành đơn hàng chứa sách này để được bình luận",
+      });
+    }
+
     // Kiểm tra parentCommentId (nếu có)
     if (parentCommentId && !mongoose.Types.ObjectId.isValid(parentCommentId)) {
       return res.status(400).json({
@@ -133,11 +112,8 @@ module.exports.create = async (req, res) => {
     }
 
     const newComment = new Comment({
-      book_id,
       user_id,
-      content,
-      thumbnail: thumbnail || null,
-      parentCommentId: parentCommentId || null,
+      ...req.body,
       status: "active",
     });
 
@@ -198,6 +174,36 @@ module.exports.delete = async (req, res) => {
       res.json({
         code: 400,
         message: "Bạn không có quyền xóa bình luận này",
+      });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(bookId)) {
+      return res.status(400).json({
+        code: 400,
+        message: "bookId không hợp lệ",
+      });
+    }
+
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy cuốn sách",
+      });
+    }
+
+    const purchasedOrder = await Order.findOne({
+      user_id: user_id,
+      "books.book_id": bookId,
+      status: "completed",
+      deleted: false,
+    });
+
+    if (!purchasedOrder) {
+      return res.status(403).json({
+        code: 403,
+        message:
+          "Bạn cần mua và hoàn thành đơn hàng chứa sách này để được xóa bình luận",
       });
     }
 
