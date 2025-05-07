@@ -32,6 +32,25 @@ const removeCommentFromTree = (comments, commentId, parentId) => {
   });
 };
 
+// Hàm đệ quy để thêm bình luận con vào đúng vị trí trong cây bình luận
+const addCommentToTree = (comments, newComment) => {
+  return comments.map((comment) => {
+    if (comment._id === newComment.parent_id) {
+      return {
+        ...comment,
+        children: [...(comment.children || []), newComment],
+      };
+    }
+    if (comment.children && comment.children.length > 0) {
+      return {
+        ...comment,
+        children: addCommentToTree(comment.children, newComment),
+      };
+    }
+    return comment;
+  });
+};
+
 const CommentsSectionComponent = ({
   bookId,
   initialComments,
@@ -51,19 +70,14 @@ const CommentsSectionComponent = ({
 
   const handleCommentAdded = (newComment) => {
     let updatedComments;
-    if (newComment.parent_id) {
-      updatedComments = comments.map((comment) =>
-        comment._id === newComment.parent_id
-          ? {
-              ...comment,
-              children: [...(comment.children || []), newComment],
-            }
-          : comment
-      );
-    } else {
+    if (!newComment.parent_id) {
+      // Nếu là bình luận cha (cấp 0)
       updatedComments = [newComment, ...comments];
+    } else {
+      // Nếu là bình luận con (cấp 1 trở lên)
+      updatedComments = addCommentToTree([...comments], newComment);
     }
-    setComments([...updatedComments]); // Tạo bản sao mới để đảm bảo re-render
+    setComments(updatedComments); // Cập nhật state để re-render
     const newTotal = calculateTotalComments(updatedComments);
     setTotalComments(newTotal);
     onCommentsUpdated({ comments: updatedComments, total: newTotal });
@@ -72,10 +86,10 @@ const CommentsSectionComponent = ({
   const handleCommentDeleted = (commentId, parentId, isChildComment) => {
     let updatedComments;
     if (!isChildComment) {
-      // Nếu là bình luận cha, xóa toàn bộ cây bình luận (TH2)
+      // Nếu là bình luận cha, xóa toàn bộ cây bình luận
       updatedComments = comments.filter((comment) => comment._id !== commentId);
     } else {
-      // Nếu là bình luận con, chỉ xóa bình luận con cụ thể (TH1)
+      // Nếu là bình luận con, chỉ xóa bình luận con cụ thể
       updatedComments = removeCommentFromTree(
         [...comments],
         commentId,
@@ -83,7 +97,7 @@ const CommentsSectionComponent = ({
       );
     }
 
-    setComments([...updatedComments]); // Tạo bản sao mới để đảm bảo re-render
+    setComments([...updatedComments]);
   };
 
   return (

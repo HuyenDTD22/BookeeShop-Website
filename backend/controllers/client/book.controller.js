@@ -1,5 +1,6 @@
 const Book = require("../../models/book.model");
 const Category = require("../../models/category.model");
+const Order = require("../../models/order.model");
 
 const bookHelper = require("../../helpers/book");
 const categoryHelper = require("../../helpers/category");
@@ -14,8 +15,13 @@ module.exports.index = async (req, res) => {
       .lean()
       .sort({ position: "desc" });
 
-    //Tính giá mới cho sản phẩm
-    const newBooks = bookHelper.priceNewBooks(books);
+    let newBooks = bookHelper.priceNewBooks(books);
+
+    newBooks = await bookHelper.soldCountBooks(books);
+
+    // const newBooks = newBookss.map(async (book) => {
+    //   await bookHelper.soldCountBook(book);
+    // });
 
     res.json({
       code: 200,
@@ -50,7 +56,9 @@ module.exports.category = async (req, res) => {
       .lean()
       .sort({ position: "desc" });
 
-    const newBooks = bookHelper.priceNewBooks(books);
+    let newBooks = bookHelper.priceNewBooks(books);
+
+    newBooks = await bookHelper.soldCountBooks(books);
 
     res.json({
       newBooks,
@@ -92,7 +100,9 @@ module.exports.detail = async (req, res) => {
       book.category = category;
     }
 
-    bookHelper.priceNewBook(book); //Tự động thêm key priceNew
+    bookHelper.priceNewBook(book);
+
+    await bookHelper.soldCountBook(book);
 
     res.json({
       code: 200,

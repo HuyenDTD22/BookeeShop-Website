@@ -71,32 +71,10 @@ const BookCardComponent = ({ book, link }) => {
             )}
           </div>
           <div className="mb-2 book-card-sold">
-            Đã bán: {book.soldQuantity || 0}
+            Đã bán: {book.soldCount || 0}
           </div>
           <div className="mb-2 book-card-rating">
             {renderStars(book.rating_mean || 5)}
-          </div>
-          <div className="d-flex justify-content-between book-card-buttons">
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={(e) => {
-                handleButtonClick(e);
-                console.log(`Thêm vào giỏ hàng: ${book.title}`);
-                // Thêm logic thêm vào giỏ hàng tại đây
-              }}
-            >
-              Thêm vào giỏ
-            </Button>
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              as={Link}
-              to={`/book/detail/${book.slug}`}
-              onClick={handleButtonClick}
-            >
-              Xem chi tiết
-            </Button>
           </div>
         </Card.Body>
       </Card>

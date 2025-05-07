@@ -166,11 +166,6 @@ const HomePage = () => {
                 </Button>
               </div>
             )}
-            {/* <div className="text-center mt-4">
-              <Button variant="primary" as={Link} to="/categories">
-                Xem thêm
-              </Button>
-            </div> */}
           </div>
         </section>
 

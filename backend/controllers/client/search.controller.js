@@ -19,6 +19,8 @@ module.exports.index = async (req, res) => {
       });
 
       newBooks = bookHelper.priceNewBooks(books);
+
+      newBooks = await bookHelper.soldCountBooks(books);
     }
 
     res.json({

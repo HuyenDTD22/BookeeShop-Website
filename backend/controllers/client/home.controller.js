@@ -18,7 +18,9 @@ module.exports.index = async (req, res) => {
     deleted: false,
   }).lean();
 
-  const newBooksFeatured = bookHelper.priceNewBooks(booksFeatured);
+  let newBooksFeatured = bookHelper.priceNewBooks(booksFeatured);
+
+  newBooksFeatured = await bookHelper.soldCountBooks(booksFeatured);
 
   //Lấy ra sản phẩm mới nhất
   const booksNew = await Book.find({
@@ -29,7 +31,8 @@ module.exports.index = async (req, res) => {
     .limit(12)
     .lean();
 
-  const newBooksNew = bookHelper.priceNewBooks(booksNew);
+  let newBooksNew = bookHelper.priceNewBooks(booksNew);
+  newBooksNew = await bookHelper.soldCountBooks(booksNew);
 
   res.json({
     code: 200,
