@@ -162,12 +162,9 @@ module.exports.changeMulti = async (req, res) => {
 //[POST] /admin/category/create - Tạo mới 1 danh mục sản phẩm
 module.exports.create = async (req, res) => {
   try {
-    if (req.body.position == "") {
-      const count = await Category.countDocuments();
-      req.body.position = count + 1;
-    } else {
-      req.body.position = parseInt(req.body.position);
-    }
+    req.body.createdBy = {
+      account_id: res.locals.user.id,
+    };
 
     const record = new Category(req.body);
     await record.save();
@@ -188,8 +185,6 @@ module.exports.create = async (req, res) => {
 module.exports.edit = async (req, res) => {
   try {
     const id = req.params.id;
-
-    req.body.position = parseInt(req.body.position);
 
     await Category.updateOne({ _id: id }, req.body);
 

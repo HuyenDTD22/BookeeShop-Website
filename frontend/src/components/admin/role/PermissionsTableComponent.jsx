@@ -67,6 +67,17 @@ const PermissionsTableComponent = ({ roles }) => {
         { key: "reply_reviews", label: "Phản hồi" },
       ],
     },
+    {
+      name: "Thông báo",
+      permissions: [
+        { key: "read_notifications", label: "Xem" },
+        { key: "create_notifications", label: "Thêm mới" },
+        { key: "update_notifications", label: "Chỉnh sửa" },
+        { key: "delete_notifications", label: "Xóa" },
+        { key: "send_notifications", label: "Gửi/Lên lịch" },
+        { key: "stats_notifications", label: "Thống kê" },
+      ],
+    },
   ];
 
   // State để lưu trạng thái quyền

@@ -6,10 +6,18 @@ const authMiddleware = require("../../middlewares/authClient.middleware");
 
 router.get("/", authMiddleware.requireAuth, controller.getNotifications);
 
-router.patch(
+router.get(
   "/:id",
   authMiddleware.requireAuth,
   controller.getDetailNotification
+);
+
+router.patch("/:id/read", authMiddleware.requireAuth, controller.markAsRead);
+
+router.get(
+  "/unread-count",
+  authMiddleware.requireAuth,
+  controller.getUnreadCount
 );
 
 module.exports = router;

@@ -18,9 +18,9 @@ router.patch("/change-multi", controller.changeMulti);
 
 router.post(
   "/create",
-  validate.create,
   upload.single("thumbnail"),
   uploadCloud.upload,
+  validate.create,
   controller.create
 );
 
@@ -30,7 +30,7 @@ router.patch(
   uploadCloud.upload,
   validate.create,
   controller.edit
-); //Chỉnh sửa danh mục sản phẩm
+);
 
 router.delete("/delete/:id", controller.deleteItem); // Tính năng xoá 1 danh mục sản phẩm
 

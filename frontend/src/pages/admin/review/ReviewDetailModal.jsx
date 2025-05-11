@@ -11,8 +11,8 @@ import {
 import { FaTrash, FaReply, FaStar } from "react-icons/fa";
 import commentService from "../../../services/admin/commentService";
 import ratingService from "../../../services/admin/ratingService";
-import StarRatingComponent from "../../../components/common/StarRatingComponent"; // Giả định bạn có component này
-import PaginationComponent from "../../../components/common/PaginationComponent"; // Giả định đường dẫn component
+import StarRatingComponent from "../../../components/common/StarRatingComponent";
+import PaginationComponent from "../../../components/common/PaginationComponent";
 
 const ReviewDetailModal = ({ show, onHide, book }) => {
   const [ratings, setRatings] = useState([]);
@@ -27,10 +27,10 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
   const [replyingCommentId, setReplyingCommentId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(5); // Số mục trên mỗi trang
+  const [itemsPerPage] = useState(5);
 
   // Tính phân bố số sao
-  const ratingDistribution = [0, 0, 0, 0, 0]; // 1 sao, 2 sao, 3 sao, 4 sao, 5 sao
+  const ratingDistribution = [0, 0, 0, 0, 0];
   ratings.forEach((rating) => {
     if (rating.rating >= 1 && rating.rating <= 5) {
       ratingDistribution[rating.rating - 1]++;
@@ -106,7 +106,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
         const fetchedComments = commentResponse.data.comments || [];
         setComments(fetchedComments);
         setFilteredComments(fetchedComments);
-        setTotalItems(countTotalComments(fetchedComments)); // Cập nhật totalItems
+        setTotalItems(countTotalComments(fetchedComments));
       } catch (error) {
         console.error("Error fetching reviews:", error);
       } finally {
@@ -132,12 +132,12 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
   // Tìm kiếm theo tên người bình luận
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
   };
 
   // Thực hiện tìm kiếm khi nhấn nút
   const handleSearchSubmit = () => {
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
   };
 
   // Xử lý chọn bình luận
@@ -159,7 +159,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
         );
         setComments(updatedComments);
         setFilteredComments(updatedComments);
-        setTotalItems(countTotalComments(updatedComments)); // Cập nhật lại tổng số mục
+        setTotalItems(countTotalComments(updatedComments));
       } catch (error) {
         console.error("Error deleting comment:", error);
         alert("Xóa thất bại!");
@@ -182,7 +182,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
         setComments(updatedComments);
         setFilteredComments(updatedComments);
         setSelectedComments([]);
-        setTotalItems(countTotalComments(updatedComments)); // Cập nhật lại tổng số mục
+        setTotalItems(countTotalComments(updatedComments));
       } catch (error) {
         console.error("Error deleting multiple comments:", error);
         alert("Xóa thất bại!");
@@ -206,7 +206,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
       setFilteredComments(updatedComments);
       setReplyContent("");
       setReplyingCommentId(null);
-      setTotalItems(countTotalComments(updatedComments)); // Cập nhật lại tổng số mục
+      setTotalItems(countTotalComments(updatedComments));
     } catch (error) {
       console.error("Error replying to comment:", error);
       alert("Phản hồi thất bại!");
@@ -230,12 +230,17 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
   // Hàm hiển thị bình luận con
   const renderCommentTree = (comments, rootComments) => {
     return comments.map((comment) => {
-      const userRating = comment.rating || 0; // Sử dụng rating từ dữ liệu bình luận
+      const userRating = comment.rating || 0;
 
       // Tìm bình luận cha nếu đây là bình luận con
       const parentComment = comment.parent_id
         ? findParentComment(comment.parent_id, rootComments)
         : null;
+
+      // Hiển thị tên người phản hồi
+      const displayName = comment.isAdmin
+        ? "BookeeShop"
+        : comment.user_id?.fullName || "Người dùng không xác định";
 
       return (
         <tr key={comment._id}>
@@ -248,14 +253,24 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
           </td>
           <td>{comment.index}</td>
           <td>
-            {comment.user_id?.fullName || "N/A"} ({userRating}{" "}
-            <FaStar color="gold" />)
+            {displayName}
+            {!comment.isAdmin && userRating > 0 && (
+              <>
+                {" "}
+                ({userRating} <FaStar color="gold" />)
+              </>
+            )}
           </td>
           <td>
             <div style={{ paddingLeft: comment.level > 0 ? "20px" : "0px" }}>
               {comment.parent_id && parentComment ? (
                 <>
-                  <strong>{parentComment.user_id?.fullName || "N/A"}</strong>{" "}
+                  <strong>
+                    {parentComment.isAdmin
+                      ? "BookeeShop"
+                      : parentComment.user_id?.fullName ||
+                        "Người dùng không xác định"}
+                  </strong>{" "}
                   {comment.content}
                 </>
               ) : (
@@ -370,7 +385,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
             value={ratingFilter}
             onChange={(e) => {
               setRatingFilter(e.target.value);
-              setCurrentPage(1); // Reset về trang 1 khi lọc
+              setCurrentPage(1);
             }}
           >
             <option value="">Lọc theo sao</option>
@@ -385,7 +400,7 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
             value={timeFilter}
             onChange={(e) => {
               setTimeFilter(e.target.value);
-              setCurrentPage(1); // Reset về trang 1 khi lọc
+              setCurrentPage(1);
             }}
           >
             <option value="">Lọc theo thời gian</option>

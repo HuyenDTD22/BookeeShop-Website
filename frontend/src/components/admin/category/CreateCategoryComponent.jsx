@@ -4,31 +4,39 @@ import { FiSave, FiX, FiUpload, FiPackage } from "react-icons/fi";
 import InputComponent from "../../common/InputComponent";
 import FormGroupComponent from "../../common/FormGroupComponent";
 import CategorySelectComponent from "../../common/CategorySelectComponent";
+import UploadImageComponent from "../../common/UploadImageComponent";
 
 const CreateCategoryComponent = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     title: "",
-    position: "",
+    thumbnail: null,
     status: "active",
     parent_id: "",
   });
+
+  const [imagePreview, setImagePreview] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (file) => {
+    setFormData((prev) => ({ ...prev, thumbnail: file }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const categoryData = {
-      title: formData.title,
-      position: formData.position,
-      status: formData.status,
-      parent_id: formData.parent_id,
-    };
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("title", formData.title);
+    if (formData.thumbnail) {
+      formDataToSubmit.append("thumbnail", formData.thumbnail);
+    }
+    formDataToSubmit.append("status", formData.status);
+    formDataToSubmit.append("parent_id", formData.parent_id);
 
-    onSubmit(categoryData);
+    onSubmit(formDataToSubmit);
   };
 
   const statusOptions = [
@@ -73,15 +81,15 @@ const CreateCategoryComponent = ({ onSubmit }) => {
                     className="shadow-sm"
                   />
 
-                  <InputComponent
-                    type="number"
-                    id="position"
-                    name="position"
-                    placeholder="Vị trí"
-                    value={formData.position}
-                    onChange={handleChange}
-                    min="0"
-                    className="shadow-sm"
+                  <h5 className="card-title border-bottom pb-2">
+                    Hình ảnh danh mục
+                  </h5>
+                  <UploadImageComponent
+                    onFileChange={handleFileChange}
+                    imagePreview={imagePreview}
+                    setImagePreview={setImagePreview}
+                    fieldName="thumbnail"
+                    label="Ảnh"
                   />
 
                   <FormGroupComponent

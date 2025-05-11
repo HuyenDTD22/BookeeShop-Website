@@ -12,6 +12,7 @@ const orderRoutes = require("./order.route");
 const userRoutes = require("./user.route");
 const commentRoutes = require("./comment.route");
 const ratingRoutes = require("./rating.route");
+const notificationRoutes = require("./notification.route");
 // const myAccountRoutes = require("./my-account.route");
 const mySettingRoutes = require("./setting.route");
 
@@ -62,6 +63,12 @@ module.exports = (app) => {
     PATH_ADMIN + "/rating",
     authMiddleware.requireAuthAdmin,
     ratingRoutes
+  );
+
+  app.use(
+    PATH_ADMIN + "/notification",
+    authMiddleware.requireAuthAdmin,
+    notificationRoutes
   );
 
   app.use(

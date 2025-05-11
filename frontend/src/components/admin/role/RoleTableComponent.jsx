@@ -59,7 +59,7 @@ const ProductTableComponent = ({
 
   return (
     <>
-      <Table striped bordered hover className="product-table">
+      <Table bordered hover className="product-table">
         <thead>
           <tr>
             <th>

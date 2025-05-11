@@ -169,12 +169,12 @@ const ProductsPage = () => {
       <FilterBarComponent
         onFilter={handleFilter}
         onSearch={handleSearch}
-        onAddNew={hasPermission("products_create") ? handleAddNew : null}
+        onAddNew={hasPermission("create_books") ? handleAddNew : null}
       />
 
       {selectedBooks.length > 0 && (
         <div className="mb-3">
-          {hasPermission("products_delete") && (
+          {hasPermission("delete_books") && (
             <Button
               variant="danger"
               onClick={() => handleChangeMulti("delete", true)}
@@ -187,7 +187,7 @@ const ProductsPage = () => {
               Xóa các mục đã chọn
             </Button>
           )}
-          {hasPermission("products_edit") && (
+          {hasPermission("update_books") && (
             <>
               <Button
                 variant="warning"

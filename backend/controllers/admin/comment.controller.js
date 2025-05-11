@@ -21,10 +21,9 @@ module.exports.index = async (req, res) => {
     // Điều kiện lọc
     const query = { book_id: bookId, deleted: false };
     if (search) {
-      query.content = { $regex: search, $options: "i" }; // Tìm kiếm không phân biệt hoa thường
+      query.content = { $regex: search, $options: "i" };
     }
     if (ratingFilter) {
-      // Lọc theo số sao (cần liên kết với Rating)
       const ratings = await Rating.find({
         book_id: bookId,
         user_id: {
@@ -54,15 +53,21 @@ module.exports.index = async (req, res) => {
     // Hàm đệ quy để gán rating cho tất cả bình luận, bao gồm cả bình luận con
     const assignRatingToTree = (comments) => {
       return comments.map((comment) => {
-        const rating = ratings.find(
-          (r) => r.user_id.toString() === comment.user_id._id.toString()
-        );
+        // Kiểm tra comment.user_id trước khi truy cập
+        let rating = null;
+        if (comment.user_id && comment.user_id._id) {
+          rating = ratings.find(
+            (r) => r.user_id.toString() === comment.user_id._id.toString()
+          );
+        }
         const updatedComment = {
           ...comment,
           rating: rating ? rating.rating : null, // Gán rating cho bình luận hiện tại
         };
         if (comment.children && comment.children.length > 0) {
-          updatedComment.children = assignRatingToTree(comment.children); // Gán rating cho bình luận con
+          updatedComment.children = assignRatingToTree(comment.children);
+        } else {
+          updatedComment.children = comment.children || [];
         }
         return updatedComment;
       });
@@ -71,14 +76,14 @@ module.exports.index = async (req, res) => {
     // Gán rating cho toàn bộ cây bình luận
     commentList = assignRatingToTree(commentList);
 
-    // Chuyển đổi toàn bộ commentList thành plain object (để đảm bảo dữ liệu trả về là object)
+    // Chuyển đổi toàn bộ commentList thành plain object
     commentList = JSON.parse(JSON.stringify(commentList));
 
     res.json({
       status: "success",
       data: {
         comments: commentList,
-        total: commentList.length, // Thêm total để hỗ trợ phân trang phía client
+        total: commentList.length,
       },
     });
   } catch (error) {
@@ -98,6 +103,13 @@ module.exports.reply = async (req, res) => {
         .json({ status: "error", message: "Reply content is required" });
     }
 
+    // Kiểm tra res.locals.user
+    if (!res.locals.user || !res.locals.user._id) {
+      return res
+        .status(401)
+        .json({ status: "error", message: "Unauthorized: User not found" });
+    }
+
     // Tìm bình luận gốc
     const comment = await Comment.findById(commentId);
     if (!comment || comment.deleted) {
@@ -108,7 +120,7 @@ module.exports.reply = async (req, res) => {
 
     // Thêm phản hồi bằng cách tạo bình luận mới với parent_id
     const replyComment = new Comment({
-      user_id: req.user._id, // Giả định req.user chứa thông tin admin
+      user_id: res.locals.user._id, // Sử dụng res.locals.user thay vì req.user
       book_id: comment.book_id,
       content: replyContent,
       parent_id: commentId,

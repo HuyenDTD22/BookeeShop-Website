@@ -140,7 +140,7 @@ const ReviewPage = () => {
         <Spinner animation="border" />
       ) : (
         <>
-          <Table striped bordered hover>
+          <Table bordered hover>
             <thead>
               <tr>
                 <th>STT</th>

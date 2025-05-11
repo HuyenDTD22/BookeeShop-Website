@@ -10,6 +10,7 @@ import CategoryBooksPage from "../pages/client/category/CategoryBooksPage";
 import OrderPage from "../pages/client/order/OrderPage";
 import CartPage from "../pages/client/cart/CartPage";
 import MyAccountPage from "../pages/client/user/MyAccountPage";
+import NotificationsPage from "../pages/client/notification/NotificationsPage";
 
 //admin
 import LoginPageAdmin from "../pages/admin/auth/LoginPageAdmin";
@@ -32,6 +33,11 @@ import AccountDetailPage from "../pages/admin/account/AccountDetailPage";
 import OrderPageAdmin from "../pages/admin/order/OrderPage";
 import UserPage from "../pages/admin/user/UserPage";
 import ReviewPage from "../pages/admin/review/ReviewPage";
+import NotificationsPageAdmin from "../pages/admin/notification/NotificationsPage";
+import CreateNotificationPage from "../pages/admin/notification/CreateNotificationPage";
+import EditNotificationPage from "../pages/admin/notification/EditNotificationPage";
+import NotificationDetailPage from "../pages/admin/notification/NotificationDetailPage";
+import NotificationStatsPage from "../pages/admin/notification/NotificationStatsPage";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
@@ -64,6 +70,11 @@ export const routes = [
   {
     path: "/cart",
     page: CartPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/notifications",
+    page: NotificationsPage,
     isShowHeader: true,
   },
   {
@@ -190,6 +201,32 @@ export const routes = [
   {
     path: `/${ADMIN}/reviews`,
     page: ReviewPage,
+    isAdmin: true,
+  },
+  // Notification - Quản lý thông báo
+  {
+    path: `/${ADMIN}/notification`,
+    page: NotificationsPageAdmin,
+    isAdmin: true,
+  },
+  {
+    path: `/${ADMIN}/notification/create`,
+    page: CreateNotificationPage,
+    isAdmin: true,
+  },
+  {
+    path: `/${ADMIN}/notification/edit/:id`,
+    page: EditNotificationPage,
+    isAdmin: true,
+  },
+  {
+    path: `/${ADMIN}/notification/detail/:id`,
+    page: NotificationDetailPage,
+    isAdmin: true,
+  },
+  {
+    path: `/${ADMIN}/notification/stats`,
+    page: NotificationStatsPage,
     isAdmin: true,
   },
   {

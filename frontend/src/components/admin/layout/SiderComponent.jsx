@@ -12,6 +12,7 @@ import {
   FaBookOpen,
   FaShoppingCart,
   FaStar,
+  FaBell,
 } from "react-icons/fa";
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -101,6 +102,17 @@ const SiderComponent = () => {
             end={true}
           >
             <FaStar className="me-2" /> Quản lý đánh giá
+          </NavLink>
+        )}
+        {hasPermission("read_notifications") && (
+          <NavLink
+            to={`/${ADMIN}/notification`}
+            className={({ isActive }) =>
+              `nav-link text-white ${isActive ? "bg-primary" : ""}`
+            }
+            end={true}
+          >
+            <FaBell className="me-2" /> Quản lý thông báo
           </NavLink>
         )}
         {hasPermission("read_accounts") && (

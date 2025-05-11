@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 import { Table, Button, Modal, Spinner } from "react-bootstrap";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import "../../../styles/admin/component/ProductTableComponent.css";
 import ConfirmModalComponent from "../../common/ConfirmModalComponent";
 import { AuthContext } from "../../../context/AuthContext";
+import "../../../styles/admin/component/CategoryTableComponent.css";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
@@ -108,12 +108,18 @@ const CategoryTableComponent = ({
               />
             </td>
             <td>{currentIndex}</td>
+            <td>
+              <img
+                src={category.thumbnail || "https://via.placeholder.com/50"}
+                alt={category.title}
+                className="category-thumbnail"
+              />
+            </td>
             <td style={{ paddingLeft: `${level * 20}px` }}>
               {level > 0
                 ? `-- ${category.title || "Không có tiêu đề"}`
                 : category.title || "Không có tiêu đề"}
             </td>
-            <td>{category.position ?? "N/A"}</td>
             <td>
               <Button
                 variant={category.status === "active" ? "success" : "danger"}
@@ -172,7 +178,7 @@ const CategoryTableComponent = ({
 
   return (
     <>
-      <Table striped bordered hover className="product-table">
+      <Table bordered hover className="product-table">
         <thead>
           <tr>
             <th>
@@ -192,8 +198,8 @@ const CategoryTableComponent = ({
               />
             </th>
             <th>STT</th>
+            <th>Hình ảnh</th>
             <th>Tiêu đề</th>
-            <th>Vị trí</th>
             <th>Trạng thái</th>
             <th>Người tạo</th>
             <th>Hành động</th>

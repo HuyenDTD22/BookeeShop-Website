@@ -1,4 +1,5 @@
 const Book = require("../../models/book.model");
+const Account = require("../../models/account.model");
 const Comment = require("../../models/comment.model");
 
 const searchHelper = require("../../helpers/search");
@@ -46,29 +47,10 @@ module.exports.index = async (req, res) => {
       commentCountMap[item._id.toString()] = item.commentCount;
     });
 
-    // Gán commentCount cho từng sách trong mảng books
+    //Gán commentCount cho từng sách trong mảng books
     books.forEach((book, index) => {
       book.commentCount = commentCountMap[book._id.toString()] || 0; // Gán số lượng bình luận
     });
-    // for (const book of books) {
-    //   //Lấy ra thông tin người tạo
-    //   const account = await Account.findOne({
-    //     _id: book.createdBy.account_id,
-    //   });
-
-    //   if (user) {
-    //     book.accountFullName = account.fullName;
-    //   }
-
-    //     //Lấy ra thông tin người cập nhật gần nhất
-    //     const updateBy = book.updateBy[book.updatedBy.length - 1];
-    //     if (updateBy) {
-    //       const accountUpdated = await Account.findOne({
-    //         _id: updateBy.account_id,
-    //       });
-    //       updateBy.accountFullName = accountUpdated.fullName;
-    //     }
-    // }
 
     res.json({
       code: 200,
@@ -207,9 +189,9 @@ module.exports.create = async (req, res) => {
     }
 
     //Lưu logs lịch sử thay đổi sản phẩm
-    // req.body.createdBy = {
-    //   account_id: res.locals.user.id,
-    // };
+    req.body.createdBy = {
+      account_id: res.locals.user.id,
+    };
 
     // Kiểm tra parent_id
 
@@ -239,11 +221,6 @@ module.exports.edit = async (req, res) => {
     req.body.discountPercentage = parseInt(req.body.discountPercentage);
     req.body.stock = parseInt(req.body.stock);
     req.body.position = parseInt(req.body.position);
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     await Book.updateOne(
       { _id: id },

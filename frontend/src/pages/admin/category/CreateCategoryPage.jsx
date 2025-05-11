@@ -12,9 +12,9 @@ const CreateCategoryPage = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState("success");
 
-  const handleSubmit = async (categoryData) => {
+  const handleSubmit = async (formData) => {
     try {
-      const response = await createCategory(categoryData);
+      const response = await createCategory(formData);
       if (response.code === 200) {
         setToastMessage(response.message);
         setToastVariant("success");

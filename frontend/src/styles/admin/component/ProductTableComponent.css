@@ -1,19 +1,8 @@
-/* .book-thumbnail {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 4px;
-}
-
-* .book-thumbnail:hover {
-    transform: scale(1.5);
-} */
-
 /* Style cho bảng */
 .product-table th,
 .product-table td {
     padding: 8px;
-    vertical-align: middle;
+    vertical-align: middle !important;
 }
 
 /* Chiều rộng cố định cho các cột */
@@ -27,7 +16,7 @@
 
 .col-image {
     width: 170px;
-    text-align: center;
+    text-align: center !important;
 }
 
 .col-price {
@@ -46,7 +35,7 @@
 
 /* Style cho ảnh thumbnail */
 .book-thumbnail {
-    width: 150px;
+    width: 100px;
     height: 150px;
     object-fit: cover;
     border-radius: 4px;
@@ -54,16 +43,3 @@
     background-color: #f8f9fa;
     transition: all 0.3s ease;
 }
-
-/* .book-thumbnail:hover {
-    width: auto;
-    height: auto;
-    max-width: 300px;
-    max-height: 300px;
-    object-fit: unset;
-    z-index: 10;
-    position: relative;
-    border-radius: 0;
-    border: 1px solid #007bff;
-    background-color: transparent;
-} */

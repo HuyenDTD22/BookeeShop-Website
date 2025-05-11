@@ -62,7 +62,7 @@ const AccountTableComponent = ({
 
   return (
     <>
-      <Table striped bordered hover className="account-table">
+      <Table bordered hover className="account-table">
         <thead>
           <tr>
             <th>

@@ -73,7 +73,7 @@ const UserTableComponent = ({
 
   return (
     <>
-      <Table striped bordered hover responsive>
+      <Table bordered hover responsive>
         <thead>
           <tr>
             <th>

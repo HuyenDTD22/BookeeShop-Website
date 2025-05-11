@@ -1,11 +1,22 @@
-// import api from "./api";
+import axios from "axios";
 
-// export const getDashboard = async () => {
-//   try {
-//     const response = await api.get("/");
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching dashboard:", error);
-//     throw error;
-//   }
-// };
+const API_URL = process.env.REACT_APP_API_URL;
+const ADMIN = process.env.REACT_APP_ADMIN;
+
+const dashboardService = {
+  // Lấy dữ liệu dashboard
+  getDashboardStats: async (params = {}) => {
+    try {
+      const response = await axios.get(`${API_URL}/${ADMIN}/dashboard/stats`, {
+        params,
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      throw error;
+    }
+  },
+};
+
+export default dashboardService;

@@ -67,7 +67,7 @@ export const createCategory = async (categoryData) => {
       categoryData,
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       }
@@ -86,7 +86,7 @@ export const editCategory = async (id, categoryData) => {
       categoryData,
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
         withCredentials: true,
       }

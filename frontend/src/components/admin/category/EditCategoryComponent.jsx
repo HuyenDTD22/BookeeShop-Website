@@ -4,24 +4,25 @@ import { FiSave, FiX, FiUpload, FiPackage } from "react-icons/fi";
 import InputComponent from "../../common/InputComponent";
 import FormGroupComponent from "../../common/FormGroupComponent";
 import CategorySelectComponent from "../../common/CategorySelectComponent";
+import UploadImageComponent from "../../common/UploadImageComponent";
 
 const EditCategoryComponent = ({ category, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: "",
-    position: "",
-    status: "",
+    thumbnail: null,
+    status: "active",
     parent_id: "",
   });
+  const [imagePreview, setImagePreview] = useState("");
 
-  // Điền dữ liệu sản phẩm vào form khi component mount
   useEffect(() => {
     if (category) {
       setFormData({
         title: category.title || "",
-        position: category.position || "",
         status: category.status || "active",
         parent_id: category.parent_id || "",
       });
+      setImagePreview(category.thumbnail || "");
     }
   }, [category]);
 
@@ -30,17 +31,23 @@ const EditCategoryComponent = ({ category, onSubmit }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (file) => {
+    setFormData((prev) => ({ ...prev, thumbnail: file }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const categoryData = {
-      title: formData.title,
-      position: formData.position,
-      status: formData.status,
-      parent_id: formData.parent_id,
-    };
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append("title", formData.title);
+    formDataToSubmit.append("status", formData.status);
+    formDataToSubmit.append("parent_id", formData.parent_id);
 
-    onSubmit(categoryData);
+    if (formData.thumbnail) {
+      formDataToSubmit.append("thumbnail", formData.thumbnail);
+    }
+
+    onSubmit(formDataToSubmit);
   };
 
   const statusOptions = [
@@ -85,15 +92,15 @@ const EditCategoryComponent = ({ category, onSubmit }) => {
                     className="shadow-sm"
                   />
 
-                  <InputComponent
-                    type="number"
-                    id="position"
-                    name="position"
-                    placeholder="Vị trí"
-                    value={formData.position}
-                    onChange={handleChange}
-                    min="0"
-                    className="shadow-sm"
+                  <h5 className="card-title border-bottom pb-2">
+                    Hình ảnh danh mục
+                  </h5>
+                  <UploadImageComponent
+                    onFileChange={handleFileChange}
+                    imagePreview={imagePreview}
+                    setImagePreview={setImagePreview}
+                    fieldName="thumbnail"
+                    label="Ảnh"
                   />
 
                   <FormGroupComponent
