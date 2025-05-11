@@ -10,6 +10,8 @@ import {
   FaUsers,
   FaCog,
   FaBookOpen,
+  FaShoppingCart,
+  FaStar,
 } from "react-icons/fa";
 import { AuthContext } from "../../../context/AuthContext";
 
@@ -68,6 +70,39 @@ const SiderComponent = () => {
             <FaFolder className="me-2" /> Danh mục sản phẩm
           </NavLink>
         )}
+        {hasPermission("read_users") && (
+          <NavLink
+            to={`/${ADMIN}/user`}
+            className={({ isActive }) =>
+              `nav-link text-white ${isActive ? "bg-primary" : ""}`
+            }
+            end={true}
+          >
+            <FaUsers className="me-2" /> Quản lý khách hàng
+          </NavLink>
+        )}
+        {hasPermission("read_orders") && (
+          <NavLink
+            to={`/${ADMIN}/order`}
+            className={({ isActive }) =>
+              `nav-link text-white ${isActive ? "bg-primary" : ""}`
+            }
+            end={true}
+          >
+            <FaShoppingCart className="me-2" /> Quản lý đơn hàng
+          </NavLink>
+        )}
+        {hasPermission("read_reviews") && (
+          <NavLink
+            to={`/${ADMIN}/reviews`}
+            className={({ isActive }) =>
+              `nav-link text-white ${isActive ? "bg-primary" : ""}`
+            }
+            end={true}
+          >
+            <FaStar className="me-2" /> Quản lý đánh giá
+          </NavLink>
+        )}
         {hasPermission("read_accounts") && (
           <NavLink
             to={`/${ADMIN}/account`}
@@ -76,7 +111,7 @@ const SiderComponent = () => {
             }
             end={true}
           >
-            <FaUserFriends className="me-2" /> Danh sách tài khoản
+            <FaUserFriends className="me-2" /> Quản lý nhân sự
           </NavLink>
         )}
         {hasPermission("read_roles") && (

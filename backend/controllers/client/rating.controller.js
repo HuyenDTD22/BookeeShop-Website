@@ -93,7 +93,6 @@ module.exports.create = async (req, res) => {
       user_id,
       rating,
       order_id: finalOrderId,
-      status: "active",
     });
 
     await newRating.save();
@@ -143,7 +142,6 @@ module.exports.index = async (req, res) => {
     // Lấy danh sách đánh giá
     const ratings = await Rating.find({
       book_id: bookId,
-      status: "active",
       deleted: false,
     })
       .populate("user_id", "fullName email")
@@ -283,7 +281,6 @@ module.exports.delete = async (req, res) => {
 
     // Soft delete
     existingRating.deleted = true;
-    existingRating.status = "inactive";
     await existingRating.save();
 
     await ratingHelper.updateBookRatingMean(existingRating.book_id);
@@ -308,7 +305,6 @@ module.exports.getUserRatings = async (req, res) => {
     // Lấy danh sách đánh giá của người dùng
     const ratings = await Rating.find({
       user_id: userId,
-      status: "active",
       deleted: false,
     })
       .populate("book_id", "title thumbnail slug")

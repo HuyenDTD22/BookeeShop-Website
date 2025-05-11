@@ -91,7 +91,6 @@ const BookDetailPage = () => {
   const handleAddToCart = async () => {
     try {
       const response = await cartService.addToCart(slugBook, 1);
-      console.log("Gio hang: ", response);
       if (response.code === 200) {
         setAddedToCart(true);
         setCartError("");

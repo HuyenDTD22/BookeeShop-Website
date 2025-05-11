@@ -18,10 +18,9 @@ const commentSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
+    isAdmin: {
+      type: Boolean,
+      default: false, // Đánh dấu phản hồi từ admin
     },
     deletedBy: {
       account_id: mongoose.Schema.Types.ObjectId,

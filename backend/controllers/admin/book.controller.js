@@ -1,6 +1,6 @@
 const Book = require("../../models/book.model");
+const Comment = require("../../models/comment.model");
 
-const paginationHelper = require("../../helpers/pagination");
 const searchHelper = require("../../helpers/search");
 
 // [GET] /admin/book - lấy tất cả sách
@@ -22,21 +22,6 @@ module.exports.index = async (req, res) => {
       find.title = objectSearch.regex;
     }
 
-    //Pagination - Phân trang
-    let initPagination = {
-      currentPage: 1,
-      limitItems: 4,
-    };
-
-    const countBook = await Book.countDocuments(find); //Đếm số lượng sản phẩm có trong database
-
-    const objectPagination = paginationHelper(
-      initPagination,
-      req.query,
-      countBook
-    );
-    // End Pagination
-
     //Sort
     const sort = {};
 
@@ -45,11 +30,26 @@ module.exports.index = async (req, res) => {
     }
     //End Sort
 
-    const books = await Book.find(find)
-      .sort(sort)
-      .limit(objectPagination.limitItems)
-      .skip(objectPagination.skip);
+    // Lấy danh sách sách
+    const books = await Book.find(find).sort(sort).lean();
 
+    // Lấy số lượng bình luận cho từng sách
+    const bookIds = books.map((book) => book._id);
+    const commentCounts = await Comment.aggregate([
+      { $match: { book_id: { $in: bookIds }, deleted: false } },
+      { $group: { _id: "$book_id", commentCount: { $sum: 1 } } },
+    ]);
+
+    // Tạo map để gán số lượng bình luận
+    const commentCountMap = {};
+    commentCounts.forEach((item) => {
+      commentCountMap[item._id.toString()] = item.commentCount;
+    });
+
+    // Gán commentCount cho từng sách trong mảng books
+    books.forEach((book, index) => {
+      book.commentCount = commentCountMap[book._id.toString()] || 0; // Gán số lượng bình luận
+    });
     // for (const book of books) {
     //   //Lấy ra thông tin người tạo
     //   const account = await Account.findOne({
@@ -73,12 +73,6 @@ module.exports.index = async (req, res) => {
     res.json({
       code: 200,
       books: books,
-      pagination: {
-        totalItems: countBook,
-        currentPage: objectPagination.currentPage,
-        limitItems: objectPagination.limitItems,
-        totalPages: objectPagination.totalPage,
-      },
     });
   } catch (error) {
     res.json({

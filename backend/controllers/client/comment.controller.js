@@ -22,7 +22,6 @@ module.exports.index = async (req, res) => {
     // Lấy danh sách bình luận gốc (parentCommentId = null)
     const comments = await Comment.find({
       book_id: bookId,
-      status: "active",
       deleted: false,
     })
       .populate("user_id", "name fullName avatar")
@@ -114,7 +113,6 @@ module.exports.create = async (req, res) => {
     const newComment = new Comment({
       user_id,
       ...req.body,
-      status: "active",
     });
 
     await newComment.save();

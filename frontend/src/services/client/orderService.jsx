@@ -9,7 +9,6 @@ const orderService = {
       const response = await axios.get(`${API_URL}/order`, {
         withCredentials: true,
       });
-      //   console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching cart for order:", error);

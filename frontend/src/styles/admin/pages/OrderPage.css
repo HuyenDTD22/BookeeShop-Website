@@ -1,0 +1,33 @@
+.filter-row {
+    width: 100%;
+}
+
+.filter-group {
+    flex: 0 0 150px;
+    margin: 0;
+    padding: 0;
+}
+
+.filter-group .form-control,
+.filter-group .dropdown-toggle {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+.filter-group .btn {
+    height: 100%;
+    align-self: flex-end;
+}
+
+.filter-row {
+    gap: 1.5rem !important;
+}
+
+.filter-label {
+    display: block;
+    /* Đảm bảo label chiếm toàn bộ chiều rộng */
+    text-align: center;
+    /* Căn giữa nội dung */
+    width: 100%;
+    /* Đảm bảo label lấp đầy ô */
+}

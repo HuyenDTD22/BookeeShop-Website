@@ -1,0 +1,91 @@
+import axios from "axios";
+
+const API_URL = process.env.REACT_APP_API_URL;
+const ADMIN = process.env.REACT_APP_ADMIN;
+
+const orderService = {
+  // Lấy danh sách đơn hàng
+  getOrders: async (params = {}) => {
+    try {
+      const response = await axios.get(`${API_URL}/${ADMIN}/order`, {
+        params,
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      throw error;
+    }
+  },
+
+  // Lấy chi tiết đơn hàng
+  getOrderDetail: async (orderId) => {
+    try {
+      const response = await axios.get(`${API_URL}/${ADMIN}/order/${orderId}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching order detail ${orderId}:`, error);
+      throw error;
+    }
+  },
+
+  // Cập nhật trạng thái đơn hàng
+  ChangeStatus: async (orderId, status) => {
+    try {
+      const response = await axios.patch(
+        `${API_URL}/${ADMIN}/order/change-status/${orderId}`,
+        { status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating order status ${orderId}:`, error);
+      throw error;
+    }
+  },
+
+  // Cập nhật trạng thái đơn hàng
+  ChangeMultiStatus: async (orderIds, status) => {
+    try {
+      const response = await axios.patch(
+        `${API_URL}/${ADMIN}/order/change-multi`,
+        { orderIds, status },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error updating order status :`, error);
+      throw error;
+    }
+  },
+
+  // Xóa đơn hàng
+  deleteOrder: async (orderId) => {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/${ADMIN}/order/${orderId}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error deleting order ${orderId}:`, error);
+      throw error;
+    }
+  },
+};
+
+export default orderService;

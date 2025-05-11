@@ -29,6 +29,9 @@ import AccountPage from "../pages/admin/account/AccountPage";
 import CreateAccountPage from "../pages/admin/account/CreateAccountPage";
 import EditAccountPage from "../pages/admin/account/EditAccountPage";
 import AccountDetailPage from "../pages/admin/account/AccountDetailPage";
+import OrderPageAdmin from "../pages/admin/order/OrderPage";
+import UserPage from "../pages/admin/user/UserPage";
+import ReviewPage from "../pages/admin/review/ReviewPage";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
@@ -171,7 +174,24 @@ export const routes = [
     page: EditAccountPage,
     isAdmin: true,
   },
-
+  //Order - Quản lý đơn hàng
+  {
+    path: `/${ADMIN}/order`,
+    page: OrderPageAdmin,
+    isAdmin: true,
+  },
+  //User - Quản lý khách hàng
+  {
+    path: `/${ADMIN}/user`,
+    page: UserPage,
+    isAdmin: true,
+  },
+  // Review - Quản lý đánh giá
+  {
+    path: `/${ADMIN}/reviews`,
+    page: ReviewPage,
+    isAdmin: true,
+  },
   {
     path: "*",
     page: NotFoundPage,

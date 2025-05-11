@@ -24,11 +24,6 @@ const ratingSchema = new mongoose.Schema(
       ref: "Order",
       required: true,
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
-    },
     deleted: {
       type: Boolean,
       default: false,

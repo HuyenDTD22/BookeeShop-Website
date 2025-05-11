@@ -41,6 +41,32 @@ const PermissionsTableComponent = ({ roles }) => {
         { key: "delete_accounts", label: "Xóa" },
       ],
     },
+    {
+      name: "Đơn hàng",
+      permissions: [
+        { key: "read_orders", label: "Xem" },
+        { key: "create_orders", label: "Thêm mới" },
+        { key: "update_orders", label: "Chỉnh sửa" },
+        { key: "delete_orders", label: "Xóa" },
+      ],
+    },
+    {
+      name: "Khách hàng",
+      permissions: [
+        { key: "read_users", label: "Xem" },
+        { key: "create_users", label: "Thêm mới" },
+        { key: "update_users", label: "Chỉnh sửa" },
+        { key: "delete_users", label: "Xóa" },
+      ],
+    },
+    {
+      name: "Đánh giá",
+      permissions: [
+        { key: "read_reviews", label: "Xem" },
+        { key: "delete_reviews", label: "Xóa" },
+        { key: "reply_reviews", label: "Phản hồi" },
+      ],
+    },
   ];
 
   // State để lưu trạng thái quyền
