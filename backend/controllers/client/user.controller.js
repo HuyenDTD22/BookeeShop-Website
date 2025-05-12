@@ -68,6 +68,7 @@ module.exports.register = async (req, res) => {
       password: req.body.password,
       phone: req.body.phone,
       gender: req.body.gender,
+      address: req.body.address,
     });
 
     user.save();

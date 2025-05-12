@@ -14,6 +14,8 @@ import NotificationsPage from "../pages/client/notification/NotificationsPage";
 
 //admin
 import LoginPageAdmin from "../pages/admin/auth/LoginPageAdmin";
+import ForgotPasswordPageAdmin from "../pages/admin/auth/ForgotPasswordPageAdmin";
+import VerifyOtpPageAdmin from "../pages/admin/auth/VerifyOtpPageAdmin";
 import DashboardPage from "../pages/admin/dashboard/DashboardPage";
 import ProductsPage from "../pages/admin/product/ProductsPage";
 import CreateProductPage from "../pages/admin/product/CreateProductPage";
@@ -104,6 +106,14 @@ export const routes = [
   {
     path: `/${ADMIN}/auth/login`,
     page: LoginPageAdmin,
+  },
+  {
+    path: `/${ADMIN}/auth/forgot-password`,
+    page: ForgotPasswordPageAdmin,
+  },
+  {
+    path: `/${ADMIN}/auth/verify-otp`,
+    page: VerifyOtpPageAdmin,
   },
   //Product - Danh sách sản phẩm
   {

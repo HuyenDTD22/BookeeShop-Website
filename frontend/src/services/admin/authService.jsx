@@ -3,7 +3,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const authService = {
-  //Đăng nhập
   login: async (email, password) => {
     try {
       const response = await axios.post(
@@ -27,7 +26,6 @@ const authService = {
     }
   },
 
-  // Đăng xuất
   logout: async () => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/auth/logout`, {
@@ -40,7 +38,6 @@ const authService = {
     }
   },
 
-  // Kiểm tra đăng nhập và lấy thông tin user
   getAuthInfo: async () => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/auth/info`, {
@@ -49,6 +46,60 @@ const authService = {
       return response.data;
     } catch (error) {
       throw error;
+    }
+  },
+
+  forgotPassword: async (email) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/${ADMIN}/auth/password/forgot`,
+        { email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã xảy ra lỗi" };
+    }
+  },
+
+  verifyOtp: async (email, otp) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/${ADMIN}/auth/password/otp`,
+        { email, otp },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã xảy ra lỗi" };
+    }
+  },
+
+  resetPassword: async (password) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/${ADMIN}/auth/password/reset`,
+        { password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: "Đã xảy ra lỗi" };
     }
   },
 };

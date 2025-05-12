@@ -6,10 +6,20 @@ const validate = require("../../validates/auth.validate");
 
 const authMiddleware = require("../../middlewares/auth.middleware");
 
-router.post("/login", validate.login, controller.login); //Tính năng đăng nhập
+router.post("/login", validate.login, controller.login);
 
-router.get("/logout", controller.logout); //Tính năng đăng xuất
+router.get("/logout", controller.logout);
 
 router.get("/info", authMiddleware.requireAuthAdmin, controller.getAuthInfo);
+
+router.post("/password/forgot", controller.forgotPassword);
+
+router.post("/password/otp", controller.otpPassword);
+
+router.post(
+  "/password/reset",
+  authMiddleware.requireAuthAdmin,
+  controller.resetPassword
+);
 
 module.exports = router;

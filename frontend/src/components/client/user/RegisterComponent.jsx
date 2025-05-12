@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InputComponent from "../../common/InputComponent";
 import ButtonComponent from "../../common/ButtonComponent";
+import "../../../styles/client/component/RegisterComponent.css";
 
 const RegisterComponent = ({ onSubmit, loading, error, success }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
     confirmPassword: "",
     phone: "",
     gender: "",
+    address: "",
   });
 
   const handleChange = (e) => {
@@ -48,7 +50,7 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
               onChange={handleChange}
               required
               showLabel={true}
-              showPlaceholder={false}
+              showPlaceholder={true}
             />
           </div>
 
@@ -62,10 +64,22 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
               onChange={handleChange}
               required
               showLabel={true}
-              showPlaceholder={false}
+              showPlaceholder={true}
             />
           </div>
         </div>
+
+        <InputComponent
+          type="text"
+          id="address"
+          name="address"
+          placeholder="Địa chỉ"
+          value={formData.address}
+          onChange={handleChange}
+          required
+          showLabel={true}
+          showPlaceholder={true}
+        />
 
         <InputComponent
           type="password"
@@ -76,7 +90,7 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
           onChange={handleChange}
           required
           showLabel={true}
-          showPlaceholder={false}
+          showPlaceholder={true}
         />
 
         <InputComponent
@@ -88,7 +102,7 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
           onChange={handleChange}
           required
           showLabel={true}
-          showPlaceholder={false}
+          showPlaceholder={true}
         />
 
         <div className="row">
@@ -102,7 +116,7 @@ const RegisterComponent = ({ onSubmit, loading, error, success }) => {
               onChange={handleChange}
               required
               showLabel={true}
-              showPlaceholder={false}
+              showPlaceholder={true}
             />
           </div>
 

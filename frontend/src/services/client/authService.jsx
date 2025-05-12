@@ -33,7 +33,8 @@ const authService = {
     password,
     confirmPassword,
     phone,
-    gender
+    gender,
+    address
   ) => {
     try {
       const payload = {
@@ -43,6 +44,7 @@ const authService = {
         confirmPassword,
         phone,
         gender,
+        address,
       };
       const response = await axios.post(`${API_URL}/user/register`, payload, {
         headers: {
@@ -94,6 +96,26 @@ const authService = {
       return response.data;
     } catch (error) {
       console.error("Auth service register error:", error);
+      throw error;
+    }
+  },
+
+  // Đổi mật khẩu
+  resetPassword: async (password) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/user/password/reset`,
+        { password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Auth service reset password error:", error);
       throw error;
     }
   },

@@ -4,7 +4,9 @@ import InputComponent from "./InputComponent";
 import ButtonComponent from "./ButtonComponent";
 import "../../styles/client/component/LoginComponent.css";
 
-const LoginForm = ({ onSubmit, loading, error, success }) => {
+const ADMIN = process.env.REACT_APP_ADMIN;
+
+const LoginForm = ({ onSubmit, loading, error, success, isAdmin = false }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,6 +14,10 @@ const LoginForm = ({ onSubmit, loading, error, success }) => {
     e.preventDefault();
     onSubmit(email, password);
   };
+
+  const forgotPasswordPath = isAdmin
+    ? `/${ADMIN}/auth/forgot-password`
+    : "/user/password/forgot";
 
   return (
     <div className="card my-5">
@@ -52,7 +58,7 @@ const LoginForm = ({ onSubmit, loading, error, success }) => {
 
         <div className="d-flex justify-content-end mb-3">
           <a
-            href="/user/password/forgot"
+            href={forgotPasswordPath}
             className="text-primary text-decoration-none"
           >
             Quên mật khẩu?
@@ -96,12 +102,14 @@ LoginForm.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   success: PropTypes.string,
+  isAdmin: PropTypes.bool,
 };
 
 LoginForm.defaultProps = {
   loading: false,
   error: null,
   success: null,
+  isAdmin: false,
 };
 
 export default LoginForm;

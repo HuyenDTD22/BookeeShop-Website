@@ -25,7 +25,12 @@ import {
   Legend,
 } from "recharts";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import ResetPasswordModal from "../../../components/common/ResetPasswordModal";
 import dashboardService from "../../../services/admin/dashboardService";
+import authService from "../../../services/admin/authService";
+
+const ADMIN = process.env.REACT_APP_ADMIN;
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -38,6 +43,8 @@ const statusMap = {
 };
 
 const DashboardPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +52,17 @@ const DashboardPage = () => {
   const [endDate, setEndDate] = useState("2025-05-11");
   const [openPending, setOpenPending] = useState(false);
   const [openLowStock, setOpenLowStock] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [email, setEmail] = useState("");
+
+  // Kiểm tra trạng thái từ navigate
+  useEffect(() => {
+    const { state } = location;
+    if (state && state.showResetModal) {
+      setShowResetModal(true);
+      setEmail(state.email || "");
+    }
+  }, [location]);
 
   // Lấy dữ liệu dashboard
   const fetchStats = async (params = {}) => {
@@ -52,7 +70,6 @@ const DashboardPage = () => {
       setLoading(true);
       const response = await dashboardService.getDashboardStats(params);
       if (response.success) {
-        // Chuyển đổi trạng thái đơn hàng sang tiếng Việt
         const updatedStats = {
           ...response.data,
           charts: {
@@ -75,20 +92,21 @@ const DashboardPage = () => {
     }
   };
 
-  // Gọi API khi component mount và khi thay đổi params
   useEffect(() => {
     fetchStats({ startDate, endDate });
   }, []);
 
-  // Xử lý lọc thời gian
   const handleFilter = () => {
     fetchStats({ startDate, endDate });
   };
 
-  // Xử lý đăng xuất
   const handleLogout = () => {
     console.log("Đăng xuất");
     // Xử lý đăng xuất (xóa token, chuyển hướng)
+  };
+
+  const handleCloseModal = () => {
+    setShowResetModal(false);
   };
 
   if (loading) return <div>Đang tải...</div>;
@@ -99,7 +117,6 @@ const DashboardPage = () => {
     <Container fluid className="p-4">
       <h2 className="mb-4">Tổng quan</h2>
 
-      {/* Bộ lọc thời gian */}
       <Form className="mb-4">
         <Row>
           <Col md={4}>
@@ -130,7 +147,6 @@ const DashboardPage = () => {
         </Row>
       </Form>
 
-      {/* Thẻ chỉ số */}
       <Row className="mb-4">
         <Col md={3}>
           <Card>
@@ -209,7 +225,6 @@ const DashboardPage = () => {
         </Col>
       </Row>
 
-      {/* Biểu đồ */}
       <Row className="mb-4">
         <Col md={6}>
           <Card>
@@ -285,7 +300,6 @@ const DashboardPage = () => {
         </Col>
       </Row>
 
-      {/* Cảnh báo */}
       <Row className="mb-4">
         <Col>
           <Card>
@@ -397,7 +411,6 @@ const DashboardPage = () => {
         </Col>
       </Row>
 
-      {/* Thông báo gần đây */}
       <Row>
         <Col>
           <Card>
@@ -433,6 +446,15 @@ const DashboardPage = () => {
           </Card>
         </Col>
       </Row>
+
+      <ResetPasswordModal
+        isOpen={showResetModal}
+        onClose={handleCloseModal}
+        email={email}
+        authService={authService}
+        navigate={navigate}
+        redirectPath={`/${ADMIN}/`}
+      />
     </Container>
   );
 };

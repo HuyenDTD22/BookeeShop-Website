@@ -22,6 +22,7 @@ router.post("/password/opt", controller.otpPassword);
 router.post(
   "/password/reset",
   authMiddleware.requireAuth,
+  validate.resetPassword,
   controller.resetPassword
 );
 

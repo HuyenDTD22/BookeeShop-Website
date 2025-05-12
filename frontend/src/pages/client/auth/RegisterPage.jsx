@@ -14,8 +14,15 @@ const RegisterPage = () => {
       setLoading(true);
       setError(null);
 
-      const { fullName, email, password, confirmPassword, phone, gender } =
-        formData;
+      const {
+        fullName,
+        email,
+        password,
+        confirmPassword,
+        phone,
+        gender,
+        address,
+      } = formData;
 
       const response = await authService.register(
         fullName,
@@ -23,7 +30,8 @@ const RegisterPage = () => {
         password,
         confirmPassword,
         phone,
-        gender
+        gender,
+        address
       );
       if (response.code === 200) {
         setSuccess(response.message);
