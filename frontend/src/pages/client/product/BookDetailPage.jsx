@@ -9,6 +9,7 @@ import {
   Spinner,
   Card,
   Badge,
+  Modal,
 } from "react-bootstrap";
 import { FiTruck, FiRepeat, FiPercent } from "react-icons/fi";
 import bookService from "../../../services/client/bookService";
@@ -18,6 +19,7 @@ import ratingService from "../../../services/client/ratingService";
 import StarRatingComponent from "../../../components/common/StarRatingComponent";
 import CommentsSectionComponent from "../../../components/client/comment/CommentsSectionComponent";
 import BookCardComponent from "../../../components/client/product/BookCardComponent";
+import authService from "../../../services/client/authService";
 import "../../../styles/client/pages/BookDetailPage.css";
 
 const BookDetailPage = () => {
@@ -41,6 +43,7 @@ const BookDetailPage = () => {
   const [cartError, setCartError] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const fetchBookData = async () => {
@@ -87,6 +90,19 @@ const BookDetailPage = () => {
 
     fetchBookData();
   }, [slugBook]);
+
+  const checkAuthAndProceed = async (action) => {
+    const authStatus = await authService.checkAuth();
+    if (authStatus.isAuthenticated) {
+      if (action === "addToCart") {
+        handleAddToCart();
+      } else if (action === "buyNow") {
+        handleBuyNow();
+      }
+    } else {
+      setShowLoginModal(true);
+    }
+  };
 
   const handleAddToCart = async () => {
     try {
@@ -150,7 +166,7 @@ const BookDetailPage = () => {
                     <Button
                       variant="success"
                       size="lg"
-                      onClick={handleAddToCart}
+                      onClick={() => checkAuthAndProceed("addToCart")}
                       className="me-2 w-50"
                     >
                       Thêm vào giỏ hàng
@@ -158,7 +174,7 @@ const BookDetailPage = () => {
                     <Button
                       variant="danger"
                       size="lg"
-                      onClick={handleBuyNow}
+                      onClick={() => checkAuthAndProceed("buyNow")}
                       className="w-50"
                     >
                       Mua ngay
@@ -181,7 +197,7 @@ const BookDetailPage = () => {
                       margin: 0,
                       fontSize: "1rem",
                       color: "#333",
-                      lineHeight: "1.8", // tăng khoảng cách giữa các dòng
+                      lineHeight: "1.8",
                     }}
                   >
                     <li className="mb-2">
@@ -530,6 +546,26 @@ const BookDetailPage = () => {
           </Card.Body>
         </Card>
       )}
+
+      <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Thông báo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Bạn cần đăng nhập hoặc đăng ký tài khoản để mua sắm!
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => navigate("/user/login")}>
+            Đăng nhập
+          </Button>
+          <Button variant="primary" onClick={() => navigate("/user/register")}>
+            Đăng ký
+          </Button>
+          <Button variant="secondary" onClick={() => setShowLoginModal(false)}>
+            Đóng
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Button, Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import cartService from "../../../services/client/cartService";
+import authService from "../../../services/client/authService";
 import CartItemComponent from "../../../components/client/cart/CartItemComponent";
 import "../../../styles/client/pages/CartPage.css";
 
@@ -15,9 +16,15 @@ const CartPage = () => {
   useEffect(() => {
     const fetchCart = async () => {
       try {
+        const authStatus = await authService.checkAuth();
+        if (!authStatus.isAuthenticated) {
+          setError("Vui lòng đăng nhập để xem giỏ hàng.");
+          setLoading(false);
+          return;
+        }
         const response = await cartService.getCart();
         if (response.code === 200) {
-          setCart(response.cartDetail);
+          setCart(response.cartDetail || { books: [], totalPrice: 0 });
         } else {
           setError("Không thể tải giỏ hàng.");
         }
@@ -32,6 +39,11 @@ const CartPage = () => {
 
   const handleUpdateQuantity = async (bookId, quantity) => {
     try {
+      const authStatus = await authService.checkAuth();
+      if (!authStatus.isAuthenticated) {
+        setError("Vui lòng đăng nhập để cập nhật giỏ hàng.");
+        return;
+      }
       await cartService.updateQuantity(bookId, quantity);
       const updatedCart = await cartService.getCart();
       if (updatedCart.code === 200) {
@@ -44,6 +56,11 @@ const CartPage = () => {
 
   const handleRemoveItem = async (bookId) => {
     try {
+      const authStatus = await authService.checkAuth();
+      if (!authStatus.isAuthenticated) {
+        setError("Vui lòng đăng nhập để xóa sản phẩm.");
+        return;
+      }
       await cartService.deleteFromCart(bookId);
       const updatedCart = await cartService.getCart();
       if (updatedCart.code === 200) {
@@ -80,7 +97,12 @@ const CartPage = () => {
       .reduce((sum, item) => sum + (item.totalPrice || 0), 0);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    const authStatus = await authService.checkAuth();
+    if (!authStatus.isAuthenticated) {
+      setError("Vui lòng đăng nhập để thanh toán.");
+      return;
+    }
     const selectedBooks = cart.books.filter((item) =>
       selectedItems.includes(item.book_id)
     );

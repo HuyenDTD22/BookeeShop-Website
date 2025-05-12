@@ -106,12 +106,21 @@ export const deleteAccount = async (id) => {
   }
 };
 
-// export const getMyAccount = async () => {
-//   try {
-//     const response = await axiosInstance.get(`/my-account`);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error fetching my account:", error);
-//     throw error;
-//   }
-// };
+export const editMyAccount = async (id, formData) => {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/account/my-account/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error editing my account:", error);
+    throw error;
+  }
+};

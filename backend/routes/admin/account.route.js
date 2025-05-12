@@ -34,4 +34,11 @@ router.patch(
 
 router.delete("/delete/:id", controller.delete);
 
+router.patch(
+  "/my-account/:id",
+  upload.single("avatar"),
+  uploadCloud.upload,
+  controller.EditMyAccount
+);
+
 module.exports = router;

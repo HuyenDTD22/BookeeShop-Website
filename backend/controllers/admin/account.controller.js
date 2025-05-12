@@ -299,3 +299,92 @@ module.exports.delete = async (req, res) => {
     });
   }
 };
+
+module.exports.EditMyAccount = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const userId = res.locals.user.id; // Lấy ID của người dùng hiện tại từ middleware auth
+    const { fullName, phone, gender, birth, address, avatar } = req.body;
+
+    // Kiểm tra xem ID trong URL có khớp với ID của người dùng hiện tại không
+    if (id !== userId.toString()) {
+      return res.status(403).json({
+        code: 403,
+        message: "Bạn chỉ được phép chỉnh sửa tài khoản của chính mình!",
+      });
+    }
+
+    // Lấy thông tin tài khoản hiện tại
+    const account = await Account.findById(id).select("+password"); // Cần lấy password để kiểm tra
+    if (!account || account.deleted) {
+      return res.status(404).json({
+        code: 404,
+        message: "Tài khoản không tồn tại hoặc đã bị xóa!",
+      });
+    }
+
+    const updateData = {};
+    if (fullName) updateData.fullName = fullName;
+    if (phone) updateData.phone = phone;
+    if (gender) updateData.gender = gender;
+    if (birth) updateData.birth = birth;
+    if (address) updateData.address = address;
+    if (avatar) updateData.avatar = avatar;
+
+    // Xử lý thay đổi mật khẩu
+    const currentPassword = req.body.currentPassword;
+    const newPassword = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+
+    if (newPassword || confirmPassword) {
+      // Nếu có nhập mật khẩu mới, kiểm tra cả 3 trường
+      if (!currentPassword) {
+        return res.status(400).json({
+          code: 400,
+          message: "Vui lòng nhập mật khẩu cũ để thay đổi mật khẩu!",
+        });
+      }
+      if (!newPassword || !confirmPassword) {
+        return res.status(400).json({
+          code: 400,
+          message: "Vui lòng nhập đầy đủ mật khẩu mới và nhập lại mật khẩu!",
+        });
+      }
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({
+          code: 400,
+          message: "Mật khẩu mới và Nhập lại mật khẩu không khớp!",
+        });
+      }
+
+      // Kiểm tra mật khẩu cũ có đúng không
+      if (md5(currentPassword) !== account.password) {
+        return res.status(400).json({
+          code: 400,
+          message: "Mật khẩu cũ không đúng!",
+        });
+      }
+
+      updateData.password = md5(newPassword);
+    }
+
+    // Cập nhật tài khoản
+    await Account.updateOne({ _id: id }, updateData);
+
+    // Lấy lại thông tin tài khoản sau khi cập nhật (không bao gồm password)
+    const updatedAccount = await Account.findById(id).select(
+      "-password -token"
+    );
+
+    res.json({
+      code: 200,
+      message: "Cập nhật tài khoản thành công!",
+      account: updatedAccount,
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: error.message || "Đã xảy ra lỗi khi cập nhật tài khoản!",
+    });
+  }
+};

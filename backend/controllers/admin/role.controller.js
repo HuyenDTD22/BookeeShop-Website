@@ -141,6 +141,10 @@ module.exports.changeMulti = async (req, res) => {
 //[POST] /admin/role/create - Thêm mới 1 nhóm quyền
 module.exports.create = async (req, res) => {
   try {
+    req.body.createdBy = {
+      account_id: res.locals.user.id,
+    };
+
     const role = new Role(req.body);
 
     await role.save();

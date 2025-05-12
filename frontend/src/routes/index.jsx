@@ -30,6 +30,7 @@ import AccountPage from "../pages/admin/account/AccountPage";
 import CreateAccountPage from "../pages/admin/account/CreateAccountPage";
 import EditAccountPage from "../pages/admin/account/EditAccountPage";
 import AccountDetailPage from "../pages/admin/account/AccountDetailPage";
+import MyAccountPageAdmin from "../pages/admin/account/MyAccountPage";
 import OrderPageAdmin from "../pages/admin/order/OrderPage";
 import UserPage from "../pages/admin/user/UserPage";
 import ReviewPage from "../pages/admin/review/ReviewPage";
@@ -183,6 +184,11 @@ export const routes = [
   {
     path: `/${ADMIN}/account/edit/:id`,
     page: EditAccountPage,
+    isAdmin: true,
+  },
+  {
+    path: `/${ADMIN}/my-account`,
+    page: MyAccountPageAdmin,
     isAdmin: true,
   },
   //Order - Quản lý đơn hàng

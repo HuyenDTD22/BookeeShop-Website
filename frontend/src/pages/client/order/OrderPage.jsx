@@ -35,6 +35,13 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const authStatus = await authService.checkAuth();
+        if (!authStatus.isAuthenticated) {
+          setError("Vui lòng đăng nhập để thanh toán.");
+          setLoading(false);
+          return;
+        }
+
         let fetchedBooks = [];
         let initialQuantities = {};
 
@@ -76,7 +83,6 @@ const OrderPage = () => {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [initialCart, slug]);
 
@@ -112,6 +118,13 @@ const OrderPage = () => {
     setError("");
 
     try {
+      const authStatus = await authService.checkAuth();
+      if (!authStatus.isAuthenticated) {
+        setError("Vui lòng đăng nhập để thanh toán.");
+        setLoading(false);
+        return;
+      }
+
       const orderItems = books.map((book) => ({
         book_id: book._id,
         quantity: quantities[book._id] || 1,
