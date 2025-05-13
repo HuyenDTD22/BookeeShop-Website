@@ -1,23 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Navbar,
-  Container,
-  Nav,
-  Form,
-  FormControl,
-  Button,
-  Badge,
-  NavDropdown,
-} from "react-bootstrap";
-import {
-  FaUserCircle,
-  FaShoppingCart,
-  FaBell,
-  FaSearch,
-  FaHeart,
-  FaBookOpen,
-} from "react-icons/fa";
-import { api } from "../../../services/client/bookService";
+import homeService from "../../../services/client/homeService";
 import "../../../styles/client/component/DefaultComponent.css";
 import FooterComponent from "./FooterComponent";
 import HeaderComponent from "./HeaderComponent";
@@ -30,7 +12,7 @@ const DefaultComponent = ({ children }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await api.getHomepage();
+        const data = await homeService.getHomepage();
         setCategories(data.layoutCategory || []);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

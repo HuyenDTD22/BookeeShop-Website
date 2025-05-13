@@ -44,7 +44,6 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
     setFormData({ ...formData, avatar: file || "" });
   };
 
-  // *** ĐÃ SỬA: Chuyển formData thành đối tượng FormData để gửi multipart/form-data ***
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -56,7 +55,6 @@ const SettingsFormComponent = ({ user, setUserInfo }) => {
     }
 
     try {
-      // Tạo đối tượng FormData
       const data = new FormData();
       data.append("fullName", formData.fullName);
       data.append("phone", formData.phone);

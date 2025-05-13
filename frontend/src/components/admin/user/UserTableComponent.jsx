@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Table, Button, Image } from "react-bootstrap";
 import { FaEye, FaTrash, FaLock } from "react-icons/fa";
 import UserDetailComponent from "./UserDetailComponent";
-import ConfirmModalComponent from "../../common/ConfirmModalComponent"; // Import ConfirmModal
+import ConfirmModalComponent from "../../common/ConfirmModalComponent";
 import { AuthContext } from "../../../context/AuthContext";
 import "../../../styles/admin/component/UserTableComponent.css";
 
@@ -196,7 +196,6 @@ const UserTableComponent = ({
   );
 };
 
-// Helper để chọn màu sắc cho trạng thái
 const getStatusVariant = (status) => {
   switch (status) {
     case "active":
@@ -208,7 +207,6 @@ const getStatusVariant = (status) => {
   }
 };
 
-// Helper để chuyển trạng thái sang tiếng Việt
 const getVietnameseStatus = (status) => {
   switch (status) {
     case "active":

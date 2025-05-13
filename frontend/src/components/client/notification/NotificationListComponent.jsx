@@ -8,7 +8,6 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Ánh xạ type sang tiếng Việt
   const typeLabels = {
     system: "Hệ thống",
     promotion: "Khuyến mãi",
@@ -16,7 +15,6 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
     order_status: "Cập nhật đơn hàng",
   };
 
-  // Ánh xạ status sang tiếng Việt
   const statusLabels = {
     sent: "Đã gửi",
   };

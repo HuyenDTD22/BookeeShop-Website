@@ -6,7 +6,7 @@ import UploadImageComponent from "../../common/UploadImageComponent";
 const MyAccountComponent = ({ userInfo, onSubmit, onFileChange }) => {
   const [imagePreview, setImagePreview] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false); // Thêm trạng thái loading
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     avatar: null,
     fullName: "",
@@ -30,7 +30,7 @@ const MyAccountComponent = ({ userInfo, onSubmit, onFileChange }) => {
         fullName: userInfo.fullName || "",
         email: userInfo.email || "",
         phone: userInfo.phone || "",
-        gender: userInfo.gender || "", // Đảm bảo giá trị ban đầu là "Nam", "Nữ", hoặc rỗng
+        gender: userInfo.gender || "",
         birth: birthDate,
         address: userInfo.address || "",
         avatar: null,
@@ -53,15 +53,14 @@ const MyAccountComponent = ({ userInfo, onSubmit, onFileChange }) => {
       ...prev,
       [name]: value,
     }));
-    setError(""); // Xóa lỗi khi người dùng nhập
+    setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setIsSubmitting(true); // Bật trạng thái loading
+    setIsSubmitting(true);
 
-    // Kiểm tra mật khẩu nếu có nhập
     if (formData.password || formData.confirmPassword) {
       if (!formData.currentPassword) {
         setError("Vui lòng nhập mật khẩu cũ!");
@@ -85,7 +84,6 @@ const MyAccountComponent = ({ userInfo, onSubmit, onFileChange }) => {
       }
     }
 
-    // Chuẩn bị FormData
     const formDataToSubmit = new FormData();
     if (selectedFile) {
       formDataToSubmit.append("avatar", selectedFile);
@@ -118,7 +116,7 @@ const MyAccountComponent = ({ userInfo, onSubmit, onFileChange }) => {
     } catch (error) {
       setError("Có lỗi xảy ra khi cập nhật tài khoản!");
     } finally {
-      setIsSubmitting(false); // Tắt trạng thái loading
+      setIsSubmitting(false);
     }
   };
 

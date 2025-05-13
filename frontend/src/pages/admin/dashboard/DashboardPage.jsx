@@ -34,7 +34,6 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
-// Bản đồ trạng thái đơn hàng từ tiếng Anh sang tiếng Việt
 const statusMap = {
   pending: "Chờ xác nhận",
   delivered: "Đang giao hàng",
@@ -55,7 +54,6 @@ const DashboardPage = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [email, setEmail] = useState("");
 
-  // Kiểm tra trạng thái từ navigate
   useEffect(() => {
     const { state } = location;
     if (state && state.showResetModal) {
@@ -64,7 +62,6 @@ const DashboardPage = () => {
     }
   }, [location]);
 
-  // Lấy dữ liệu dashboard
   const fetchStats = async (params = {}) => {
     try {
       setLoading(true);
@@ -102,7 +99,6 @@ const DashboardPage = () => {
 
   const handleLogout = () => {
     console.log("Đăng xuất");
-    // Xử lý đăng xuất (xóa token, chuyển hướng)
   };
 
   const handleCloseModal = () => {

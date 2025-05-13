@@ -9,3 +9,9 @@
 .btn-danger {
     margin-left: 10px;
 }
+
+.cart-table img {
+    width: 100px !important;
+    height: 100px !important;
+    object-fit: cover !important;
+}

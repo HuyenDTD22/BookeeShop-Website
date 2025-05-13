@@ -1,5 +1,4 @@
 import axios from "axios";
-import axiosInstance from "./apiService";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
@@ -23,7 +22,14 @@ export const getCategory = async (params = {}) => {
 
 export const getCategoryDetail = async (id) => {
   try {
-    const response = await axiosInstance.get(`/category/detail/${id}`);
+    const response = await axios.get(
+      `${API_URL}/${ADMIN}/category/detail/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching book detail:", error);
@@ -33,10 +39,16 @@ export const getCategoryDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axiosInstance.patch(
-      `/category/change-status/${id}`,
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/category/change-status/${id}`,
       {
         status,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
       }
     );
     return response.data;
@@ -48,11 +60,20 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axiosInstance.patch(`/category/change-multi`, {
-      ids,
-      key,
-      value,
-    });
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/category/change-multi`,
+      {
+        ids,
+        key,
+        value,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error changing multi:", error);

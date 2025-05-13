@@ -25,11 +25,11 @@ const CartItemCountComponent = ({ setCartItemCount }) => {
       }
     };
     fetchCart();
-    const interval = setInterval(fetchCart, 5000); // Cập nhật mỗi 5 giây
-    return () => clearInterval(interval); // Cleanup
+    const interval = setInterval(fetchCart, 5000);
+    return () => clearInterval(interval);
   }, [setCartItemCount]);
 
-  return null; // Không render nội dung, chỉ quản lý state
+  return null;
 };
 
 export default CartItemCountComponent;

@@ -1,17 +1,12 @@
 .user-table img {
     border-radius: 50%;
-    /* Đảm bảo hình tròn */
     object-fit: cover;
-    /* Giữ tỷ lệ ảnh */
     display: block;
-    /* Loại bỏ khoảng cách thừa */
     margin: 0 auto;
-    /* Căn giữa ảnh trong ô */
 }
 
 .user-table th:nth-child(3),
 .user-table td:nth-child(3) {
     width: 80px;
-    /* Điều chỉnh chiều rộng cột ảnh */
     text-align: center;
 }

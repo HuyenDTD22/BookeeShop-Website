@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Row, Col, Image, Card } from "react-bootstrap";
-import { FiSave, FiX, FiUpload, FiPackage } from "react-icons/fi";
+import { Form, Button, Row, Col, Card } from "react-bootstrap";
+import { FiSave, FiX, FiPackage } from "react-icons/fi";
 import InputComponent from "../../common/InputComponent";
 import FormGroupComponent from "../../common/FormGroupComponent";
 import CategorySelectComponent from "../../common/CategorySelectComponent";

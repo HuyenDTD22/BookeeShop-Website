@@ -12,7 +12,6 @@
 
 .outer-card {
     border: 1px solid #dee2e6 !important;
-    /* Viền xám nhạt cho ô bao quanh */
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     background-color: #f8f9fa;
@@ -20,7 +19,6 @@
 
 .checkout-page .card {
     border: 2px solid #8a8c8e !important;
-    /* Viền xám đậm, ghi đè Bootstrap */
     border-radius: 5px;
     box-shadow: none;
 }

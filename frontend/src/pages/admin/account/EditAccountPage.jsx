@@ -25,7 +25,6 @@ const EditAccountPage = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState("success");
 
-  // Lấy dữ liệu sản phẩm để điền sẵn vào form
   useEffect(() => {
     const fetchAccountDetail = async () => {
       try {

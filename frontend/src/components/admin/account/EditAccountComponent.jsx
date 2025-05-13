@@ -22,7 +22,6 @@ const EditAccountComponent = ({ account, onSubmit }) => {
   });
   const [imagePreview, setImagePreview] = useState("");
 
-  // Điền dữ liệu sản phẩm vào form khi component mount
   useEffect(() => {
     if (account) {
       const birthDate = account.birth
@@ -61,7 +60,6 @@ const EditAccountComponent = ({ account, onSubmit }) => {
       ? new Date(formData.birth).toISOString()
       : "";
 
-    // Tạo FormData để gửi dữ liệu dưới dạng multipart/form-data
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("fullName", formData.fullName);
     formDataToSubmit.append("role_id", formData.role_id);

@@ -60,7 +60,6 @@ const CategoryTableComponent = ({
     onSelect(newSelectedCategorys);
   };
 
-  // THÊM: Hàm tính tổng số danh mục (bao gồm danh mục con) để kiểm tra checkbox "Chọn tất cả"
   const getTotalCategories = (categories) => {
     let total = 0;
     const countCategories = (nodes) => {
@@ -75,7 +74,6 @@ const CategoryTableComponent = ({
     return total;
   };
 
-  // THÊM: Hàm lấy tất cả ID danh mục (bao gồm danh mục con)
   const getAllCategoryIds = (categories) => {
     let ids = [];
     const collectIds = (nodes) => {
@@ -92,7 +90,6 @@ const CategoryTableComponent = ({
 
   let indexCounter = 0;
 
-  // THÊM: Hàm đệ quy để hiển thị danh mục dạng cây
   const renderCategories = (categories, level = 0) => {
     return categories.map((category) => {
       indexCounter++;
@@ -206,7 +203,6 @@ const CategoryTableComponent = ({
           </tr>
         </thead>
         <tbody>
-          {/* THÊM: Thông báo khi danh sách rỗng */}
           {categories.length === 0 ? (
             <tr>
               <td colSpan="6" className="text-center">

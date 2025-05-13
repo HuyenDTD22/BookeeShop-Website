@@ -100,7 +100,7 @@ module.exports.create = async (req, res) => {
     const order = new Order(objectOrder);
     await order.save();
 
-    const notification = await orderHelper.ArraycreateOrderStatusNotification(
+    const notification = await orderHelper.createOrderStatusNotification(
       order,
       "pending",
       user_id

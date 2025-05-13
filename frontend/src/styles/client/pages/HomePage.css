@@ -19,7 +19,6 @@
 .book-card {
     transition: transform 0.3s, box-shadow 0.3s;
     height: 450px;
-    /* Tăng chiều cao để chứa thêm thông tin */
     display: flex;
     flex-direction: column;
 }
@@ -31,7 +30,6 @@
 
 .book-card-img {
     height: 200px;
-    /* Chiều cao cố định cho ảnh */
     object-fit: cover;
 }
 
@@ -48,33 +46,27 @@
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    /* Giới hạn tiêu đề 2 dòng */
     -webkit-box-orient: vertical;
     height: 48px;
-    /* Chiều cao cố định cho tiêu đề */
 }
 
 .book-card-price {
     font-size: 0.9rem;
     height: 24px;
-    /* Chiều cao cố định cho giá */
 }
 
 .book-card-sold {
     font-size: 0.85rem;
     color: #666;
     height: 20px;
-    /* Chiều cao cố định cho số lượng đã bán */
 }
 
 .book-card-rating {
     height: 20px;
-    /* Chiều cao cố định cho đánh giá sao */
 }
 
 .book-card-buttons {
     height: 40px;
-    /* Chiều cao cố định cho nút */
 }
 
 .book-card-buttons .btn {
@@ -95,7 +87,6 @@
 .horizontal-scroll {
     display: flex;
     overflow: hidden;
-    /* Ẩn các sản phẩm không nằm trong nhóm hiện tại */
     width: 100%;
 }
 

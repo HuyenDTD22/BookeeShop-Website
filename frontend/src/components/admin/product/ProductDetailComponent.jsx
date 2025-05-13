@@ -18,7 +18,7 @@ const ProductDetailComponent = ({ book }) => {
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       } finally {
-        setLoading(false); // Đánh dấu đã tải xong
+        setLoading(false);
       }
     };
     fetchCategories();
@@ -29,12 +29,10 @@ const ProductDetailComponent = ({ book }) => {
       return "Không có danh mục";
     }
 
-    // Tìm ở cấp hiện tại
     for (const category of categoriesList) {
       if (category._id === categoryId) {
         return category.title;
       }
-      // Tìm trong children (đệ quy)
       if (category.children && category.children.length > 0) {
         const childResult = findCategoryTitle(categoryId, category.children);
         if (childResult !== "N/A") {
@@ -45,15 +43,12 @@ const ProductDetailComponent = ({ book }) => {
     return "N/A";
   };
 
-  // Tính giá sau giảm giá
   const discountedPrice = book.price
     ? (book.price * (100 - (book.discountPercentage || 0))) / 100
     : 0;
 
-  // Sử dụng hàm sanitizeHtml để làm sạch HTML
   const sanitizedDescription = sanitizeHtml(book.description);
 
-  // Hàm hiển thị 5 ngôi sao cho rating_mean
   const renderStars = (rating) => {
     const maxStars = 5;
     const stars = [];
@@ -77,7 +72,6 @@ const ProductDetailComponent = ({ book }) => {
 
   return (
     <>
-      {/* Khung tiêu đề */}
       <Card className="shadow-lg border-0 mb-4">
         <Card.Header className="bg-primary text-white">
           <div className="d-flex align-items-center">
@@ -87,9 +81,7 @@ const ProductDetailComponent = ({ book }) => {
         </Card.Header>
       </Card>
 
-      {/* Phần chính: Ảnh và thông tin sản phẩm */}
       <Row className="mb-5">
-        {/* Cột trái: Ảnh sản phẩm */}
         <Col md={5} className="mb-4 d-flex justify-content-center">
           <Image
             src={book.thumbnail || "https://via.placeholder.com/400"}
@@ -104,14 +96,10 @@ const ProductDetailComponent = ({ book }) => {
           />
         </Col>
 
-        {/* Cột phải: Thông tin sản phẩm */}
         <Col md={7}>
-          {/* Tiêu đề */}
           <h1 className="text-primary mb-3">
             {book.title || "Không có tiêu đề"}
           </h1>
-
-          {/* Đánh giá trung bình */}
           <div className="mb-3 d-flex align-items-center">
             {renderStars(book.rating_mean || 5)}
             <span className="text-muted ms-2">
@@ -119,7 +107,6 @@ const ProductDetailComponent = ({ book }) => {
             </span>
           </div>
 
-          {/* Danh mục và tác giả */}
           <p className="text-muted mb-2">
             <strong>Danh mục:</strong>{" "}
             <span className="fw-semibold">
@@ -131,7 +118,6 @@ const ProductDetailComponent = ({ book }) => {
             <span className="fw-semibold">{book.author || "N/A"}</span>
           </p>
 
-          {/* Giá và giảm giá */}
           <div className="mb-3">
             {book.discountPercentage > 0 ? (
               <>
@@ -152,13 +138,11 @@ const ProductDetailComponent = ({ book }) => {
             )}
           </div>
 
-          {/* Số lượng */}
           <p className="mb-2">
             <strong>Số lượng:</strong>{" "}
             <span className="fw-semibold">{book.stock || 0}</span>
           </p>
 
-          {/* Thông tin admin: Vị trí, Trạng thái, Nổi bật */}
           <p className="mb-2">
             <strong>Vị trí:</strong> <span>{book.position || 0}</span>
           </p>
@@ -177,7 +161,6 @@ const ProductDetailComponent = ({ book }) => {
         </Col>
       </Row>
 
-      {/* Phần thông tin bổ sung */}
       <Row className="mb-5">
         <Col>
           <h3 className="text-primary mb-3">Thông tin chi tiết</h3>
@@ -221,8 +204,6 @@ const ProductDetailComponent = ({ book }) => {
           </Card>
         </Col>
       </Row>
-
-      {/* Phần mô tả chi tiết */}
       <Row className="mb-5">
         <Col>
           <h3 className="text-primary mb-3">Mô tả chi tiết</h3>

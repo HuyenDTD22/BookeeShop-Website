@@ -54,7 +54,6 @@
     border-style: dashed !important;
 }
 
-/* Rich Text Editor Styles */
 .quill-editor-container {
     border-radius: 0.375rem;
     overflow: hidden;
@@ -63,7 +62,6 @@
 .editor-height {
     height: 250px;
     margin-bottom: 40px;
-    /* Account for toolbar height */
 }
 
 .ql-toolbar {

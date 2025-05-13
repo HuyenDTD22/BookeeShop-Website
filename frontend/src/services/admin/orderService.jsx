@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const orderService = {
-  // Lấy danh sách đơn hàng
   getOrders: async (params = {}) => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/order`, {
@@ -18,7 +17,6 @@ const orderService = {
     }
   },
 
-  // Lấy chi tiết đơn hàng
   getOrderDetail: async (orderId) => {
     try {
       const response = await axios.get(
@@ -34,7 +32,6 @@ const orderService = {
     }
   },
 
-  // Cập nhật trạng thái đơn hàng
   ChangeStatus: async (orderId, status) => {
     try {
       const response = await axios.patch(
@@ -54,7 +51,6 @@ const orderService = {
     }
   },
 
-  // Cập nhật trạng thái đơn hàng
   ChangeMultiStatus: async (orderIds, status) => {
     try {
       const response = await axios.patch(
@@ -74,7 +70,6 @@ const orderService = {
     }
   },
 
-  // Xóa đơn hàng
   deleteOrder: async (orderId) => {
     try {
       const response = await axios.delete(

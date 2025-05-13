@@ -14,18 +14,16 @@ const NotificationsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const { hasPermission } = useContext(AuthContext);
-  const limit = 5; // Số thông báo mỗi trang
+  const limit = 5;
 
   const fetchNotifications = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await notificationService.getAllNotifications();
-      // Kiểm tra dữ liệu trả về
       if (!Array.isArray(response.data)) {
         throw new Error("Dữ liệu thông báo không hợp lệ!");
       }
-      // Kiểm tra ID trùng lặp
       const ids = response.data.map((n) => n._id);
       const uniqueIds = new Set(ids);
       if (uniqueIds.size !== ids.length) {
@@ -34,7 +32,6 @@ const NotificationsPage = () => {
       setNotifications(response.data);
       setTotalItems(response.data.length);
       setTotalPages(Math.ceil(response.data.length / limit));
-      // Hiển thị trang đầu tiên
       setDisplayNotifications(response.data.slice(0, limit));
       setCurrentPage(1);
     } catch (error) {
@@ -52,7 +49,6 @@ const NotificationsPage = () => {
   }, []);
 
   useEffect(() => {
-    // Cập nhật danh sách hiển thị khi chuyển trang
     const startIndex = (currentPage - 1) * limit;
     const endIndex = startIndex + limit;
     setDisplayNotifications(notifications.slice(startIndex, endIndex));

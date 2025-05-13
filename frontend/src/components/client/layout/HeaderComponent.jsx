@@ -40,8 +40,7 @@ const HeaderComponent = ({
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation(); // Theo dõi thay đổi route
-
+  const location = useLocation();
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -59,7 +58,6 @@ const HeaderComponent = ({
     fetchUserInfo();
   }, [setNotificationCount]);
 
-  // Hàm tìm kiếm sách
   const handleSearch = async (keyword) => {
     try {
       const response = await homeService.searchBooks(keyword);
@@ -74,7 +72,6 @@ const HeaderComponent = ({
     }
   };
 
-  // Gọi API tìm kiếm khi người dùng gõ từ khóa
   useEffect(() => {
     if (searchKeyword.trim() === "") {
       setSearchResults([]);
@@ -83,17 +80,15 @@ const HeaderComponent = ({
 
     const debounce = setTimeout(() => {
       handleSearch(searchKeyword);
-    }, 300); // Debounce 300ms để tránh gọi API quá nhiều khi người dùng gõ nhanh
+    }, 300);
 
-    return () => clearTimeout(debounce); // Dọn dẹp timeout khi component unmount hoặc keyword thay đổi
+    return () => clearTimeout(debounce);
   }, [searchKeyword]);
 
-  // Ẩn kết quả khi navigate đến trang chi tiết
   useEffect(() => {
-    setSearchResults([]); // Ẩn kết quả khi route thay đổi (khi click vào Link)
+    setSearchResults([]);
   }, [location]);
 
-  // Xử lý khi nhấn Enter hoặc nút tìm kiếm
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     handleSearch(searchKeyword);
@@ -192,7 +187,7 @@ const HeaderComponent = ({
                   const newValue = e.target.value;
                   setSearchKeyword(newValue);
                   if (newValue === "") {
-                    setSearchResults([]); // Ẩn kết quả khi xóa từ khóa (bao gồm nhấn "x")
+                    setSearchResults([]);
                   }
                 }}
               />

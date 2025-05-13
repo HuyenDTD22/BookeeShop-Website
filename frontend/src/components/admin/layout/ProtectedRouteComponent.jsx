@@ -6,14 +6,14 @@ const ProtectedRouteComponent = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) {
-    return <div>Loading...</div>; // Hiển thị loading trong khi kiểm tra đăng nhập
+    return <div>Loading...</div>;
   }
 
   if (!user) {
-    return <Navigate to="/admin/auth/login" replace />; // Chuyển hướng nếu chưa đăng nhập
+    return <Navigate to="/admin/auth/login" replace />;
   }
 
-  return children; // Render trang nếu đã đăng nhập
+  return children;
 };
 
 export default ProtectedRouteComponent;

@@ -1,16 +1,11 @@
-/* *** ĐÃ SỬA: Đảm bảo mục được chọn có nền màu xanh *** */
 .custom-active {
     background-color: #007bff !important;
-    /* Màu xanh của Bootstrap primary */
 }
 
-/* Đảm bảo các mục trong sidebar có giao diện đồng nhất */
 .list-group-item {
     padding: 15px 0;
-    /* Tùy chỉnh padding trên/dưới nếu cần */
 }
 
-/* Đảm bảo văn bản và icon căn giữa dọc */
 .list-group-item .d-flex {
     align-items: center;
 }
@@ -71,7 +66,6 @@
     margin: 0 5px;
 }
 
-/* Style cho danh sách đơn hàng */
 .list-group-item {
     transition: all 0.2s ease-in-out;
 }

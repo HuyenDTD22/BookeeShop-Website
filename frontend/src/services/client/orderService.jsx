@@ -3,7 +3,6 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const orderService = {
-  // Lấy thông tin giỏ hàng để chuẩn bị thanh toán
   getCartForCheckout: async () => {
     try {
       const response = await axios.get(`${API_URL}/order`, {
@@ -16,7 +15,6 @@ const orderService = {
     }
   },
 
-  // Tạo đơn hàng "Mua ngay"
   buyNow: async (data) => {
     try {
       const response = await axios.post(`${API_URL}/order/create`, data, {
@@ -25,7 +23,6 @@ const orderService = {
         },
         withCredentials: true,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating buy-now order:", error);
@@ -33,7 +30,6 @@ const orderService = {
     }
   },
 
-  // Lấy thông tin đơn hàng sau khi thanh toán thành công
   getOrderSuccess: async (orderId) => {
     try {
       const response = await axios.get(`${API_URL}/order/success/${orderId}`, {
@@ -46,7 +42,6 @@ const orderService = {
     }
   },
 
-  // Lấy danh sách đơn hàng của người dùng
   getMyOrders: async () => {
     try {
       const response = await axios.get(`${API_URL}/order/my-orders`, {
@@ -59,7 +54,6 @@ const orderService = {
     }
   },
 
-  // Lấy chi tiết đơn hàng
   getOrderDetail: async (orderId) => {
     try {
       const response = await axios.get(`${API_URL}/order/detail/${orderId}`, {
@@ -72,7 +66,6 @@ const orderService = {
     }
   },
 
-  // Hủy đơn hàng
   cancelOrder: async (orderId) => {
     try {
       const response = await axios.patch(

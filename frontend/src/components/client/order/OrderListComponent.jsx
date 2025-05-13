@@ -26,7 +26,6 @@ const OrderListComponent = ({ orders, title }) => {
   const [ratings, setRatings] = useState({});
   const navigate = useNavigate();
 
-  // Hàm chuyển trạng thái sang tiếng Việt
   const translateStatus = (status) => {
     switch (status) {
       case "pending":
@@ -42,14 +41,12 @@ const OrderListComponent = ({ orders, title }) => {
     }
   };
 
-  // Hàm tính priceNew
   const calculatePriceNew = (price, discountPercentage) => {
     const basePrice = price || 0;
     const discount = discountPercentage || 0;
     return Math.round((basePrice * (100 - discount)) / 100);
   };
 
-  // Lấy danh sách đánh giá cho từng sách
   const fetchRatings = async (bookId) => {
     try {
       const response = await ratingService.getRatings(bookId);
@@ -64,7 +61,6 @@ const OrderListComponent = ({ orders, title }) => {
     }
   };
 
-  // Kiểm tra đánh giá và thời gian 24 giờ
   const canShowReviewButton = (bookId, order) => {
     if (order.status !== "completed") return false;
 
@@ -73,16 +69,14 @@ const OrderListComponent = ({ orders, title }) => {
       (rating) => rating.order_id.toString() === order._id.toString()
     );
 
-    if (!userRating) return true; // Chưa đánh giá, hiển thị nút
+    if (!userRating) return true;
 
-    // Kiểm tra thời gian 24 giờ
     const ratingTime = new Date(userRating.createdAt);
     const currentTime = new Date();
     const diffHours = (currentTime - ratingTime) / (1000 * 60 * 60);
-    return diffHours <= 24; // Hiển thị nút nếu chưa quá 24 giờ
+    return diffHours <= 24;
   };
 
-  // Lấy danh sách đánh giá khi component mount
   useEffect(() => {
     orders.forEach((order) => {
       if (order.status === "completed" && order.books) {
@@ -196,12 +190,9 @@ const OrderListComponent = ({ orders, title }) => {
               className="mb-3 border rounded shadow-sm hover-shadow"
               style={{ transition: "transform 0.2s", padding: "15px" }}
             >
-              {/* Mã đơn hàng */}
               <p className="mb-1">
                 <strong>Mã đơn hàng:</strong> {order._id}
               </p>
-
-              {/* Hiển thị tất cả sản phẩm */}
               {order.books && order.books.length > 0 ? (
                 order.books.map((item, index) => (
                   <Row key={index} className="align-items-center mb-2 no-gap">
@@ -243,16 +234,13 @@ const OrderListComponent = ({ orders, title }) => {
                         </span>
                       </p>
                     </Col>
-                    <Col xs={3} className="text-end">
-                      {/* Bỏ nút Đánh giá khỏi đây */}
-                    </Col>
+                    <Col xs={3} className="text-end"></Col>
                   </Row>
                 ))
               ) : (
                 <p className="text-muted mb-1">Không có thông tin sản phẩm</p>
               )}
 
-              {/* Trạng thái */}
               <p className="mb-1">
                 <strong>Trạng thái:</strong>{" "}
                 <strong>
@@ -269,14 +257,11 @@ const OrderListComponent = ({ orders, title }) => {
                   </span>
                 </strong>
               </p>
-
-              {/* Ngày đặt */}
               <p className="mb-1">
                 <strong>Ngày đặt:</strong>{" "}
                 {new Date(order.createdAt).toLocaleString("vi-VN")}
               </p>
 
-              {/* Nút hành động */}
               <div className="mt-2">
                 <Button
                   variant="primary"
@@ -328,7 +313,6 @@ const OrderListComponent = ({ orders, title }) => {
         </ListGroup>
       )}
 
-      {/* Modal hiển thị chi tiết đơn hàng */}
       <Modal
         show={showModal}
         onHide={handleCloseModal}

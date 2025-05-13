@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Pagination } from "react-bootstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom"; // Thêm useLocation, useNavigate
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import homeService from "../../../services/client/homeService";
 import bookService from "../../../services/client/bookService";
@@ -12,7 +12,7 @@ import "../../../styles/client/pages/HomePage.css";
 
 const HomePage = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Thêm useNavigate
+  const navigate = useNavigate();
   const [booksFeatured, setBooksFeatured] = useState([]);
   const [booksNew, setBooksNew] = useState([]);
   const [allBooks, setAllBooks] = useState([]);
@@ -30,7 +30,6 @@ const HomePage = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [email, setEmail] = useState("");
 
-  // Lấy trạng thái từ navigate
   useEffect(() => {
     const { state } = location;
     if (state && state.showResetModal) {
@@ -39,7 +38,6 @@ const HomePage = () => {
     }
   }, [location]);
 
-  // Lấy dữ liệu từ API
   useEffect(() => {
     const fetchHomepageData = async () => {
       try {
@@ -56,7 +54,6 @@ const HomePage = () => {
     fetchHomepageData();
   }, []);
 
-  // Lấy tất cả sản phẩm với phân trang
   useEffect(() => {
     const fetchAllBooks = async () => {
       try {
@@ -334,7 +331,7 @@ const HomePage = () => {
         onClose={handleCloseModal}
         email={email}
         authService={authService}
-        navigate={navigate} // Thêm navigate
+        navigate={navigate}
         redirectPath="/"
       />
     </div>

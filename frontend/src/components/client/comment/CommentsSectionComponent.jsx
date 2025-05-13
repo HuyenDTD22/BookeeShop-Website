@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CommentFormComponent from "./CommentFormComponent";
 import CommentItemComponent from "./CommentItemComponent";
 
-// Hàm tính tổng số bình luận (bao gồm cả bình luận con)
+// Hàm tính tổng số bình luận
 const calculateTotalComments = (comments) => {
   let total = comments.length;
   comments.forEach((comment) => {
@@ -13,7 +13,7 @@ const calculateTotalComments = (comments) => {
   return total;
 };
 
-// Hàm đệ quy để xóa bình luận con cụ thể mà không ảnh hưởng đến bình luận cha
+// Xóa bình luận
 const removeCommentFromTree = (comments, commentId, parentId) => {
   return comments.map((comment) => {
     if (comment._id === parentId && comment.children) {
@@ -32,7 +32,7 @@ const removeCommentFromTree = (comments, commentId, parentId) => {
   });
 };
 
-// Hàm đệ quy để thêm bình luận con vào đúng vị trí trong cây bình luận
+// Thêm bình luận
 const addCommentToTree = (comments, newComment) => {
   return comments.map((comment) => {
     if (comment._id === newComment.parent_id) {
@@ -71,13 +71,11 @@ const CommentsSectionComponent = ({
   const handleCommentAdded = (newComment) => {
     let updatedComments;
     if (!newComment.parent_id) {
-      // Nếu là bình luận cha (cấp 0)
       updatedComments = [newComment, ...comments];
     } else {
-      // Nếu là bình luận con (cấp 1 trở lên)
       updatedComments = addCommentToTree([...comments], newComment);
     }
-    setComments(updatedComments); // Cập nhật state để re-render
+    setComments(updatedComments);
     const newTotal = calculateTotalComments(updatedComments);
     setTotalComments(newTotal);
     onCommentsUpdated({ comments: updatedComments, total: newTotal });
@@ -86,10 +84,8 @@ const CommentsSectionComponent = ({
   const handleCommentDeleted = (commentId, parentId, isChildComment) => {
     let updatedComments;
     if (!isChildComment) {
-      // Nếu là bình luận cha, xóa toàn bộ cây bình luận
       updatedComments = comments.filter((comment) => comment._id !== commentId);
     } else {
-      // Nếu là bình luận con, chỉ xóa bình luận con cụ thể
       updatedComments = removeCommentFromTree(
         [...comments],
         commentId,

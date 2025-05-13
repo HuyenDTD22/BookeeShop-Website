@@ -59,12 +59,12 @@ const ProductsPage = () => {
   }, [currentPage]);
 
   const handleFilter = (filters) => {
-    setCurrentPage(1); // Reset về trang 1 khi lọc
+    setCurrentPage(1);
     fetchBooks(filters);
   };
 
   const handleSearch = (keyword) => {
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
     fetchBooks({ keyword });
   };
 
@@ -99,7 +99,7 @@ const ProductsPage = () => {
         setToastMessage("Xóa thành công!");
         setToastVariant("success");
         setShowToast(true);
-        fetchBooks(); // Làm mới danh sách từ backend
+        fetchBooks();
       } else {
         throw new Error(response.message || "Lỗi khi xóa sản phẩm");
       }
@@ -124,7 +124,6 @@ const ProductsPage = () => {
       return;
     }
 
-    // Hiển thị modal xác nhận
     if (
       window.confirm(
         `Bạn có chắc chắn muốn ${

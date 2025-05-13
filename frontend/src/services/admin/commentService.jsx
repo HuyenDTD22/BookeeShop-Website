@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const commentService = {
-  // Lấy danh sách bình luận của một cuốn sách
   getComments: async (bookId, params = {}) => {
     try {
       const response = await axios.get(
@@ -21,7 +20,6 @@ const commentService = {
     }
   },
 
-  // Phản hồi bình luận
   replyComment: async (commentId, replyContent) => {
     try {
       const response = await axios.post(
@@ -41,7 +39,6 @@ const commentService = {
     }
   },
 
-  // Xóa một bình luận
   deleteComment: async (commentId) => {
     try {
       const response = await axios.delete(
@@ -57,7 +54,6 @@ const commentService = {
     }
   },
 
-  // Xóa nhiều bình luận
   deleteMultipleComments: async (commentIds) => {
     try {
       const response = await axios.patch(
@@ -77,7 +73,6 @@ const commentService = {
     }
   },
 
-  // Xóa tất cả bình luận của một cuốn sách (xóa mềm)
   deleteAllComments: async (bookId) => {
     try {
       const response = await axios.patch(

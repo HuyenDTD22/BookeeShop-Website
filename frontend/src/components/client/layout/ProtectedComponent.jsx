@@ -8,7 +8,7 @@ const ProtectedComponent = ({ onAction, children }) => {
 
   const handleAction = () => {
     if (loading) {
-      return; // Đợi kiểm tra đăng nhập hoàn tất
+      return;
     }
 
     if (!isAuthenticated) {
@@ -16,7 +16,7 @@ const ProtectedComponent = ({ onAction, children }) => {
       return;
     }
 
-    onAction(); // Thực hiện hành động nếu đã đăng nhập
+    onAction();
   };
 
   return (

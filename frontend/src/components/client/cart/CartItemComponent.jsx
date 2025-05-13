@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Button, Image } from "react-bootstrap";
 import { FaTrash, FaShoppingCart } from "react-icons/fa";
-import { useNavigate } from "react-router-dom"; // Thêm useNavigate
+import { useNavigate, Link } from "react-router-dom";
 
 const CartItemComponent = ({
   item,
@@ -12,7 +12,7 @@ const CartItemComponent = ({
   isSelected,
 }) => {
   const [quantity, setQuantity] = useState(item.quantity);
-  const navigate = useNavigate(); // Khai báo useNavigate
+  const navigate = useNavigate();
 
   const handleIncrease = () => {
     const newQuantity = quantity + 1;
@@ -30,7 +30,6 @@ const CartItemComponent = ({
     onRemove(item.book_id);
   };
 
-  // Điều hướng đến /order khi nhấn Mua ngay
   const handleBuyNow = () => {
     navigate("/order", { state: { cart: [item], total: item.totalPrice } });
   };
@@ -53,26 +52,34 @@ const CartItemComponent = ({
       </td>
       <td>{index}</td>
       <td>
-        <div className="d-flex align-items-center">
-          <Image
-            src={imageSrc}
-            alt={item.bookInfo?.title || "Sản phẩm"}
-            style={{ width: "100px", marginRight: "20px" }}
-            thumbnail
-          />
-          <div>
-            <p className="mb-1">{item.bookInfo?.title || "Không có tiêu đề"}</p>
-            <p className="mb-1">
-              Giá: {(item.bookInfo?.priceNew || 0).toLocaleString("vi-VN")} VNĐ{" "}
-              <span
-                className="text-muted"
-                style={{ textDecoration: "line-through" }}
-              >
-                {(item.bookInfo?.price || 0).toLocaleString("vi-VN")} VNĐ
-              </span>
-            </p>
+        <Link
+          to={`/book/detail/${item.bookInfo?.slug}`}
+          className="text-decoration-none"
+        >
+          <div className="d-flex align-items-center">
+            <Image
+              src={imageSrc}
+              alt={item.bookInfo?.title || "Sản phẩm"}
+              style={{ width: "100px", height: "100px", marginRight: "20px" }}
+              thumbnail
+            />
+            <div>
+              <p className="mb-1" style={{ color: "#000000" }}>
+                {item.bookInfo?.title || "Không có tiêu đề"}
+              </p>
+              <p className="mb-1" style={{ color: "#000000" }}>
+                Giá: {(item.bookInfo?.priceNew || 0).toLocaleString("vi-VN")}{" "}
+                VNĐ{" "}
+                <span
+                  className="text-muted"
+                  style={{ textDecoration: "line-through" }}
+                >
+                  {(item.bookInfo?.price || 0).toLocaleString("vi-VN")} VNĐ
+                </span>
+              </p>
+            </div>
           </div>
-        </div>
+        </Link>
       </td>
       <td>
         <div className="d-flex align-items-center" style={{ gap: "10px" }}>

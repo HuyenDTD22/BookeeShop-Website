@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const userService = {
-  // Lấy danh sách khách hàng
   getUsers: async (params = {}) => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/user`, {
@@ -18,7 +17,6 @@ const userService = {
     }
   },
 
-  // Lấy chi tiết khách hàng
   getUserDetail: async (userId) => {
     try {
       const response = await axios.get(
@@ -34,7 +32,6 @@ const userService = {
     }
   },
 
-  // Cập nhật trạng thái khách hàng
   changeStatus: async (userId, status) => {
     try {
       const response = await axios.patch(
@@ -54,7 +51,6 @@ const userService = {
     }
   },
 
-  // Cập nhật trạng thái nhiều khách hàng
   changeMultiStatus: async (userIds, status) => {
     try {
       const response = await axios.patch(
@@ -74,7 +70,6 @@ const userService = {
     }
   },
 
-  // Xóa khách hàng
   deleteUser: async (userId) => {
     try {
       const response = await axios.delete(

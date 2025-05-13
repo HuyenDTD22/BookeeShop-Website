@@ -12,16 +12,13 @@ const UploadImageComponent = ({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Kiểm tra định dạng file
       const validTypes = ["image/jpeg", "image/png", "image/gif"];
       if (!validTypes.includes(file.type)) {
         alert("Vui lòng chọn file hình ảnh định dạng JPG, PNG hoặc GIF!");
         return;
       }
 
-      // Gọi callback để cập nhật file
       onFileChange(file);
-      // Cập nhật preview
       if (imagePreview) {
         URL.revokeObjectURL(imagePreview);
       }
@@ -34,7 +31,7 @@ const UploadImageComponent = ({
       URL.revokeObjectURL(imagePreview);
     }
     setImagePreview("");
-    onFileChange(null); // Xóa file
+    onFileChange(null);
   };
 
   return (

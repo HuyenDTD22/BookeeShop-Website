@@ -72,7 +72,6 @@ const UserDetailComponent = ({ show, handleClose, userId }) => {
   );
 };
 
-// Helper để chuyển trạng thái sang tiếng Việt
 const getVietnameseStatus = (status) => {
   switch (status) {
     case "active":

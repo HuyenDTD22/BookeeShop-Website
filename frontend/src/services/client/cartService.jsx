@@ -3,7 +3,6 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const cartService = {
-  // Lấy thông tin chi tiết giỏ hàng
   getCart: async () => {
     try {
       const response = await axios.get(`${API_URL}/cart`, {
@@ -16,7 +15,6 @@ const cartService = {
     }
   },
 
-  // Thêm sách vào giỏ hàng
   addToCart: async (slug, quantity) => {
     try {
       const response = await axios.post(
@@ -31,7 +29,6 @@ const cartService = {
     }
   },
 
-  // Xóa sách khỏi giỏ hàng
   deleteFromCart: async (bookId) => {
     try {
       const response = await axios.get(`${API_URL}/cart/delete/${bookId}`, {
@@ -44,11 +41,11 @@ const cartService = {
     }
   },
 
-  // Cập nhật số lượng sách trong giỏ hàng
   updateQuantity: async (bookId, quantity) => {
     try {
       const response = await axios.patch(
-        `${API_URL}/cart/update/${bookId}/${quantity}`,
+        `${API_URL}/cart/update/${bookId}`,
+        { quantity },
         { withCredentials: true }
       );
       return response.data;

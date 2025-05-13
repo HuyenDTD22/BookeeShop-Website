@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Thêm import useNavigate
+import { useNavigate } from "react-router-dom";
 import { Card, ListGroup, Spinner, Image } from "react-bootstrap";
 import { FaStar } from "react-icons/fa";
 import ratingService from "../../../services/client/ratingService";
 
 const RatedReviewsComponent = () => {
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate();
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -58,8 +58,8 @@ const RatedReviewsComponent = () => {
           <ListGroup.Item
             key={rating._id}
             className="d-flex align-items-center justify-content-between"
-            onClick={() => navigate(`/book/detail/${rating.book_id?.slug}`)} // Chuyển hướng khi nhấn
-            style={{ cursor: "pointer" }} // Thêm con trỏ để biểu thị có thể nhấn
+            onClick={() => navigate(`/book/detail/${rating.book_id?.slug}`)}
+            style={{ cursor: "pointer" }}
           >
             <div className="d-flex align-items-center">
               <Image

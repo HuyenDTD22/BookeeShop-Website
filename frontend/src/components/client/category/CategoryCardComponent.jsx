@@ -3,7 +3,6 @@ import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 const CategoryCardComponent = ({ category, link }) => {
-  // Ngăn sự kiện click lan tỏa lên Link khi click vào nút "Khám phá"
   const handleButtonClick = (e) => {
     e.stopPropagation();
   };

@@ -101,7 +101,7 @@ const CommentItemComponent = ({
   const handleCommentAdded = (newComment) => {
     onCommentAdded(newComment);
     if (newComment.parent_id) {
-      handleCloseReplyForm(newComment.parent_id); // Đóng form sau khi gửi
+      handleCloseReplyForm(newComment.parent_id);
     }
   };
 
@@ -245,7 +245,7 @@ const CommentItemComponent = ({
                 parentCommentId={item._id}
                 onCommentAdded={handleCommentAdded}
                 formKey={item._id}
-                onClose={() => handleCloseReplyForm(item._id)} // Truyền hàm đóng form
+                onClose={() => handleCloseReplyForm(item._id)}
               />
             </div>
           )}

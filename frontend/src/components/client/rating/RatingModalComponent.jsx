@@ -23,12 +23,10 @@ const RatingModalComponent = ({
       const ratingData = { book_id: bookId, rating, order_id: orderId };
       let response;
       if (existingRating) {
-        // Cập nhật đánh giá
         response = await ratingService.updateRating(existingRating._id, {
           rating,
         });
       } else {
-        // Tạo đánh giá mới
         response = await ratingService.createRating(ratingData);
       }
 

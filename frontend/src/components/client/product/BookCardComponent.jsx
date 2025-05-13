@@ -4,7 +4,6 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const BookCardComponent = ({ book, link }) => {
-  // Hàm hiển thị sao đánh giá
   const renderStars = (rating) => {
     const maxStars = 5;
     const stars = [];
@@ -26,7 +25,6 @@ const BookCardComponent = ({ book, link }) => {
     return stars;
   };
 
-  // Ngăn sự kiện click lan tỏa lên Link khi click vào các nút
   const handleButtonClick = (e) => {
     e.stopPropagation();
   };

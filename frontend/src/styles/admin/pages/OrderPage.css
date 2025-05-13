@@ -25,9 +25,6 @@
 
 .filter-label {
     display: block;
-    /* Đảm bảo label chiếm toàn bộ chiều rộng */
     text-align: center;
-    /* Căn giữa nội dung */
     width: 100%;
-    /* Đảm bảo label lấp đầy ô */
 }

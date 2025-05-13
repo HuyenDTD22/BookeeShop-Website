@@ -1,4 +1,3 @@
-import axiosInstance from "./apiService";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -6,8 +5,11 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getAccounts = async (params = {}) => {
   try {
-    const response = await axiosInstance.get(`/account`, {
+    const response = await axios.get(`${API_URL}/${ADMIN}/account`, {
       params,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     return response.data;
   } catch (error) {
@@ -18,7 +20,15 @@ export const getAccounts = async (params = {}) => {
 
 export const getAccountDetail = async (id) => {
   try {
-    const response = await axiosInstance.get(`/account/detail/${id}`);
+    const response = await axios.get(
+      `${API_URL}/${ADMIN}/account/detail/${id}`,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching account detail:", error);
@@ -28,9 +38,18 @@ export const getAccountDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axiosInstance.patch(`/account/change-status/${id}`, {
-      status,
-    });
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/account/change-status/${id}`,
+      {
+        status,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error changing status:", error);
@@ -40,11 +59,16 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axiosInstance.patch(`/account/change-multi`, {
-      ids,
-      key,
-      value,
-    });
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/account/change-multi`,
+      { ids, key, value },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error changing multi:", error);
@@ -60,7 +84,6 @@ export const createAccount = async (accountData) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          //   Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       }

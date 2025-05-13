@@ -16,7 +16,7 @@ const CommentFormComponent = ({
   onCommentAdded,
   parentCommentId,
   formKey,
-  onClose, // Thêm prop để thông báo đóng form
+  onClose,
 }) => {
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
@@ -113,7 +113,7 @@ const CommentFormComponent = ({
           fileInputRef.current.value = null;
         }
         if (parentCommentId && onClose) {
-          onClose(); // Gọi hàm để đóng form
+          onClose();
         }
       }
     } catch (error) {

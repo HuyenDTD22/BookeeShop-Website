@@ -1,11 +1,9 @@
-/* Style cho bảng */
 .product-table th,
 .product-table td {
     padding: 8px;
     vertical-align: middle !important;
 }
 
-/* Chiều rộng cố định cho các cột */
 .col-checkbox {
     width: 40px;
 }
@@ -33,7 +31,6 @@
     width: 120px;
 }
 
-/* Style cho ảnh thumbnail */
 .book-thumbnail {
     width: 100px;
     height: 150px;

@@ -7,7 +7,7 @@ import PaginationComponent from "../../../components/common/PaginationComponent"
 import "../../../styles/client/pages/HomePage.css";
 
 const CategoryBooksPage = () => {
-  const { slugCategory } = useParams(); // Lấy slugCategory từ URL
+  const { slugCategory } = useParams();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,14 +16,14 @@ const CategoryBooksPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
 
-  const limit = 10; // Số lượng item trên mỗi trang (5 sản phẩm/hàng, 2 hàng/trang)
+  const limit = 10;
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
         const response = await bookService.getCategoryBooks(slugCategory);
-        const totalItemsCount = response.newBooks.length; // Tổng số sách từ newBooks
+        const totalItemsCount = response.newBooks.length;
         const totalPagesCount = Math.ceil(totalItemsCount / limit);
 
         setBooks(
@@ -31,10 +31,10 @@ const CategoryBooksPage = () => {
             (currentPage - 1) * limit,
             currentPage * limit
           )
-        ); // Phân trang phía client
+        );
         setTotalItems(totalItemsCount);
         setTotalPages(totalPagesCount);
-        setCategoryTitle(response.category.title || "Danh mục"); // Lấy title từ category
+        setCategoryTitle(response.category.title || "Danh mục");
       } catch (err) {
         setError("Không thể tải danh sách sách. Vui lòng thử lại sau.");
       } finally {

@@ -6,19 +6,18 @@ import ReviewDetailModal from "./ReviewDetailModal";
 import ratingService from "../../../services/admin/ratingService";
 import commentService from "../../../services/admin/commentService";
 import PaginationComponent from "../../../components/common/PaginationComponent";
-import StarRatingComponent from "../../../components/common/StarRatingComponent"; // Import StarRatingComponent
+import StarRatingComponent from "../../../components/common/StarRatingComponent";
 
 const ReviewPage = () => {
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortOption, setSortOption] = useState("default"); // Mặc định là "Sắp xếp mặc định"
+  const [sortOption, setSortOption] = useState("default");
   const [selectedBook, setSelectedBook] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
-  // Lấy danh sách sách
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
@@ -35,13 +34,11 @@ const ReviewPage = () => {
     fetchBooks();
   }, [searchTerm]);
 
-  // Sắp xếp sách
   const handleSort = (sortValue) => {
     setSortOption(sortValue);
-    setCurrentPage(1); // Reset về trang 1 khi sắp xếp
+    setCurrentPage(1);
 
     if (sortValue === "default") {
-      // Khôi phục danh sách ban đầu từ books
       setFilteredBooks([...books]);
       return;
     }
@@ -61,17 +58,14 @@ const ReviewPage = () => {
     setFilteredBooks(sortedBooks);
   };
 
-  // Tìm kiếm sách
   const handleSearch = () => {
-    setCurrentPage(1); // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
   };
 
-  // Xem chi tiết sách
   const handleViewDetails = (book) => {
     setSelectedBook(book);
   };
 
-  // Xóa tất cả đánh giá và bình luận của sách (xóa mềm)
   const handleDeleteAll = async (bookId) => {
     if (
       window.confirm(
@@ -90,13 +84,11 @@ const ReviewPage = () => {
     }
   };
 
-  // Tính toán dữ liệu cho trang hiện tại
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentBooks = filteredBooks.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
 
-  // Xử lý thay đổi trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -194,7 +186,6 @@ const ReviewPage = () => {
             </tbody>
           </Table>
 
-          {/* Component phân trang */}
           <PaginationComponent
             currentPage={currentPage}
             totalPages={totalPages}

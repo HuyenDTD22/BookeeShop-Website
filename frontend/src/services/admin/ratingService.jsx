@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const ratingService = {
-  // Lấy danh sách đánh giá sao của một cuốn sách
   getRatings: async (bookId) => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/rating/${bookId}`, {
@@ -17,7 +16,6 @@ const ratingService = {
     }
   },
 
-  // Xóa tất cả đánh giá sao của một cuốn sách (xóa mềm)
   deleteAllRatings: async (bookId) => {
     try {
       const response = await axios.patch(

@@ -12,14 +12,12 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
   const [bulkStatus, setBulkStatus] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Ánh xạ type sang tiếng Việt
   const typeLabels = {
     system: "Hệ thống",
     promotion: "Khuyến mãi",
     personal: "Cá nhân",
   };
 
-  // Ánh xạ status sang tiếng Việt
   const statusLabels = {
     draft: "Nháp",
     scheduled: "Đã lên lịch",

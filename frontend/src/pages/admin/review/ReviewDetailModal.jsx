@@ -29,7 +29,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(5);
 
-  // Tính phân bố số sao
   const ratingDistribution = [0, 0, 0, 0, 0];
   ratings.forEach((rating) => {
     if (rating.rating >= 1 && rating.rating <= 5) {
@@ -41,7 +40,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     (count) => (count / totalRatings) * 100 || 0
   );
 
-  // Hàm định dạng thời gian cụ thể
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
@@ -53,7 +51,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
-  // Hàm đếm tổng số bình luận (bao gồm cha và con)
   const countTotalComments = (comments) => {
     let total = 0;
     const countRecursively = (commentList) => {
@@ -68,7 +65,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     return total;
   };
 
-  // Hàm chuyển cây bình luận thành danh sách phẳng
   const flattenComments = (comments) => {
     const flatList = [];
     const flattenRecursively = (commentList, level = 0) => {
@@ -83,7 +79,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     return flatList;
   };
 
-  // Lấy danh sách bình luận hiển thị cho trang hiện tại
   const getPaginatedComments = (comments) => {
     const flatComments = flattenComments(comments);
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -91,7 +86,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     return flatComments.slice(startIndex, endIndex);
   };
 
-  // Lấy dữ liệu đánh giá và bình luận
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -118,7 +112,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     }
   }, [book._id, show, searchTerm, ratingFilter]);
 
-  // Lọc bình luận theo thời gian
   useEffect(() => {
     let filtered = [...comments];
     if (timeFilter === "newest") {
@@ -129,18 +122,15 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     setFilteredComments(filtered);
   }, [timeFilter, comments]);
 
-  // Tìm kiếm theo tên người bình luận
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
 
-  // Thực hiện tìm kiếm khi nhấn nút
   const handleSearchSubmit = () => {
     setCurrentPage(1);
   };
 
-  // Xử lý chọn bình luận
   const handleSelectComment = (commentId) => {
     setSelectedComments((prev) =>
       prev.includes(commentId)
@@ -149,7 +139,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     );
   };
 
-  // Xóa bình luận
   const handleDeleteComment = async (commentId) => {
     if (window.confirm("Bạn có chắc muốn xóa bình luận này?")) {
       try {
@@ -167,7 +156,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     }
   };
 
-  // Xóa nhiều bình luận
   const handleDeleteMultipleComments = async () => {
     if (selectedComments.length === 0) {
       alert("Vui lòng chọn ít nhất một bình luận để xóa!");
@@ -190,7 +178,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     }
   };
 
-  // Phản hồi bình luận
   const handleReplyComment = async (commentId) => {
     if (!replyContent) {
       alert("Vui lòng nhập nội dung phản hồi!");
@@ -213,7 +200,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     }
   };
 
-  // Hàm tìm bình luận cha trong toàn bộ cây bình luận
   const findParentComment = (commentId, rootComments) => {
     for (const comment of rootComments) {
       if (comment._id === commentId) {
@@ -227,17 +213,14 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     return null;
   };
 
-  // Hàm hiển thị bình luận con
   const renderCommentTree = (comments, rootComments) => {
     return comments.map((comment) => {
       const userRating = comment.rating || 0;
 
-      // Tìm bình luận cha nếu đây là bình luận con
       const parentComment = comment.parent_id
         ? findParentComment(comment.parent_id, rootComments)
         : null;
 
-      // Hiển thị tên người phản hồi
       const displayName = comment.isAdmin
         ? "BookeeShop"
         : comment.user_id?.fullName || "Người dùng không xác định";
@@ -301,7 +284,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     });
   };
 
-  // Checkbox header
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const paginatedComments = getPaginatedComments(filteredComments);
@@ -311,7 +293,6 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
     }
   };
 
-  // Xử lý thay đổi trang
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

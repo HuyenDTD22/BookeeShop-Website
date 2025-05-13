@@ -17,10 +17,8 @@ database.connect();
 const app = express();
 const port = process.env.PORT;
 
-// Thêm dòng này để parse JSON body
 app.use(express.json());
 
-//cors
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -37,27 +35,21 @@ app.use(
   })
 );
 
-// Đảm bảo header Access-Control-Allow-Credentials được gửi
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Credentials", "true");
   next();
 });
 
-//parse application/json
 app.use(bodyParser.json());
 
 app.use(methodOverride("_method"));
 
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//Sử dụng cookie-parser
 app.use(cookieParser());
 
-//App locals variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
-//Router
 routeAdmin(app);
 route(app);
 

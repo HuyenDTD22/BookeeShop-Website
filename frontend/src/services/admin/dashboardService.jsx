@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const dashboardService = {
-  // Lấy dữ liệu dashboard
   getDashboardStats: async (params = {}) => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/dashboard/stats`, {

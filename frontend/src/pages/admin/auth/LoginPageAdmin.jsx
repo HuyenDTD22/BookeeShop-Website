@@ -13,7 +13,6 @@ const LoginPageAdmin = () => {
   const context = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Kiểm tra an toàn cho context
   if (!context) {
     console.error(
       "AuthContext is undefined. Ensure LoginPageAdmin is wrapped by AuthProvider."
@@ -44,7 +43,6 @@ const LoginPageAdmin = () => {
           }
         } catch (fetchError) {
           console.error("Failed to fetch user data:", fetchError);
-          // Nếu getAuthInfo thất bại, vẫn chuyển hướng
         }
         navigate(`/${ADMIN}/`);
       } else {

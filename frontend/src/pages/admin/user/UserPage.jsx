@@ -61,8 +61,8 @@ const UserPage = () => {
 
     try {
       await userService.changeMultiStatus(selectedUsers, newStatus);
-      setSelectedUsers([]); // Xóa danh sách đã chọn sau khi cập nhật
-      fetchUsers(); // Lấy lại danh sách khách hàng
+      setSelectedUsers([]);
+      fetchUsers();
       setError(null);
     } catch (err) {
       setError(
@@ -194,7 +194,7 @@ const UserPage = () => {
             currentPage={currentPage}
             totalPages={totalPages}
             totalItems={users.length}
-            loading={false} // Không có trạng thái loading hiện tại
+            loading={false}
             onPageChange={handlePageChange}
           />
         </>

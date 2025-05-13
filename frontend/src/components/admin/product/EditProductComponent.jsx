@@ -34,7 +34,6 @@ const EditProductComponent = ({ book, onSubmit }) => {
   });
   const [imagePreview, setImagePreview] = useState("");
 
-  // Điền dữ liệu sản phẩm vào form khi component mount
   useEffect(() => {
     if (book) {
       setFormData({
@@ -77,7 +76,6 @@ const EditProductComponent = ({ book, onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Tạo FormData để gửi dữ liệu dưới dạng multipart/form-data
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("title", formData.title);
     formDataToSubmit.append("price", formData.price);

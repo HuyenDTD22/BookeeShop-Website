@@ -26,7 +26,6 @@ const OTPVerificationPage = () => {
       if (response.code === 200) {
         setSuccess(response.message);
         localStorage.setItem("token", response.token);
-        // Truyền trạng thái qua navigate
         navigate("/", { state: { showResetModal: true, email } });
       } else {
         setError(response.message);

@@ -51,7 +51,6 @@ const CreateProductComponent = ({ onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Tạo FormData để gửi dữ liệu dưới dạng multipart/form-data
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("title", formData.title);
     formDataToSubmit.append("price", formData.price);
@@ -62,7 +61,7 @@ const CreateProductComponent = ({ onSubmit }) => {
     formDataToSubmit.append("book_category_id", formData.book_category_id);
     formDataToSubmit.append("description", formData.description);
     formDataToSubmit.append("feature", formData.feature);
-    formDataToSubmit.append("author", formData.author); // Thêm các trường mới
+    formDataToSubmit.append("author", formData.author);
     formDataToSubmit.append("supplier", formData.supplier);
     formDataToSubmit.append("publisher", formData.publisher);
     formDataToSubmit.append("publish_year", formData.publish_year);

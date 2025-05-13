@@ -21,8 +21,8 @@ import { AuthContext } from "../../../context/AuthContext";
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const AccountPage = () => {
-  const [accounts, setAccounts] = useState([]); // Toàn bộ danh sách tài khoản từ backend
-  const [displayedAccounts, setDisplayedAccounts] = useState([]); // Danh sách tài khoản hiển thị sau phân trang
+  const [accounts, setAccounts] = useState([]);
+  const [displayedAccounts, setDisplayedAccounts] = useState([]);
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -46,7 +46,6 @@ const AccountPage = () => {
         setTotalItems(allAccounts.length);
         setTotalPages(Math.ceil(allAccounts.length / limitItems) || 1);
 
-        // Phân trang ở frontend
         const startIndex = (currentPage - 1) * limitItems;
         const endIndex = startIndex + limitItems;
         setDisplayedAccounts(allAccounts.slice(startIndex, endIndex));
@@ -67,7 +66,6 @@ const AccountPage = () => {
   }, []);
 
   useEffect(() => {
-    // Cập nhật dữ liệu hiển thị khi thay đổi trang
     const startIndex = (currentPage - 1) * limitItems;
     const endIndex = startIndex + limitItems;
     setDisplayedAccounts(accounts.slice(startIndex, endIndex));
@@ -139,7 +137,6 @@ const AccountPage = () => {
       return;
     }
 
-    // Hiển thị modal xác nhận
     if (
       window.confirm(
         `Bạn có chắc chắn muốn ${

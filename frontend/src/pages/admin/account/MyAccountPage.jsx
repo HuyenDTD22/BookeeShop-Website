@@ -107,7 +107,7 @@ const MyAccountPage = () => {
       if (error.message.includes("đăng nhập")) {
         navigate(`/${ADMIN}/auth/login`);
       }
-      throw error; // Ném lỗi để MyAccountComponent xử lý
+      throw error;
     }
   };
 

@@ -2,7 +2,6 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const authService = {
-  //Đăng nhập
   login: async (email, password) => {
     try {
       const response = await axios.post(
@@ -26,7 +25,6 @@ const authService = {
     }
   },
 
-  //Đăng ký
   register: async (
     fullName,
     email,
@@ -60,7 +58,6 @@ const authService = {
     }
   },
 
-  //Quên mật khẩu
   forgotPassword: async (email) => {
     try {
       const response = await axios.post(
@@ -80,7 +77,6 @@ const authService = {
     }
   },
 
-  //xác nhận otp
   verifyOtp: async (email, otp) => {
     try {
       const response = await axios.post(
@@ -100,7 +96,6 @@ const authService = {
     }
   },
 
-  // Đổi mật khẩu
   resetPassword: async (password) => {
     try {
       const response = await axios.post(
@@ -136,24 +131,22 @@ const authService = {
     }
   },
 
-  // Lấy thông tin user
   getUserInfo: async () => {
     try {
       const response = await axios.get(`${API_URL}/user/info`, {
         withCredentials: true,
       });
-      return response.data; // Trả về trực tiếp response.data
+      return response.data;
     } catch (error) {
       console.error("Error fetching user info:", error);
-      throw error; // Ném lỗi để xử lý ở tầng trên
+      throw error;
     }
   },
 
-  //Cập nhật thông tin người dùng
   updateUserInfo: async (formData) => {
     try {
       const response = await axios.patch(`${API_URL}/user/update`, formData, {
-        headers: { "Content-Type": "multipart/form-data" }, // Sửa Content-Type
+        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
       return response.data;
@@ -163,7 +156,6 @@ const authService = {
     }
   },
 
-  // Kiểm tra trạng thái đăng nhập
   checkAuth: async () => {
     try {
       const response = await axios.get(`${API_URL}/user/info`, {

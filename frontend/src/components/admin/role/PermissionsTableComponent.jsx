@@ -3,7 +3,6 @@ import { Table, Button, Spinner } from "react-bootstrap";
 import { updatePermissions } from "../../../services/admin/roleService";
 
 const PermissionsTableComponent = ({ roles }) => {
-  // Danh sách tính năng và quyền
   const features = [
     {
       name: "Danh mục",
@@ -80,7 +79,6 @@ const PermissionsTableComponent = ({ roles }) => {
     },
   ];
 
-  // State để lưu trạng thái quyền
   const [permissionsState, setPermissionsState] = useState(
     roles.map((role) => ({
       id: role._id,
@@ -90,7 +88,6 @@ const PermissionsTableComponent = ({ roles }) => {
 
   const [loading, setLoading] = useState(false);
 
-  // Xử lý thay đổi checkbox
   const handlePermissionChange = (roleId, permissionKey) => {
     setPermissionsState((prev) =>
       prev.map((role) => {
@@ -105,7 +102,6 @@ const PermissionsTableComponent = ({ roles }) => {
     );
   };
 
-  // Xử lý cập nhật quyền
   const handleUpdatePermissions = async () => {
     setLoading(true);
     try {

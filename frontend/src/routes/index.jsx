@@ -1,4 +1,4 @@
-//client
+/* Client */
 import LoginPage from "../pages/client/auth/LoginPage";
 import HomePage from "../pages/client/home/HomePage";
 import RegisterPage from "../pages/client/auth/RegisterPage";
@@ -11,8 +11,7 @@ import OrderPage from "../pages/client/order/OrderPage";
 import CartPage from "../pages/client/cart/CartPage";
 import MyAccountPage from "../pages/client/user/MyAccountPage";
 import NotificationsPage from "../pages/client/notification/NotificationsPage";
-
-//admin
+/* Admin */
 import LoginPageAdmin from "../pages/admin/auth/LoginPageAdmin";
 import ForgotPasswordPageAdmin from "../pages/admin/auth/ForgotPasswordPageAdmin";
 import VerifyOtpPageAdmin from "../pages/admin/auth/VerifyOtpPageAdmin";
@@ -45,6 +44,7 @@ import NotificationStatsPage from "../pages/admin/notification/NotificationStats
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const routes = [
+  /* Client */
   {
     path: "/",
     page: HomePage,
@@ -97,7 +97,7 @@ export const routes = [
     page: OTPVertificationPage,
   },
 
-  //Admin
+  /* Admin */
   {
     path: `/${ADMIN}/`,
     page: DashboardPage,
@@ -115,7 +115,6 @@ export const routes = [
     path: `/${ADMIN}/auth/verify-otp`,
     page: VerifyOtpPageAdmin,
   },
-  //Product - Danh sách sản phẩm
   {
     path: `/${ADMIN}/book`,
     page: ProductsPage,
@@ -136,7 +135,6 @@ export const routes = [
     page: EditProductPage,
     isAdmin: true,
   },
-  //category - Danh mục sản phẩm
   {
     path: `/${ADMIN}/category`,
     page: CategoryPage,
@@ -152,7 +150,6 @@ export const routes = [
     page: EditCategoryPage,
     isAdmin: true,
   },
-  //Role - Nhóm quyền
   {
     path: `/${ADMIN}/role`,
     page: RolePage,
@@ -168,14 +165,11 @@ export const routes = [
     page: EditRolePage,
     isAdmin: true,
   },
-  //Permissions - Phân quyền
   {
     path: `/${ADMIN}/role/permissions`,
     page: PermissionsPage,
     isAdmin: true,
   },
-
-  //Account - Tài khoản
   {
     path: `/${ADMIN}/account`,
     page: AccountPage,
@@ -201,25 +195,21 @@ export const routes = [
     page: MyAccountPageAdmin,
     isAdmin: true,
   },
-  //Order - Quản lý đơn hàng
   {
     path: `/${ADMIN}/order`,
     page: OrderPageAdmin,
     isAdmin: true,
   },
-  //User - Quản lý khách hàng
   {
     path: `/${ADMIN}/user`,
     page: UserPage,
     isAdmin: true,
   },
-  // Review - Quản lý đánh giá
   {
     path: `/${ADMIN}/reviews`,
     page: ReviewPage,
     isAdmin: true,
   },
-  // Notification - Quản lý thông báo
   {
     path: `/${ADMIN}/notification`,
     page: NotificationsPageAdmin,

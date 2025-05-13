@@ -1,4 +1,3 @@
-import axiosInstance from "./apiService";
 import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -6,8 +5,11 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getBooks = async (params = {}) => {
   try {
-    const response = await axiosInstance.get(`/book`, {
+    const response = await axios.get(`${API_URL}/${ADMIN}/book`, {
       params,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     return response.data;
   } catch (error) {
@@ -18,7 +20,11 @@ export const getBooks = async (params = {}) => {
 
 export const getBookDetail = async (id) => {
   try {
-    const response = await axiosInstance.get(`/book/detail/${id}`);
+    const response = await axios.get(`${API_URL}/${ADMIN}/book/detail/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching book detail:", error);
@@ -28,9 +34,18 @@ export const getBookDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axiosInstance.patch(`/book/change-status/${id}`, {
-      status,
-    });
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/book/change-status/${id}`,
+      {
+        status,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error changing status:", error);
@@ -40,11 +55,16 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axiosInstance.patch(`/book/change-multi`, {
-      ids,
-      key,
-      value,
-    });
+    const response = await axios.patch(
+      `${API_URL}/${ADMIN}/book/change-multi`,
+      { ids, key, value },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error changing multi:", error);
@@ -95,7 +115,15 @@ export const editBook = async (id, bookData) => {
 
 export const deleteBook = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/book/delete/${id}`);
+    const response = await axios.delete(
+      `${API_URL}/${ADMIN}/book/delete/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error deleting book:", error);
