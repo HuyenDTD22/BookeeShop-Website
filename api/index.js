@@ -15,14 +15,18 @@ const route = require("../backend/routes/client/index.route");
 database.connect();
 
 const app = express();
-const port = process.env.PORT;
+// const port = process.env.PORT;
 
 app.use(express.json());
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = ["http://localhost:3001", "http://localhost:3000"];
+      const allowedOrigins = [
+        "http://localhost:3001",
+        "http://localhost:3000",
+        "https://bookee-shop-website.vercel.app",
+      ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
