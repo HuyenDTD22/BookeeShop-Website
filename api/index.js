@@ -6,11 +6,11 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const database = require("./config/database");
-const systemConfig = require("./config/system");
+const database = require("../backend/config/database");
+const systemConfig = require("../backend/config/system");
 
-const routeAdmin = require("./routes/admin/index.route");
-const route = require("./routes/client/index.route");
+const routeAdmin = require("../backend/routes/admin/index.route");
+const route = require("../backend/routes/client/index.route");
 
 database.connect();
 
@@ -53,6 +53,6 @@ app.locals.prefixAdmin = systemConfig.prefixAdmin;
 routeAdmin(app);
 route(app);
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`App listening on port ${port}`);
+// });
