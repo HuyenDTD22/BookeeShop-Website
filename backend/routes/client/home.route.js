@@ -5,4 +5,6 @@ const controller = require("../../controllers/client/home.controller");
 
 router.get("/", controller.index);
 
+router.get("/search", controller.search);
+
 module.exports = router;

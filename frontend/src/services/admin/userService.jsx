@@ -21,9 +21,12 @@ const userService = {
   // Lấy chi tiết khách hàng
   getUserDetail: async (userId) => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/user/${userId}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_URL}/${ADMIN}/user/detail/${userId}`,
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching user detail ${userId}:`, error);
@@ -75,7 +78,7 @@ const userService = {
   deleteUser: async (userId) => {
     try {
       const response = await axios.delete(
-        `${API_URL}/${ADMIN}/user/${userId}`,
+        `${API_URL}/${ADMIN}/user/delete/${userId}`,
         {
           withCredentials: true,
         }

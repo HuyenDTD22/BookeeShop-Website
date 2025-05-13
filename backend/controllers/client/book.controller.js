@@ -19,10 +19,6 @@ module.exports.index = async (req, res) => {
 
     newBooks = await bookHelper.soldCountBooks(books);
 
-    // const newBooks = newBookss.map(async (book) => {
-    //   await bookHelper.soldCountBook(book);
-    // });
-
     res.json({
       code: 200,
       books: newBooks,
@@ -35,7 +31,7 @@ module.exports.index = async (req, res) => {
   }
 };
 
-// [GET] /book/:slugCategory - Lấy ra các sản phẩm thuộc danh mục nào
+// [GET] /book/:slugCategory - Lấy ra các sản phẩm thuộc danh mục
 module.exports.category = async (req, res) => {
   try {
     const category = await Category.findOne({
@@ -44,7 +40,6 @@ module.exports.category = async (req, res) => {
       deleted: false,
     });
 
-    //Hàm lấy ra các danh mục con
     const lisSubcategory = await categoryHelper.getSubCategory(category.id);
 
     const lisSubcategoryId = lisSubcategory.map((item) => item.id);

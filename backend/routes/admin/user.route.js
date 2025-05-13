@@ -1,20 +1,21 @@
 const express = require("express");
 const router = express.Router();
+
 const controller = require("../../controllers/admin/user.controller");
+const userValidate = require("../../validates/admin/user.validate");
 
-// API để lấy danh sách khách hàng (hỗ trợ tìm kiếm, lọc)
-router.get("/", controller.index);
+router.get("/", userValidate.index, controller.index);
 
-// API để lấy chi tiết một khách hàng
-router.get("/:id", controller.detail);
+router.get("/detail/:id", userValidate.detail, controller.detail);
 
-// API để cập nhật trạng thái khách hàng
-router.patch("/change-status/:id", controller.changeStatus);
+router.patch(
+  "/change-status/:id",
+  userValidate.changeStatus,
+  controller.changeStatus
+);
 
-// API để thay đổi trạng thái của nhiều khách hàng cùng lúc
-router.patch("/change-multi", controller.changeMulti);
+router.patch("/change-multi", userValidate.changeMulti, controller.changeMulti);
 
-// API để xóa khách hàng (xóa mềm)
-router.delete("/:id", controller.delete);
+router.delete("/delete/:id", userValidate.delete, controller.delete);
 
 module.exports = router;

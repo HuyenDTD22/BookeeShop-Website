@@ -6,13 +6,13 @@ const Rating = require("../../models/rating.model");
 const Account = require("../../models/account.model");
 const Notification = require("../../models/notification.model");
 
-// Hàm kiểm tra ngày hợp lệ
 const isValidDate = (dateString) => {
   const date = new Date(dateString);
   return !isNaN(date.getTime());
 };
 
-exports.getDashboardStats = async (req, res) => {
+// [GET] /admin/dashboard/stats - Thống kê
+exports.index = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
 
@@ -39,8 +39,7 @@ exports.getDashboardStats = async (req, res) => {
       notificationMatch.createdAt = queryDate;
     }
 
-    // 1. Thẻ chỉ số chính
-    // Doanh thu (tổng totalPrice của đơn hàng completed)
+    // Doanh thu
     const revenue = await Order.aggregate([
       { $match: { ...orderMatch, status: "completed" } },
       { $group: { _id: null, total: { $sum: "$totalPrice" } } },
@@ -61,7 +60,7 @@ exports.getDashboardStats = async (req, res) => {
       console.error("Error counting users:", error.message);
     }
 
-    // Số đơn hàng (tổng và theo trạng thái)
+    // Số đơn hàng
     const orderStats = await Order.aggregate([
       { $match: orderMatch },
       { $group: { _id: "$status", count: { $sum: 1 } } },
@@ -78,7 +77,7 @@ exports.getDashboardStats = async (req, res) => {
       orderStatusBreakdown[stat._id] = stat.count;
     });
 
-    // Số sách (tổng và còn hàng)
+    // Số sách
     const totalBooks = await Book.countDocuments({ deleted: false });
     const inStockBooks = await Book.countDocuments({
       deleted: false,
@@ -91,7 +90,7 @@ exports.getDashboardStats = async (req, res) => {
     // Số đánh giá
     const totalRatings = await Rating.countDocuments({ deleted: false });
 
-    // Số nhân viên (admin)
+    // Số nhân viên
     const totalAdmins = await Account.countDocuments({
       deleted: false,
       role_id: { $exists: true },
@@ -127,7 +126,6 @@ exports.getDashboardStats = async (req, res) => {
     }
     const readRate = totalTarget > 0 ? (totalRead / totalTarget) * 100 : 0;
 
-    // 2. Biểu đồ
     // Doanh thu theo ngày
     const revenueChart = await Order.aggregate([
       { $match: { ...orderMatch, status: "completed" } },
@@ -206,7 +204,6 @@ exports.getDashboardStats = async (req, res) => {
       { $limit: 5 },
     ]);
 
-    // 3. Cảnh báo
     // Đơn hàng pending quá 24 giờ
     const pendingOrders = await Order.countDocuments({
       status: "pending",
@@ -253,7 +250,7 @@ exports.getDashboardStats = async (req, res) => {
       console.error("Error counting low read notifications:", error.message);
     }
 
-    // 4. Thông báo gần đây
+    // Thông báo gần đây
     let recentNotifications = [];
     try {
       recentNotifications = await Notification.find({
@@ -266,7 +263,6 @@ exports.getDashboardStats = async (req, res) => {
       console.error("Error fetching recent notifications:", error.message);
     }
 
-    // Response
     res.status(200).json({
       success: true,
       data: {

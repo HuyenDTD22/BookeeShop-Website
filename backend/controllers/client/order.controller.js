@@ -4,8 +4,9 @@ const Book = require("../../models/book.model");
 const Order = require("../../models/order.model");
 
 const bookHelper = require("../../helpers/book");
+const orderHelper = require("../../helpers/order");
 
-// [GET] /order/
+// [GET] /order/ - Lấy ra tất cả các đơn hàng
 module.exports.index = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -52,133 +53,16 @@ module.exports.index = async (req, res) => {
   }
 };
 
-// [POST] /order/create
+// [POST] /order/create - Tạo đơn hàng
 module.exports.create = async (req, res) => {
-  try {
-    const { fullName, phone, address } = req.body;
-    const user_id = req.user._id;
-
-    if (!fullName || !phone || !address) {
-      return res.json({
-        code: 400,
-        message: "fullName, phone và address là bắt buộc",
-      });
-    }
-
-    const cart = await Cart.findOne({ user_id: user_id }).lean();
-
-    if (!cart) {
-      return res.json({
-        code: 404,
-        message: "Không tìm thấy giỏ hàng",
-      });
-    }
-
-    if (!cart.books || cart.books.length === 0) {
-      return res.json({
-        code: 400,
-        message: "Giỏ hàng của bạn đang trống",
-      });
-    }
-
-    let books = [];
-    let totalPrice = 0;
-    for (const item of cart.books) {
-      const bookInfo = await Book.findOne({ _id: item.book_id }).lean();
-
-      if (!bookInfo) {
-        return res.json({
-          code: 404,
-          message: `Không tìm thấy sách với ID: ${item.book_id}`,
-        });
-      }
-
-      bookHelper.priceNewBook(bookInfo);
-      const bookTotalPrice = Number(bookInfo.priceNew) * item.quantity;
-
-      const objectBook = {
-        book_id: item.book_id,
-        price: bookInfo.price,
-        discountPercentage: bookInfo.discountPercentage || 0,
-        quantity: item.quantity,
-      };
-
-      books.push(objectBook);
-      totalPrice += bookTotalPrice;
-    }
-
-    const objectOrder = {
-      user_id,
-      userInfo: {
-        fullName,
-        phone,
-        address,
-      },
-      books,
-      totalPrice,
-      status: "pending",
-    };
-
-    const order = new Order(objectOrder);
-    await order.save();
-
-    // Xóa giỏ hàng sau khi đặt hàng
-    await Cart.updateOne({ user_id: user_id }, { books: [] });
-
-    const populatedOrder = await Order.findById(order._id)
-      .populate("user_id", "fullName email")
-      .populate("books.book_id", "title");
-
-    res.json({
-      code: 200,
-      message: "Thanh toán thành công!",
-      order: populatedOrder,
-    });
-  } catch (error) {
-    res.json({
-      code: 400,
-      message: error.message || "Đã xảy ra lỗi",
-    });
-  }
-};
-
-// [POST] /order/buy-now
-module.exports.buyNow = async (req, res) => {
   try {
     const { items, fullName, phone, address, paymentMethod } = req.body;
     const user_id = req.user._id;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.json({
-        code: 400,
-        message: "Danh sách items là bắt buộc và phải là mảng không rỗng",
-      });
-    }
-    if (!fullName || !phone || !address || !paymentMethod) {
-      return res.json({
-        code: 400,
-        message: "fullName, phone, address và paymentMethod là bắt buộc",
-      });
-    }
 
     let books = [];
     let totalPrice = 0;
     for (const item of items) {
       const { book_id, quantity } = item;
-
-      if (!mongoose.Types.ObjectId.isValid(book_id)) {
-        return res.json({
-          code: 400,
-          message: `book_id ${book_id} không hợp lệ`,
-        });
-      }
-
-      if (!quantity || quantity <= 0) {
-        return res.json({
-          code: 400,
-          message: `Số lượng cho book_id ${book_id} phải lớn hơn 0`,
-        });
-      }
 
       const book = await Book.findOne({ _id: book_id }).lean();
       if (!book) {
@@ -216,6 +100,17 @@ module.exports.buyNow = async (req, res) => {
     const order = new Order(objectOrder);
     await order.save();
 
+    const notification = await orderHelper.ArraycreateOrderStatusNotification(
+      order,
+      "pending",
+      user_id
+    );
+    if (!notification) {
+      console.warn(
+        `Không tạo được thông báo cho đơn hàng ${order._id}, trạng thái pending`
+      );
+    }
+
     const populatedOrder = await Order.findById(order._id)
       .populate("user_id", "fullName email")
       .populate("books.book_id", "title");
@@ -233,18 +128,11 @@ module.exports.buyNow = async (req, res) => {
   }
 };
 
-// [GET] /order/success/:orderId
+// [GET] /order/success/:orderId - Đặt hàng thành công
 module.exports.success = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const user_id = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.json({
-        code: 400,
-        message: "orderId không hợp lệ",
-      });
-    }
 
     const order = await Order.findOne({ _id: orderId })
       .populate("user_id", "fullName email")
@@ -282,7 +170,7 @@ module.exports.success = async (req, res) => {
   }
 };
 
-// [GET] /order/my-orders
+// [GET] /order/my-orders - Lấy ra tất cả các đơn hàng
 module.exports.getMyOrders = async (req, res) => {
   try {
     const user_id = req.user._id;
@@ -309,18 +197,11 @@ module.exports.getMyOrders = async (req, res) => {
   }
 };
 
-// [GET] /order/detail/:orderId
+// [GET] /order/detail/:orderId - Lấy ra thông tin chi tiết 1 đơn hàng
 module.exports.detail = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const user_id = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.json({
-        code: 400,
-        message: "orderId không hợp lệ",
-      });
-    }
 
     const order = await Order.findById(orderId)
       .populate("user_id", "fullName email")
@@ -370,18 +251,11 @@ module.exports.detail = async (req, res) => {
   }
 };
 
-// [PATCH] /order/cancel/:orderId
+// [PATCH] /order/cancel/:orderId - Huỷ 1 đơn hàng
 module.exports.cancel = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const user_id = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.json({
-        code: 400,
-        message: "orderId không hợp lệ",
-      });
-    }
 
     const order = await Order.findById(orderId);
     if (!order) {

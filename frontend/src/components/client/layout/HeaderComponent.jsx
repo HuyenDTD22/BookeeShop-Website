@@ -24,7 +24,8 @@ import {
 } from "react-icons/fa";
 import "../../../styles/client/component/DefaultComponent.css";
 import authService from "../../../services/client/authService";
-import { useNavigate } from "react-router-dom";
+import homeService from "../../../services/client/homeService";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import CartItemCountComponent from "../cart/CartItemCountComponent";
 
 const HeaderComponent = ({
@@ -36,7 +37,10 @@ const HeaderComponent = ({
   const [user, setUser] = useState(null);
   const [cartItemCount, setCartItemCount] = useState(0);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation(); // Theo dõi thay đổi route
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -54,6 +58,46 @@ const HeaderComponent = ({
     };
     fetchUserInfo();
   }, [setNotificationCount]);
+
+  // Hàm tìm kiếm sách
+  const handleSearch = async (keyword) => {
+    try {
+      const response = await homeService.searchBooks(keyword);
+      if (response.code === 200) {
+        setSearchResults(response.books);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Search failed:", error);
+      setSearchResults([]);
+    }
+  };
+
+  // Gọi API tìm kiếm khi người dùng gõ từ khóa
+  useEffect(() => {
+    if (searchKeyword.trim() === "") {
+      setSearchResults([]);
+      return;
+    }
+
+    const debounce = setTimeout(() => {
+      handleSearch(searchKeyword);
+    }, 300); // Debounce 300ms để tránh gọi API quá nhiều khi người dùng gõ nhanh
+
+    return () => clearTimeout(debounce); // Dọn dẹp timeout khi component unmount hoặc keyword thay đổi
+  }, [searchKeyword]);
+
+  // Ẩn kết quả khi navigate đến trang chi tiết
+  useEffect(() => {
+    setSearchResults([]); // Ẩn kết quả khi route thay đổi (khi click vào Link)
+  }, [location]);
+
+  // Xử lý khi nhấn Enter hoặc nút tìm kiếm
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    handleSearch(searchKeyword);
+  };
 
   const handleLogout = async () => {
     try {
@@ -136,17 +180,51 @@ const HeaderComponent = ({
               {renderCategoryMenu(categories)}
             </NavDropdown>
           </Nav>
-          <Form className="d-flex search-form">
+          <Form className="d-flex search-form" onSubmit={handleSearchSubmit}>
             <div className="search-input-container">
               <FormControl
-                type="search"
+                type="text"
                 placeholder="Tìm kiếm sách..."
                 className="search-input"
                 aria-label="Search"
+                value={searchKeyword}
+                onChange={(e) => {
+                  const newValue = e.target.value;
+                  setSearchKeyword(newValue);
+                  if (newValue === "") {
+                    setSearchResults([]); // Ẩn kết quả khi xóa từ khóa (bao gồm nhấn "x")
+                  }
+                }}
               />
-              <Button variant="link" className="search-button">
+              <Button variant="link" className="search-button" type="submit">
                 <FaSearch />
               </Button>
+              {searchResults.length > 0 && (
+                <div className="search-results">
+                  {searchResults.map((book) => (
+                    <Link
+                      to={`/book/detail/${book.slug}`}
+                      key={book._id}
+                      className="search-result-item"
+                    >
+                      <img
+                        src={book.thumbnail}
+                        alt={book.title}
+                        className="search-result-image"
+                      />
+                      <div className="search-result-info">
+                        <div className="search-result-title">{book.title}</div>
+                        <div className="search-result-author">
+                          Tác giả: {book.author || "Không có thông tin"}
+                        </div>
+                        <div className="search-result-supplier">
+                          Nhà sản xuất: {book.supplier || "Không có thông tin"}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </Form>
           <Nav className="ms-auto user-actions" style={{ marginRight: "50px" }}>

@@ -21,9 +21,12 @@ const orderService = {
   // Lấy chi tiết đơn hàng
   getOrderDetail: async (orderId) => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/order/${orderId}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_URL}/${ADMIN}/order/detail/${orderId}`,
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching order detail ${orderId}:`, error);
@@ -75,7 +78,7 @@ const orderService = {
   deleteOrder: async (orderId) => {
     try {
       const response = await axios.delete(
-        `${API_URL}/${ADMIN}/order/${orderId}`,
+        `${API_URL}/${ADMIN}/order/delete/${orderId}`,
         {
           withCredentials: true,
         }

@@ -1,47 +1,63 @@
 const express = require("express");
 const router = express.Router();
+
+const notificationValidate = require("../../validates/admin/notification.validate");
 const notificationController = require("../../controllers/admin/notification.controller");
 
-// Lấy danh sách tất cả thông báo
-router.get("/", notificationController.getAllNotifications);
+router.get("/", notificationController.index);
 
-// Lấy chi tiết một thông báo
-router.get("/:id", notificationController.getNotificationById);
+router.get(
+  "/detail/:id",
+  notificationValidate.detail,
+  notificationController.detail
+);
 
-// Tạo thông báo mới
-router.post("/", notificationController.createNotification);
+router.post(
+  "/create",
+  notificationValidate.create,
+  notificationController.create
+);
 
-// Cập nhật thông báo
-router.put("/:id", notificationController.updateNotification);
+router.put("/edit/:id", notificationValidate.edit, notificationController.edit);
 
-// Cập nhật trạng thái của một thông báo
-router.patch("/:id", notificationController.updateNotificationStatus);
-
-// Cập nhật trạng thái của nhiều thông báo
 router.patch(
   "/change-status/:id",
-  notificationController.updateMultipleStatuses
+  notificationValidate.changeStatus,
+  notificationController.changeStatus
 );
 
-// Gửi thông báo ngay lập tức
-router.post("/send/:id", notificationController.sendNotification);
-
-// Lên lịch gửi thông báo
-router.post("/schedule/:id", notificationController.scheduleNotification);
-
-// Xóa nhiều thông báo
-router.delete("/:id", notificationController.deleteNotification);
-
-// Xóa nhiều thông báo
-router.delete(
+router.patch(
   "/change-multi",
-  notificationController.deleteMultipleNotifications
+  notificationValidate.changeMulti,
+  notificationController.changeMulti
 );
 
-// Lấy danh sách người dùng đã đọc thông báo
-router.get("/read/:id", notificationController.getReadByUsers);
+router.post(
+  "/send/:id",
+  notificationValidate.send,
+  notificationController.send
+);
 
-// Xem thống kê thông báo
-router.get("/stats", notificationController.getNotificationStats);
+router.post(
+  "/schedule/:id",
+  notificationValidate.schedule,
+  notificationController.schedule
+);
+
+router.delete(
+  "/delete/:id",
+  notificationValidate.delete,
+  notificationController.delete
+);
+
+router.delete(
+  "/delete-multi",
+  notificationValidate.deleteMulti,
+  notificationController.deleteMulti
+);
+
+router.get("/read/:id", notificationValidate.read, notificationController.read);
+
+router.get("/stats", notificationController.stats);
 
 module.exports = router;

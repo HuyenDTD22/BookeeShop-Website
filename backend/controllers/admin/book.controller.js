@@ -4,7 +4,7 @@ const Comment = require("../../models/comment.model");
 
 const searchHelper = require("../../helpers/search");
 
-// [GET] /admin/book - lấy tất cả sách
+// [GET] /admin/book/ - Lấy tất cả sách
 module.exports.index = async (req, res) => {
   try {
     let find = {
@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
       find.status = req.query.status;
     }
 
-    //Tính năng tìm kiếm sách
+    //Search
     let objectSearch = searchHelper(req.query);
 
     if (req.query.keyword) {
@@ -29,27 +29,22 @@ module.exports.index = async (req, res) => {
     if (req.query.sortKey && req.query.sortValue) {
       sort[req.query.sortKey] = req.query.sortValue;
     }
-    //End Sort
 
-    // Lấy danh sách sách
     const books = await Book.find(find).sort(sort).lean();
 
-    // Lấy số lượng bình luận cho từng sách
     const bookIds = books.map((book) => book._id);
     const commentCounts = await Comment.aggregate([
       { $match: { book_id: { $in: bookIds }, deleted: false } },
       { $group: { _id: "$book_id", commentCount: { $sum: 1 } } },
     ]);
 
-    // Tạo map để gán số lượng bình luận
     const commentCountMap = {};
     commentCounts.forEach((item) => {
       commentCountMap[item._id.toString()] = item.commentCount;
     });
 
-    //Gán commentCount cho từng sách trong mảng books
     books.forEach((book, index) => {
-      book.commentCount = commentCountMap[book._id.toString()] || 0; // Gán số lượng bình luận
+      book.commentCount = commentCountMap[book._id.toString()] || 0;
     });
 
     res.json({
@@ -64,7 +59,7 @@ module.exports.index = async (req, res) => {
   }
 };
 
-// [GET] /book/detail/:id - lấy ra chi tiết sách
+// [GET] /book/detail/:id - Lấy ra chi tiết 1 sách
 module.exports.detail = async (req, res) => {
   try {
     const id = req.params.id;
@@ -89,18 +84,12 @@ module.exports.changeStatus = async (req, res) => {
     const id = req.params.id;
     const status = req.body.status;
 
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
-
     await Book.updateOne(
       {
         _id: id,
       },
       {
         status: status,
-        // $push: { updatedBy: updatedBy },
       }
     );
 
@@ -116,15 +105,10 @@ module.exports.changeStatus = async (req, res) => {
   }
 };
 
-// [PATCH] /admin/book/change-multi - Thay đổi trạng thái nhiều sách
+// [PATCH] /admin/book/change-multi - Thay đổi trạng thái, xoá nhiều sách
 module.exports.changeMulti = async (req, res) => {
   try {
     const { ids, key, value } = req.body;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     switch (key) {
       case "status":
@@ -136,7 +120,6 @@ module.exports.changeMulti = async (req, res) => {
           },
           {
             status: value,
-            // $push: { updatedBy: updatedBy },
           }
         );
         res.json({
@@ -188,12 +171,9 @@ module.exports.create = async (req, res) => {
       req.body.position = parseInt(req.body.position);
     }
 
-    //Lưu logs lịch sử thay đổi sản phẩm
     req.body.createdBy = {
       account_id: res.locals.user.id,
     };
-
-    // Kiểm tra parent_id
 
     const book = new Book(req.body);
 
@@ -201,7 +181,7 @@ module.exports.create = async (req, res) => {
 
     res.json({
       code: 200,
-      message: "Tạo thành công!",
+      message: "Tạo sách thành công!",
       data: data,
     });
   } catch (error) {
@@ -212,7 +192,7 @@ module.exports.create = async (req, res) => {
   }
 };
 
-// [PATCH] /book/edit/:id - Chỉnh sửa sách
+// [PATCH] /book/edit/:id - Chỉnh sửa 1 sách
 module.exports.edit = async (req, res) => {
   try {
     const id = req.params.id;
@@ -222,11 +202,7 @@ module.exports.edit = async (req, res) => {
     req.body.stock = parseInt(req.body.stock);
     req.body.position = parseInt(req.body.position);
 
-    await Book.updateOne(
-      { _id: id },
-      req.body
-      //   { ...req.body, $push: { updatedBy: updatedBy } }
-    );
+    await Book.updateOne({ _id: id }, req.body);
 
     res.json({
       code: 200,
@@ -240,7 +216,7 @@ module.exports.edit = async (req, res) => {
   }
 };
 
-// [DELETE] /book/delete/:id
+// [DELETE] /book/delete/:id - Xoá 1 sách
 module.exports.delete = async (req, res) => {
   try {
     const id = req.params.id;

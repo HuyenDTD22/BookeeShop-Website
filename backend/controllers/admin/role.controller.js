@@ -2,14 +2,13 @@ const Role = require("../../models/role.model");
 
 const systemConfig = require("../../config/system");
 
-//[GET] /admin/role
+//[GET] /admin/role - Lấy ra tất cả các nhóm quyền
 module.exports.index = async (req, res) => {
   try {
     let find = {
       deleted: false,
     };
 
-    //Bộ lọc trạng thái
     if (req.query.status) {
       find.status = req.query.status;
     }
@@ -28,7 +27,7 @@ module.exports.index = async (req, res) => {
   }
 };
 
-// [GET] /admin/role/detail/:id - lấy ra chi tiết sách
+// [GET] /admin/role/detail/:id - lấy ra chi tiết 1 nhóm quyền
 module.exports.detail = async (req, res) => {
   try {
     const id = req.params.id;
@@ -53,18 +52,12 @@ module.exports.changeStatus = async (req, res) => {
     const id = req.params.id;
     const status = req.body.status;
 
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
-
     await Role.updateOne(
       {
         _id: id,
       },
       {
         status: status,
-        // $push: { updatedBy: updatedBy },
       }
     );
 
@@ -80,15 +73,10 @@ module.exports.changeStatus = async (req, res) => {
   }
 };
 
-// [PATCH] /admin/book/change-multi - Thay đổi trạng thái nhiều sách
+// [PATCH] /admin/book/change-multi - Thay đổi trạng thái, xoá nhiều nhóm quyền
 module.exports.changeMulti = async (req, res) => {
   try {
     const { ids, key, value } = req.body;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     switch (key) {
       case "status":
@@ -100,7 +88,6 @@ module.exports.changeMulti = async (req, res) => {
           },
           {
             status: value,
-            // $push: { updatedBy: updatedBy },
           }
         );
         res.json({
@@ -147,6 +134,10 @@ module.exports.create = async (req, res) => {
 
     const role = new Role(req.body);
 
+    req.body.createdBy = {
+      account_id: res.locals.user.id,
+    };
+
     await role.save();
 
     res.json({
@@ -183,7 +174,6 @@ module.exports.edit = async (req, res) => {
 // [PATCH] /admin/role/permissions - Xây dựng nhóm phân quyền
 module.exports.permissions = async (req, res) => {
   try {
-    // const permissions = JSON.parse(req.body.permissions);
     const permissions = req.body.permissions;
 
     for (const item of permissions) {
@@ -202,7 +192,7 @@ module.exports.permissions = async (req, res) => {
   }
 };
 
-// [DELETE] /admin/role/delete/:id
+// [DELETE] /admin/role/delete/:id - Xoá 1 nhóm quyền
 module.exports.delete = async (req, res) => {
   try {
     const id = req.params.id;

@@ -4,7 +4,6 @@ const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const notificationService = {
-  // Lấy danh sách tất cả thông báo
   getAllNotifications: async () => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/notification`, {
@@ -17,11 +16,10 @@ const notificationService = {
     }
   },
 
-  // Lấy chi tiết một thông báo
   getNotificationById: async (id) => {
     try {
       const response = await axios.get(
-        `${API_URL}/${ADMIN}/notification/${id}`,
+        `${API_URL}/${ADMIN}/notification/detail/${id}`,
         {
           withCredentials: true,
         }
@@ -33,11 +31,10 @@ const notificationService = {
     }
   },
 
-  // Tạo thông báo mới
   createNotification: async (data) => {
     try {
       const response = await axios.post(
-        `${API_URL}/${ADMIN}/notification`,
+        `${API_URL}/${ADMIN}/notification/create`,
         data,
         {
           headers: {
@@ -53,11 +50,10 @@ const notificationService = {
     }
   },
 
-  // Cập nhật thông báo
   updateNotification: async (id, data) => {
     try {
       const response = await axios.put(
-        `${API_URL}/${ADMIN}/notification/${id}`,
+        `${API_URL}/${ADMIN}/notification/edit/${id}`,
         data,
         {
           headers: {
@@ -73,11 +69,10 @@ const notificationService = {
     }
   },
 
-  // Cập nhật trạng thái một thông báo
   updateNotificationStatus: async (id, status) => {
     try {
       const response = await axios.patch(
-        `${API_URL}/${ADMIN}/notification/${id}`,
+        `${API_URL}/${ADMIN}/notification/change-status/${id}`,
         { status },
         {
           headers: {
@@ -93,7 +88,6 @@ const notificationService = {
     }
   },
 
-  // Cập nhật trạng thái nhiều thông báo
   updateMultipleStatuses: async (ids, status) => {
     try {
       const response = await axios.patch(
@@ -113,7 +107,6 @@ const notificationService = {
     }
   },
 
-  // Gửi thông báo ngay lập tức
   sendNotification: async (id) => {
     try {
       const response = await axios.post(
@@ -133,7 +126,6 @@ const notificationService = {
     }
   },
 
-  // Lên lịch gửi thông báo
   scheduleNotification: async (id, sendAt) => {
     try {
       const response = await axios.post(
@@ -153,11 +145,10 @@ const notificationService = {
     }
   },
 
-  // Xóa một thông báo
   deleteNotification: async (id) => {
     try {
       const response = await axios.delete(
-        `${API_URL}/${ADMIN}/notification/${id}`,
+        `${API_URL}/${ADMIN}/notification/delete/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -172,11 +163,10 @@ const notificationService = {
     }
   },
 
-  // Xóa nhiều thông báo
   deleteMultipleNotifications: async (ids) => {
     try {
       const response = await axios.delete(
-        `${API_URL}/${ADMIN}/notification/change-multi`,
+        `${API_URL}/${ADMIN}/notification/delete-multi`,
         {
           data: { ids },
           headers: {
@@ -192,7 +182,6 @@ const notificationService = {
     }
   },
 
-  // Lấy danh sách người dùng đã đọc thông báo
   getReadByUsers: async (id) => {
     try {
       const response = await axios.get(
@@ -208,7 +197,6 @@ const notificationService = {
     }
   },
 
-  // Lấy thống kê thông báo
   getNotificationStats: async () => {
     try {
       const response = await axios.get(

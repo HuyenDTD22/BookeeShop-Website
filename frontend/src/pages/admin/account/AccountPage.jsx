@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import {
   Container,
   Button,
-  Pagination,
   Toast,
   ToastContainer,
   Spinner,
@@ -22,7 +21,8 @@ import { AuthContext } from "../../../context/AuthContext";
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const AccountPage = () => {
-  const [accounts, setAccounts] = useState([]);
+  const [accounts, setAccounts] = useState([]); // Toàn bộ danh sách tài khoản từ backend
+  const [displayedAccounts, setDisplayedAccounts] = useState([]); // Danh sách tài khoản hiển thị sau phân trang
   const [selectedAccounts, setSelectedAccounts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -39,14 +39,22 @@ const AccountPage = () => {
   const fetchAccounts = async (params = {}) => {
     try {
       setLoading(true);
-      const response = await getAccounts({ ...params, page: currentPage });
+      const response = await getAccounts(params);
       if (response.code === 200) {
-        setAccounts(response.accounts);
-        setTotalPages(response.pagination?.totalPages || 1);
-        setTotalItems(response.pagination?.totalItems || 0);
+        const allAccounts = response.accounts;
+        setAccounts(allAccounts);
+        setTotalItems(allAccounts.length);
+        setTotalPages(Math.ceil(allAccounts.length / limitItems) || 1);
+
+        // Phân trang ở frontend
+        const startIndex = (currentPage - 1) * limitItems;
+        const endIndex = startIndex + limitItems;
+        setDisplayedAccounts(allAccounts.slice(startIndex, endIndex));
       }
     } catch (error) {
-      setToastMessage(error.message || "Đã xảy ra lỗi khi tải danh sách sách!");
+      setToastMessage(
+        error.message || "Đã xảy ra lỗi khi tải danh sách tài khoản!"
+      );
       setToastVariant("danger");
       setShowToast(true);
     } finally {
@@ -56,7 +64,14 @@ const AccountPage = () => {
 
   useEffect(() => {
     fetchAccounts();
-  }, [currentPage]);
+  }, []);
+
+  useEffect(() => {
+    // Cập nhật dữ liệu hiển thị khi thay đổi trang
+    const startIndex = (currentPage - 1) * limitItems;
+    const endIndex = startIndex + limitItems;
+    setDisplayedAccounts(accounts.slice(startIndex, endIndex));
+  }, [currentPage, accounts]);
 
   const handleFilter = (filters) => {
     setCurrentPage(1);
@@ -101,10 +116,10 @@ const AccountPage = () => {
         setShowToast(true);
         fetchAccounts();
       } else {
-        throw new Error(response.message || "Lỗi khi xóa sản phẩm");
+        throw new Error(response.message || "Lỗi khi xóa tài khoản");
       }
     } catch (error) {
-      setToastMessage(error.message || "Đã xảy ra lỗi khi xóa sản phẩm!");
+      setToastMessage(error.message || "Đã xảy ra lỗi khi xóa tài khoản!");
       setToastVariant("danger");
       setShowToast(true);
     }
@@ -117,7 +132,7 @@ const AccountPage = () => {
   const handleChangeMulti = async (key, value) => {
     if (!selectedAccounts || selectedAccounts.length === 0) {
       setToastMessage(
-        "Vui lòng chọn ít nhất một sản phẩm để thực hiện hành động!"
+        "Vui lòng chọn ít nhất một tài khoản để thực hiện hành động!"
       );
       setToastVariant("warning");
       setShowToast(true);
@@ -219,27 +234,49 @@ const AccountPage = () => {
         <div className="text-center my-4">
           <Spinner animation="border" variant="primary" />
         </div>
+      ) : accounts.length === 0 ? (
+        <div className="text-center my-4">
+          <p>Không có tài khoản nào để hiển thị.</p>
+        </div>
       ) : (
-        <AccountTableComponent
-          accounts={accounts}
-          onStatusChange={handleStatusChange}
-          onDelete={handleDelete}
-          onSelect={handleSelectAccounts}
-          selectedAccounts={selectedAccounts}
-          currentPage={currentPage}
-          limitItems={limitItems}
-        />
+        <>
+          <AccountTableComponent
+            accounts={displayedAccounts}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            onSelect={handleSelectAccounts}
+            selectedAccounts={selectedAccounts}
+            currentPage={currentPage}
+            limitItems={limitItems}
+          />
+          {totalPages > 1 && (
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              loading={loading}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
+        </>
       )}
 
-      {totalPages > 0 && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={totalItems}
-          loading={loading}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
-      )}
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg={toastVariant}
+        >
+          <Toast.Header>
+            <strong className="me-auto">
+              {toastVariant === "success" ? "Thành công" : "Lỗi"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body>{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 };

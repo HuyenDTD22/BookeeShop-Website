@@ -9,7 +9,7 @@ const createTreeHelper = require("../../helpers/createTree");
 module.exports.index = async (req, res) => {
   try {
     const bookId = req.params.bookId;
-    const user = req.user || null; // req.user được thêm bởi middleware xác thực JWT
+    const user = req.user || null;
 
     const book = await Book.findById(bookId);
     if (!book) {
@@ -19,7 +19,6 @@ module.exports.index = async (req, res) => {
       });
     }
 
-    // Lấy danh sách bình luận gốc (parentCommentId = null)
     const comments = await Comment.find({
       book_id: bookId,
       deleted: false,
@@ -30,7 +29,6 @@ module.exports.index = async (req, res) => {
 
     const newComments = createTreeHelper.tree(comments);
 
-    // Lấy tổng số bình luận gốc
     const total = comments.length;
 
     res.json({
@@ -52,22 +50,6 @@ module.exports.create = async (req, res) => {
     const { book_id, content, parentCommentId } = req.body;
     const user_id = req.user._id;
 
-    // Kiểm tra dữ liệu đầu vào
-    if (!book_id || !content) {
-      return res.status(400).json({
-        code: 400,
-        message: "book_id và content là bắt buộc",
-      });
-    }
-
-    // Kiểm tra book_id hợp lệ và tồn tại
-    if (!mongoose.Types.ObjectId.isValid(book_id)) {
-      return res.status(400).json({
-        code: 400,
-        message: "book_id không hợp lệ",
-      });
-    }
-
     const book = await Book.findById(book_id);
     if (!book) {
       return res.status(404).json({
@@ -76,7 +58,6 @@ module.exports.create = async (req, res) => {
       });
     }
 
-    // Kiểm tra người dùng đã mua sách này chưa
     const purchasedOrder = await Order.findOne({
       user_id: user_id,
       "books.book_id": book_id,
@@ -92,7 +73,6 @@ module.exports.create = async (req, res) => {
       });
     }
 
-    // Kiểm tra parentCommentId (nếu có)
     if (parentCommentId && !mongoose.Types.ObjectId.isValid(parentCommentId)) {
       return res.status(400).json({
         code: 400,
@@ -117,9 +97,8 @@ module.exports.create = async (req, res) => {
 
     await newComment.save();
 
-    // Populate thông tin người dùng và sách
     const populatedComment = await Comment.findById(newComment._id)
-      .populate("user_id", "name email") // Lấy tên và email của người dùng
+      .populate("user_id", "name email")
       .populate("book_id", "title");
 
     res.json({
@@ -142,23 +121,6 @@ module.exports.delete = async (req, res) => {
     const user_id = req.user._id;
     const bookId = req.query.bookId;
 
-    // Kiểm tra user_id (người dùng phải đăng nhập)
-    if (!user_id) {
-      return res.status(401).json({
-        code: 401,
-        message: "Vui lòng đăng nhập để xóa bình luận!",
-      });
-    }
-
-    // Kiểm tra commentId hợp lệ
-    if (!mongoose.Types.ObjectId.isValid(commentId)) {
-      return res.status(400).json({
-        code: 400,
-        message: "commentId không hợp lệ",
-      });
-    }
-
-    // Tìm bình luận
     const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).json({
@@ -167,18 +129,10 @@ module.exports.delete = async (req, res) => {
       });
     }
 
-    // Kiểm tra quyền xóa (chỉ người tạo bình luận mới được xóa)
     if (comment.user_id.toString() !== user_id.toString()) {
       res.json({
         code: 400,
         message: "Bạn không có quyền xóa bình luận này",
-      });
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(bookId)) {
-      return res.status(400).json({
-        code: 400,
-        message: "bookId không hợp lệ",
       });
     }
 
@@ -205,7 +159,6 @@ module.exports.delete = async (req, res) => {
       });
     }
 
-    // Kiểm tra trạng thái bình luận
     if (comment.status !== "active" || comment.deleted) {
       return res.status(400).json({
         code: 400,

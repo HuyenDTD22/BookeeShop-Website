@@ -134,7 +134,7 @@ const CartPage = () => {
         <div>Giỏ hàng của bạn trống.</div>
       ) : (
         <>
-          <Table responsive striped bordered hover className="cart-table">
+          <Table responsive bordered hover className="cart-table">
             <thead>
               <tr>
                 <th>

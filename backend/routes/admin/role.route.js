@@ -2,21 +2,26 @@ const express = require("express");
 const router = express.Router();
 
 const controller = require("../../controllers/admin/role.controller");
+const roleValidate = require("../../validates/admin/role.validate");
 
-router.get("/", controller.index);
+router.get("/", roleValidate.index, controller.index);
 
-router.get("/detail/:id", controller.detail);
+router.get("/detail/:id", roleValidate.detail, controller.detail);
 
-router.patch("/change-status/:id", controller.changeStatus);
+router.patch(
+  "/change-status/:id",
+  roleValidate.changeStatus,
+  controller.changeStatus
+);
 
-router.patch("/change-multi", controller.changeMulti);
+router.patch("/change-multi", roleValidate.changeMulti, controller.changeMulti);
 
-router.post("/create", controller.create);
+router.post("/create", roleValidate.create, controller.create);
 
-router.patch("/edit/:id", controller.edit);
+router.patch("/edit/:id", roleValidate.edit, controller.edit);
 
-router.patch("/permissions", controller.permissions); // Xây dựng nhóm phân quyền
+router.patch("/permissions", roleValidate.permissions, controller.permissions);
 
-router.delete("/delete/:id", controller.delete);
+router.delete("/delete/:id", roleValidate.delete, controller.delete);
 
 module.exports = router;

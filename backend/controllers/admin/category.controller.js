@@ -1,11 +1,10 @@
 const Category = require("../../models/category.model");
 
 const systemConfig = require("../../config/system");
-
 const createTreeHelper = require("../../helpers/createTree");
 const searchHelper = require("../../helpers/search");
 
-//[GET] /admin/category
+//[GET] /admin/category/ - Lấy ra tất cả danh mục
 module.exports.index = async (req, res) => {
   try {
     let find = {
@@ -17,7 +16,7 @@ module.exports.index = async (req, res) => {
       find.status = req.query.status;
     }
 
-    //Tính năng tìm kiếm sách
+    //Search
     let objectSearch = searchHelper(req.query);
 
     if (req.query.keyword) {
@@ -30,7 +29,6 @@ module.exports.index = async (req, res) => {
     if (req.query.sortKey && req.query.sortValue) {
       sort[req.query.sortKey] = req.query.sortValue;
     }
-    //End Sort
 
     const records = await Category.find(find).sort(sort);
 
@@ -41,15 +39,14 @@ module.exports.index = async (req, res) => {
       categories: newRecords,
     });
   } catch (error) {
-    console.error("Error fetching categories:", error);
     res.json({
       code: 400,
-      message: "Lỗi khi lấy danh mục",
+      message: error.message,
     });
   }
 };
 
-// [GET] /category/detail/:id
+// [GET] /category/detail/:id - Lấy ra thông tin chi tiết 1 danh mục
 module.exports.detail = async (req, res) => {
   try {
     const id = req.params.id;
@@ -63,21 +60,16 @@ module.exports.detail = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: error.message || "Đã xảy ra lỗi",
     });
   }
 };
 
-// [PATCH] /admin/category/change-status/:id - Thay đổi trạng thái 1 sách
+// [PATCH] /admin/category/change-status/:id - Thay đổi trạng thái 1 danh mục
 module.exports.changeStatus = async (req, res) => {
   try {
     const id = req.params.id;
     const status = req.body.status;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     await Category.updateOne(
       {
@@ -85,7 +77,6 @@ module.exports.changeStatus = async (req, res) => {
       },
       {
         status: status,
-        // $push: { updatedBy: updatedBy },
       }
     );
 
@@ -101,15 +92,10 @@ module.exports.changeStatus = async (req, res) => {
   }
 };
 
-// [PATCH] /admin/category/change-multi - Thay đổi trạng thái nhiều sách
+// [PATCH] /admin/category/change-multi - Thay đổi trạng thái, xoá nhiều danh mục
 module.exports.changeMulti = async (req, res) => {
   try {
     const { ids, key, value } = req.body;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     switch (key) {
       case "status":
@@ -121,7 +107,6 @@ module.exports.changeMulti = async (req, res) => {
           },
           {
             status: value,
-            // $push: { updatedBy: updatedBy },
           }
         );
         res.json({
@@ -159,7 +144,7 @@ module.exports.changeMulti = async (req, res) => {
   }
 };
 
-//[POST] /admin/category/create - Tạo mới 1 danh mục sản phẩm
+//[POST] /admin/category/create - Tạo mới 1 danh mục
 module.exports.create = async (req, res) => {
   try {
     req.body.createdBy = {
@@ -176,12 +161,12 @@ module.exports.create = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: "Tạo danh mục thất bại!",
+      message: error.message,
     });
   }
 };
 
-//[PATCH] /admin/category/edit/:id -Chỉnh sửa danh mục sản phẩm
+//[PATCH] /admin/category/edit/:id -Chỉnh sửa danh mục
 module.exports.edit = async (req, res) => {
   try {
     const id = req.params.id;
@@ -195,12 +180,12 @@ module.exports.edit = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: "Chỉnh sửa danh mục thất bại!",
+      message: error.message,
     });
   }
 };
 
-//[DELETE] /admin/category/delete/:id - Tính năng xoá 1 danh mục sản phẩm
+//[DELETE] /admin/category/delete/:id - Tính năng xoá 1 danh mục
 module.exports.deleteItem = async (req, res) => {
   try {
     const id = req.params.id;
@@ -213,7 +198,7 @@ module.exports.deleteItem = async (req, res) => {
         deleted: true,
         deletedAt: new Date(),
       }
-    ); //cập nhật giá trị của trường deleted là true đồng thời cập nhật luôn thời gian xoá của 1 danh mục sp trong database có id là id
+    );
     res.json({
       code: 200,
       message: "Đã xoá thành công danh mục sản phẩm!",

@@ -184,7 +184,7 @@ const AccountTableComponent = ({
         }}
         title="Xác nhận xóa"
         body={`Bạn có chắc chắn muốn xóa tài khoản "${
-          accountToDelete?.title || "Không có tiêu đề"
+          accountToDelete?.fullName || "Không có tên"
         }" không?`}
         confirmButton={{
           label: "Xóa",

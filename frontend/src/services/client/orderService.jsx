@@ -16,26 +16,10 @@ const orderService = {
     }
   },
 
-  // Tạo đơn hàng từ giỏ hàng
-  createOrder: async (data) => {
-    try {
-      const response = await axios.post(`${API_URL}/order/create`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error creating order from cart:", error);
-      throw error;
-    }
-  },
-
   // Tạo đơn hàng "Mua ngay"
   buyNow: async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/order/buy-now`, data, {
+      const response = await axios.post(`${API_URL}/order/create`, data, {
         headers: {
           "Content-Type": "application/json",
         },

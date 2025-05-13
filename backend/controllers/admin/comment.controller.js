@@ -4,18 +4,17 @@ const Comment = require("../../models/comment.model");
 const Rating = require("../../models/rating.model");
 const createTreeHelper = require("../../helpers/createTree");
 
-// [GET] /api/admin/comment/:bookId - Lấy ra tất cả các bình luận của một cuốn sách
+// [GET] /api/admin/comment/:bookId - Lấy ra tất cả bình luận của 1 cuốn sách
 module.exports.index = async (req, res) => {
   try {
     const { bookId } = req.params;
     const { search = "", ratingFilter } = req.query;
 
-    // Kiểm tra sách có tồn tại và chưa bị xóa
     const book = await Book.findOne({ _id: bookId, deleted: false });
     if (!book) {
       return res
         .status(404)
-        .json({ status: "error", message: "Book not found" });
+        .json({ status: "error", message: "Không tìm thấy sách" });
     }
 
     // Điều kiện lọc
@@ -41,19 +40,16 @@ module.exports.index = async (req, res) => {
       .populate("user_id", "email fullName")
       .populate("book_id", "title");
 
-    // Lấy tất cả rating liên quan đến cuốn sách này
     const ratings = await Rating.find({
       book_id: bookId,
       deleted: false,
     });
 
-    // Chuẩn hóa dữ liệu trả về (bao gồm cây bình luận nếu cần)
     let commentList = await createTreeHelper.tree(comments);
 
-    // Hàm đệ quy để gán rating cho tất cả bình luận, bao gồm cả bình luận con
+    // Gán rating cho tất cả bình luận
     const assignRatingToTree = (comments) => {
       return comments.map((comment) => {
-        // Kiểm tra comment.user_id trước khi truy cập
         let rating = null;
         if (comment.user_id && comment.user_id._id) {
           rating = ratings.find(
@@ -62,7 +58,7 @@ module.exports.index = async (req, res) => {
         }
         const updatedComment = {
           ...comment,
-          rating: rating ? rating.rating : null, // Gán rating cho bình luận hiện tại
+          rating: rating ? rating.rating : null,
         };
         if (comment.children && comment.children.length > 0) {
           updatedComment.children = assignRatingToTree(comment.children);
@@ -73,10 +69,7 @@ module.exports.index = async (req, res) => {
       });
     };
 
-    // Gán rating cho toàn bộ cây bình luận
     commentList = assignRatingToTree(commentList);
-
-    // Chuyển đổi toàn bộ commentList thành plain object
     commentList = JSON.parse(JSON.stringify(commentList));
 
     res.json({
@@ -100,31 +93,28 @@ module.exports.reply = async (req, res) => {
     if (!replyContent) {
       return res
         .status(400)
-        .json({ status: "error", message: "Reply content is required" });
+        .json({ status: "error", message: "Nội dung phản hồi là bắt buộc." });
     }
 
-    // Kiểm tra res.locals.user
     if (!res.locals.user || !res.locals.user._id) {
       return res
         .status(401)
-        .json({ status: "error", message: "Unauthorized: User not found" });
+        .json({ status: "error", message: "Không tìm thấy người dùng." });
     }
 
-    // Tìm bình luận gốc
     const comment = await Comment.findById(commentId);
     if (!comment || comment.deleted) {
       return res
         .status(404)
-        .json({ status: "error", message: "Comment not found" });
+        .json({ status: "error", message: "Không tìm thấy bình luận." });
     }
 
-    // Thêm phản hồi bằng cách tạo bình luận mới với parent_id
     const replyComment = new Comment({
-      user_id: res.locals.user._id, // Sử dụng res.locals.user thay vì req.user
+      user_id: res.locals.user._id,
       book_id: comment.book_id,
       content: replyContent,
       parent_id: commentId,
-      isAdmin: true, // Đánh dấu phản hồi từ admin
+      isAdmin: true,
     });
     await replyComment.save();
 
@@ -141,29 +131,28 @@ module.exports.reply = async (req, res) => {
   }
 };
 
-// [DELETE] /api/admin/comment/delete/:commentId - Xóa 1 bình luận cụ thể
+// [DELETE] /api/admin/comment/delete/:commentId - Xóa 1 bình luận
 module.exports.delete = async (req, res) => {
   try {
     const { commentId } = req.params;
 
-    // Xóa mềm bình luận
     const comment = await Comment.findById(commentId);
     if (!comment || comment.deleted) {
       return res
         .status(404)
-        .json({ status: "error", message: "Comment not found" });
+        .json({ status: "error", message: "Không tìm thấy bình luận." });
     }
 
     comment.deleted = true;
     comment.deletedBy = {
-      account_id: req.user._id, // Giả định req.user chứa thông tin admin
+      account_id: req.user._id,
       deletedAt: new Date(),
     };
     await comment.save();
 
     res.json({
       status: "success",
-      message: "Comment has been soft-deleted.",
+      message: "Bình luận đã được xoá thành công.",
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });
@@ -178,18 +167,17 @@ module.exports.deleteMulti = async (req, res) => {
     if (!Array.isArray(commentIds) || commentIds.length === 0) {
       return res.status(400).json({
         status: "error",
-        message: "Comment IDs are required and must be an array",
+        message: "CommentIds là bắt buộc và phải là 1 mảng.",
       });
     }
 
-    // Xóa mềm nhiều bình luận
     await Comment.updateMany(
       { _id: { $in: commentIds }, deleted: false },
       {
         $set: {
           deleted: true,
           deletedBy: {
-            account_id: req.user._id, // Giả định req.user chứa thông tin admin
+            account_id: req.user._id,
             deletedAt: new Date(),
           },
         },
@@ -198,34 +186,32 @@ module.exports.deleteMulti = async (req, res) => {
 
     res.json({
       status: "success",
-      message: "Selected comments have been soft-deleted.",
+      message: "các bình luận được chọn đã xoá thành công.",
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });
   }
 };
 
-// [PATCH] /api/admin/comment/delete-all/:bookId - Xóa mềm tất cả bình luận của một cuốn sách
+// [PATCH] /api/admin/comment/delete-all/:bookId - Xóa tất cả bình luận của một cuốn sách
 module.exports.deleteAll = async (req, res) => {
   try {
     const { bookId } = req.params;
 
-    // Kiểm tra sách có tồn tại và chưa bị xóa
     const book = await Book.findOne({ _id: bookId, deleted: false });
     if (!book) {
       return res
         .status(404)
-        .json({ status: "error", message: "Book not found" });
+        .json({ status: "error", message: "Không tìm thấy sách." });
     }
 
-    // Xóa mềm tất cả bình luận của sách
     await Comment.updateMany(
       { book_id: bookId, deleted: false },
       {
         $set: {
           deleted: true,
           deletedBy: {
-            account_id: req.user._id, // Giả định req.user chứa thông tin admin
+            account_id: req.user._id,
             deletedAt: new Date(),
           },
         },
@@ -234,7 +220,7 @@ module.exports.deleteAll = async (req, res) => {
 
     res.json({
       status: "success",
-      message: "All comments for this book have been soft-deleted.",
+      message: "Tất cả bình luận của quyển sách này đã được xoá thành công.",
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });

@@ -20,7 +20,7 @@ const commentSchema = new mongoose.Schema(
     },
     isAdmin: {
       type: Boolean,
-      default: false, // Đánh dấu phản hồi từ admin
+      default: false,
     },
     deletedBy: {
       account_id: mongoose.Schema.Types.ObjectId,

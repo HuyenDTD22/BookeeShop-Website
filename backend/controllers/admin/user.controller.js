@@ -2,20 +2,18 @@ const User = require("../../models/user.model");
 
 const searchHelper = require("../../helpers/search");
 
-// Lấy danh sách khách hàng (hỗ trợ tìm kiếm và lọc)
+//[GET] /admin/user - Lấy danh sách khách hàng
 exports.index = async (req, res) => {
   try {
     const { search = "", status, startDate, endDate } = req.query;
 
-    // Điều kiện tìm kiếm
     let query = { deleted: false };
 
-    // Sử dụng searchHelper để xử lý tìm kiếm
     const objectSearch = searchHelper({ keyword: search });
     if (objectSearch.keyword) {
       query.$or = [
-        { fullName: objectSearch.regex }, // Tìm kiếm theo tên
-        { email: objectSearch.regex }, // Tìm kiếm theo email
+        { fullName: objectSearch.regex },
+        { email: objectSearch.regex },
       ];
     }
 
@@ -31,10 +29,9 @@ exports.index = async (req, res) => {
       if (endDate) query.createdAt.$lte = new Date(endDate);
     }
 
-    // Lấy danh sách khách hàng
     const users = await User.find(query)
-      .select("-password") // Không trả về password
-      .sort({ createdAt: -1 }); // Sắp xếp theo ngày tạo (mới nhất trước)
+      .select("-password")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -49,7 +46,7 @@ exports.index = async (req, res) => {
   }
 };
 
-// Lấy chi tiết một khách hàng
+//[GET] /admin/user/detail/:id - Lấy chi tiết một khách hàng
 exports.detail = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -78,21 +75,11 @@ exports.detail = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái khách hàng
+//[PATCH] /admin/user/change-status/:id - Cập nhật trạng thái 1 khách hàng
 exports.changeStatus = async (req, res) => {
   try {
     const userId = req.params.id;
     const { status } = req.body;
-
-    // Kiểm tra trạng thái hợp lệ
-    const validStatuses = ["active", "inactive"];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Trạng thái không hợp lệ! Trạng thái phải là 'active' hoặc 'inactive'.",
-      });
-    }
 
     const user = await User.findOne({ _id: userId, deleted: false });
     if (!user) {
@@ -119,30 +106,11 @@ exports.changeStatus = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái của nhiều khách hàng cùng lúc
+//[PATCH] /admin/user/change-multi - Cập nhật trạng thái của nhiều khách hàng
 exports.changeMulti = async (req, res) => {
   try {
     const { userIds, status } = req.body;
 
-    // Kiểm tra đầu vào
-    if (!Array.isArray(userIds) || !userIds.length || !status) {
-      return res.status(400).json({
-        success: false,
-        message: "Danh sách userIds hoặc trạng thái không hợp lệ!",
-      });
-    }
-
-    // Kiểm tra trạng thái hợp lệ
-    const validStatuses = ["active", "inactive"];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Trạng thái không hợp lệ! Trạng thái phải là 'active' hoặc 'inactive'.",
-      });
-    }
-
-    // Tìm và cập nhật các khách hàng
     const updatedUsers = await User.updateMany(
       { _id: { $in: userIds }, deleted: false },
       { status: status },
@@ -156,7 +124,6 @@ exports.changeMulti = async (req, res) => {
       });
     }
 
-    // Lấy lại danh sách các khách hàng đã cập nhật để trả về
     const users = await User.find({
       _id: { $in: userIds },
       deleted: false,
@@ -176,7 +143,7 @@ exports.changeMulti = async (req, res) => {
   }
 };
 
-// Xóa khách hàng (xóa mềm)
+//[PATCH] /admin/user/delete/:id - Xóa khách hàng
 exports.delete = async (req, res) => {
   try {
     const userId = req.params.id;

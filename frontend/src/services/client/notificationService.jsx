@@ -22,7 +22,7 @@ const notificationService = {
 
   getNotificationById: async (id) => {
     try {
-      const response = await axios.get(`${API_URL}/notification/${id}`, {
+      const response = await axios.get(`${API_URL}/notification/detail/${id}`, {
         withCredentials: true,
       });
       return response.data;

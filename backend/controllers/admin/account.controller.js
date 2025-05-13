@@ -3,11 +3,9 @@ const Account = require("../../models/account.model");
 const Role = require("../../models/role.model");
 
 const systemConfig = require("../../config/system");
-
 const searchHelper = require("../../helpers/search");
-const paginationHelper = require("../../helpers/pagination");
 
-//[GET] /admin/account
+//[GET] /admin/account - Lấy ra danh sách tài khoản
 module.exports.index = async (req, res) => {
   try {
     let find = {
@@ -19,27 +17,12 @@ module.exports.index = async (req, res) => {
       find.status = req.query.status;
     }
 
-    //Tính năng tìm kiếm sách
+    //Search
     let objectSearch = searchHelper(req.query);
 
     if (req.query.keyword) {
       find.title = objectSearch.regex;
     }
-
-    //Pagination - Phân trang
-    let initPagination = {
-      currentPage: 1,
-      limitItems: 4,
-    };
-
-    const countAccount = await Account.countDocuments(find);
-
-    const objectPagination = paginationHelper(
-      initPagination,
-      req.query,
-      countAccount
-    );
-    // End Pagination
 
     //Sort
     const sort = {};
@@ -47,15 +30,11 @@ module.exports.index = async (req, res) => {
     if (req.query.sortKey && req.query.sortValue) {
       sort[req.query.sortKey] = req.query.sortValue;
     }
-    //End Sort
 
     const accounts = await Account.find(find)
       .sort(sort)
-      .limit(objectPagination.limitItems)
-      .skip(objectPagination.skip)
       .select("-password -token");
 
-    // Chuyển documents thành plain objects và gán role
     const accountsWithRoles = await Promise.all(
       accounts.map(async (account) => {
         const plainAccount = account.toObject();
@@ -71,22 +50,17 @@ module.exports.index = async (req, res) => {
     res.json({
       code: 200,
       accounts: accountsWithRoles,
-      pagination: {
-        totalItems: countAccount,
-        currentPage: objectPagination.currentPage,
-        limitItems: objectPagination.limitItems,
-        totalPages: objectPagination.totalPage,
-      },
     });
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi khi lấy danh sách tài khoản!",
+      error: error.message,
     });
   }
 };
 
-// [GET] /admin/account/detail/:id - lấy ra chi tiết sách
+// [GET] /admin/account/detail/:id - Lấy ra chi tiết tài khoản
 module.exports.detail = async (req, res) => {
   try {
     const id = req.params.id;
@@ -100,21 +74,17 @@ module.exports.detail = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi khi lấy thông tin tài khoản!",
+      error: error.message,
     });
   }
 };
 
-// [PATCH] /admin/book/change-status/:id - Thay đổi trạng thái 1 sách
+// [PATCH] /admin/account/change-status/:id - Thay đổi trạng thái 1 tài khoản
 module.exports.changeStatus = async (req, res) => {
   try {
     const id = req.params.id;
     const status = req.body.status;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     await Account.updateOne(
       {
@@ -122,7 +92,6 @@ module.exports.changeStatus = async (req, res) => {
       },
       {
         status: status,
-        // $push: { updatedBy: updatedBy },
       }
     );
 
@@ -133,20 +102,16 @@ module.exports.changeStatus = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi khi thay đổi trạng thái!",
+      error: error.message,
     });
   }
 };
 
-// [PATCH] /admin/book/change-multi - Thay đổi trạng thái nhiều sách
+// [PATCH] /admin/account/change-multi - Thay đổi trạng thái, xoá nhiều tài khoản
 module.exports.changeMulti = async (req, res) => {
   try {
     const { ids, key, value } = req.body;
-
-    // const updatedBy = {
-    //   account_id: res.locals.user.id,
-    //   updatedAt: new Date(),
-    // };
 
     switch (key) {
       case "status":
@@ -158,7 +123,6 @@ module.exports.changeMulti = async (req, res) => {
           },
           {
             status: value,
-            // $push: { updatedBy: updatedBy },
           }
         );
         res.json({
@@ -191,7 +155,8 @@ module.exports.changeMulti = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi!",
+      error: error.message,
     });
   }
 };
@@ -220,6 +185,10 @@ module.exports.create = async (req, res) => {
 
       req.body.password = md5(req.body.password);
 
+      req.body.createdBy = {
+        account_id: res.locals.user.id,
+      };
+
       const account = new Account(req.body);
 
       await account.save();
@@ -232,12 +201,13 @@ module.exports.create = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error,
+      message: "Đã xảy ra lỗi khi tạo tài khoản!",
+      error: error.message,
     });
   }
 };
 
-//[PATCH] /admin/account/edit/:id - //Tính năng chỉnh sửa tài khoản
+//[PATCH] /admin/account/edit/:id - Chỉnh sửa tài khoản
 module.exports.edit = async (req, res) => {
   try {
     const id = req.params.id;
@@ -270,12 +240,13 @@ module.exports.edit = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error,
+      message: "Đã xảy ra lỗi khi chỉnh sửa tài khoản!",
+      error: error.message,
     });
   }
 };
 
-// [DELETE] /admin/account/delete/:id
+// [DELETE] /admin/account/delete/:id - Xoá 1 tài khoản
 module.exports.delete = async (req, res) => {
   try {
     const id = req.params.id;
@@ -295,18 +266,19 @@ module.exports.delete = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi khi xóa tài khoản!",
+      error: error.message,
     });
   }
 };
 
+//[PATCH] /admin/account//my-account/:id - Chỉnh sửa tài khoản cá nhân
 module.exports.EditMyAccount = async (req, res) => {
   try {
     const id = req.params.id;
-    const userId = res.locals.user.id; // Lấy ID của người dùng hiện tại từ middleware auth
+    const userId = res.locals.user.id;
     const { fullName, phone, gender, birth, address, avatar } = req.body;
 
-    // Kiểm tra xem ID trong URL có khớp với ID của người dùng hiện tại không
     if (id !== userId.toString()) {
       return res.status(403).json({
         code: 403,
@@ -314,8 +286,7 @@ module.exports.EditMyAccount = async (req, res) => {
       });
     }
 
-    // Lấy thông tin tài khoản hiện tại
-    const account = await Account.findById(id).select("+password"); // Cần lấy password để kiểm tra
+    const account = await Account.findById(id).select("+password");
     if (!account || account.deleted) {
       return res.status(404).json({
         code: 404,
@@ -331,13 +302,11 @@ module.exports.EditMyAccount = async (req, res) => {
     if (address) updateData.address = address;
     if (avatar) updateData.avatar = avatar;
 
-    // Xử lý thay đổi mật khẩu
     const currentPassword = req.body.currentPassword;
     const newPassword = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
     if (newPassword || confirmPassword) {
-      // Nếu có nhập mật khẩu mới, kiểm tra cả 3 trường
       if (!currentPassword) {
         return res.status(400).json({
           code: 400,
@@ -357,7 +326,6 @@ module.exports.EditMyAccount = async (req, res) => {
         });
       }
 
-      // Kiểm tra mật khẩu cũ có đúng không
       if (md5(currentPassword) !== account.password) {
         return res.status(400).json({
           code: 400,
@@ -368,10 +336,8 @@ module.exports.EditMyAccount = async (req, res) => {
       updateData.password = md5(newPassword);
     }
 
-    // Cập nhật tài khoản
     await Account.updateOne({ _id: id }, updateData);
 
-    // Lấy lại thông tin tài khoản sau khi cập nhật (không bao gồm password)
     const updatedAccount = await Account.findById(id).select(
       "-password -token"
     );
@@ -384,7 +350,8 @@ module.exports.EditMyAccount = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       code: 500,
-      message: error.message || "Đã xảy ra lỗi khi cập nhật tài khoản!",
+      message: "Đã xảy ra lỗi khi chỉnh sửa tài khoản!",
+      error: error.message,
     });
   }
 };

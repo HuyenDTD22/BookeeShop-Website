@@ -3,7 +3,7 @@ const Book = require("../../models/book.model");
 
 const bookHelper = require("../../helpers/book");
 
-//[GET] /cart/
+//[GET] /cart/ - Lấy ra danh sách sản phẩm trong giỏ hàng
 module.exports.index = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -11,10 +11,9 @@ module.exports.index = async (req, res) => {
     let cart = await Cart.findOne({ user_id: userId }).lean();
 
     if (!cart) {
-      // Nếu không tìm thấy giỏ hàng, tạo mới
       cart = new Cart({ user_id: userId, books: [] });
       await cart.save();
-      cart = cart.toObject(); // Chuyển sang plain object để xử lý
+      cart = cart.toObject();
     }
 
     let totalPrice = 0;
@@ -46,12 +45,13 @@ module.exports.index = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi!",
+      error: error.message,
     });
   }
 };
 
-//[POST] /cart/add/:slug
+//[POST] /cart/add/:slug - Thêm 1 sản phẩm vào giỏ hàng
 module.exports.add = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -71,7 +71,6 @@ module.exports.add = async (req, res) => {
     let cart = await Cart.findOne({ user_id: userId });
 
     if (!cart) {
-      // Nếu không tìm thấy giỏ hàng, tạo mới
       cart = new Cart({ user_id: userId, books: [] });
       await cart.save();
     }
@@ -79,7 +78,6 @@ module.exports.add = async (req, res) => {
     const existBookInCart = cart.books.find((item) => item.book_id == bookId);
 
     if (existBookInCart) {
-      // Nếu sách đã tồn tại trong giỏ, cập nhật số lượng
       const newQuantity = quantity + existBookInCart.quantity;
 
       await Cart.updateOne(
@@ -87,7 +85,6 @@ module.exports.add = async (req, res) => {
         { "books.$.quantity": newQuantity }
       );
     } else {
-      // Thêm sách mới vào giỏ hàng
       const objectCart = { book_id: bookId, quantity: quantity };
 
       await Cart.updateOne(
@@ -103,12 +100,13 @@ module.exports.add = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || "Đã xảy ra lỗi",
+      message: "Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng!",
+      error: error.message,
     });
   }
 };
 
-// [GET] /cart/delete/:bookId
+// [GET] /cart/delete/:bookId - Xoá 1 sản phẩm trong giỏ hàng
 module.exports.delete = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -131,19 +129,12 @@ module.exports.delete = async (req, res) => {
   }
 };
 
-// [GET] /cart/update/:bookId/:quantity
+// [PATCH] /cart/update/:bookId/:quantity - Thay đổi số lượng sản phẩm trong giỏ hàng
 module.exports.update = async (req, res) => {
   try {
     const userId = req.user._id;
     const bookId = req.params.bookId;
-    const quantity = parseInt(req.params.quantity);
-
-    if (isNaN(quantity) || quantity <= 0) {
-      return res.json({
-        code: 400,
-        message: "Số lượng không hợp lệ.",
-      });
-    }
+    const quantity = parseInt(req.body.quantity);
 
     await Cart.updateOne(
       { user_id: userId, "books.book_id": bookId },
@@ -152,7 +143,7 @@ module.exports.update = async (req, res) => {
 
     res.json({
       code: 200,
-      message: "Đã cập nhật số lượng!",
+      message: "Đã cập nhật số lượng thành công!",
     });
   } catch (error) {
     res.json({

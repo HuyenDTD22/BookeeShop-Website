@@ -2,11 +2,12 @@ const Book = require("../../models/book.model");
 const Category = require("../../models/category.model");
 
 const bookHelper = require("../../helpers/book");
+const searchHelper = require("../../helpers/search");
 const createTreeHelper = require("../../helpers/createTree");
 
-//[GET] /
+//[GET] / - Hiển thị dữ liệu ở trang HomePage
 module.exports.index = async (req, res) => {
-  // Lấy ra menu chung
+  // Lấy ra danh mục
   const category = await Category.find({ deleted: false });
 
   const newCategory = createTreeHelper.tree(category);
@@ -40,4 +41,39 @@ module.exports.index = async (req, res) => {
     booksFeatured: newBooksFeatured,
     booksNew: newBooksNew,
   });
+};
+
+//[GET] /search - Tìm kiếm theo tên sách, tên tác giả
+module.exports.search = async (req, res) => {
+  try {
+    const query = req.query;
+    const searchObject = searchHelper(query);
+
+    let newBooks = [];
+
+    if (searchObject.keyword) {
+      const books = await Book.find({
+        $or: [
+          { title: searchObject.regex },
+          { author: searchObject.regex },
+          { supplier: searchObject.regex },
+        ],
+        status: "active",
+        deleted: false,
+      });
+
+      newBooks = bookHelper.priceNewBooks(books);
+      newBooks = await bookHelper.soldCountBooks(books);
+    }
+
+    res.json({
+      code: 200,
+      books: newBooks,
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+    });
+  }
 };

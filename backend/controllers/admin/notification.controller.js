@@ -3,12 +3,13 @@ const Notification = require("../../models/notification.model");
 const User = require("../../models/user.model");
 const Account = require("../../models/account.model");
 
-// Lấy danh sách tất cả thông báo
-exports.getAllNotifications = async (req, res) => {
+// [GET] /admin/notification/ - Lấy ra tất cả thông báo
+exports.index = async (req, res) => {
   try {
     const notifications = await Notification.find()
-      .populate("createdBy", "fullName email") // Lấy thông tin admin
-      .sort({ createdAt: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+      .populate("createdBy", "fullName email")
+      .sort({ createdAt: -1 });
+
     return res.status(200).json({
       code: 200,
       message: "Lấy danh sách thông báo thành công",
@@ -17,13 +18,13 @@ exports.getAllNotifications = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
+      message: error.message,
     });
   }
 };
 
-// Lấy chi tiết một thông báo
-exports.getNotificationById = async (req, res) => {
+// [GET] /admin/notification/detail/:id - Lấy chi tiết một thông báo
+exports.detail = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -34,8 +35,9 @@ exports.getNotificationById = async (req, res) => {
     }
 
     const notification = await Notification.findById(id)
-      .populate("createdBy", "fullName email") // Admin
-      .populate("readBy", "fullName email"); // Khách hàng đã đọc
+      .populate("createdBy", "fullName email")
+      .populate("readBy", "fullName email");
+
     if (!notification) {
       return res.status(404).json({
         code: 404,
@@ -51,17 +53,16 @@ exports.getNotificationById = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
+      message: error.message,
     });
   }
 };
 
-// Tạo thông báo mới
-exports.createNotification = async (req, res) => {
+// [POST] /admin/notification/create - Tạo thông báo mới
+exports.create = async (req, res) => {
   try {
     const { title, content, type, target, sendAt } = req.body;
 
-    // Validate dữ liệu
     if (!title || title.trim().length === 0 || title.length > 200) {
       return res.status(400).json({
         code: 400,
@@ -109,7 +110,7 @@ exports.createNotification = async (req, res) => {
       target,
       sendAt,
       status: sendAt ? "scheduled" : "draft",
-      createdBy: res.locals.user._id, // Lấy từ middleware requireAuthAdmin (Account)
+      createdBy: res.locals.user._id,
     });
 
     await notification.save();
@@ -127,13 +128,12 @@ exports.createNotification = async (req, res) => {
   }
 };
 
-// Cập nhật thông báo
-exports.updateNotification = async (req, res) => {
+// [PUT] /admin/notification/edit/:id - Cập nhật thông báo
+exports.edit = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content, type, target, sendAt } = req.body;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         code: 400,
@@ -141,7 +141,6 @@ exports.updateNotification = async (req, res) => {
       });
     }
 
-    // Validate dữ liệu
     if (!title || title.trim().length === 0 || title.length > 200) {
       return res.status(400).json({
         code: 400,
@@ -218,13 +217,12 @@ exports.updateNotification = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái của một thông báo
-exports.updateNotificationStatus = async (req, res) => {
+// [PATCH] /admin/notification/change-status/:id -Lấy tất cả sách Cập nhật trạng thái của một thông báo
+exports.changeStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         code: 400,
@@ -232,7 +230,6 @@ exports.updateNotificationStatus = async (req, res) => {
       });
     }
 
-    // Validate status
     if (!["draft", "sent", "scheduled", "canceled"].includes(status)) {
       return res.status(400).json({
         code: 400,
@@ -264,12 +261,11 @@ exports.updateNotificationStatus = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái của nhiều thông báo
-exports.updateMultipleStatuses = async (req, res) => {
+// [PATCH] /admin/notification/change-multi - Cập nhật trạng thái của nhiều thông báo
+exports.changeMulti = async (req, res) => {
   try {
     const { ids, status } = req.body;
 
-    // Validate dữ liệu
     if (!Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({
         code: 400,
@@ -313,12 +309,11 @@ exports.updateMultipleStatuses = async (req, res) => {
   }
 };
 
-// Gửi thông báo ngay lập tức
-exports.sendNotification = async (req, res) => {
+// [POST] /admin/notification/send/:id - Gửi thông báo ngay lập tức
+exports.send = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         code: 400,
@@ -340,12 +335,11 @@ exports.sendNotification = async (req, res) => {
       });
     }
 
-    // Lấy danh sách người nhận (User - khách hàng)
+    // Lấy danh sách người nhận
     let recipients = [];
     if (notification.target.type === "all") {
       recipients = await User.find({ deleted: false }).select("_id");
     } else if (notification.target.type === "group") {
-      // Giả định groupId là một thuộc tính của User (ví dụ: "vip", "new_user")
       recipients = await User.find({
         groupId: notification.target.groupId,
         deleted: false,
@@ -357,14 +351,10 @@ exports.sendNotification = async (req, res) => {
       }).select("_id");
     }
 
-    // Cập nhật trạng thái và lưu danh sách người nhận
     notification.status = "sent";
     notification.sendAt = new Date();
     notification.target.userIds = recipients.map((user) => user._id);
     await notification.save();
-
-    // TODO: Tích hợp gửi thông báo qua in-app/email/push
-    // Ví dụ: sendEmail(recipients, notification);
 
     return res.status(200).json({
       code: 200,
@@ -379,13 +369,12 @@ exports.sendNotification = async (req, res) => {
   }
 };
 
-// Lên lịch gửi thông báo
-exports.scheduleNotification = async (req, res) => {
+// [POST] /admin/notification/schelude - Lên lịch gửi thông báo
+exports.schedule = async (req, res) => {
   try {
     const { id } = req.params;
     const { sendAt } = req.body;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         code: 400,
@@ -393,7 +382,6 @@ exports.scheduleNotification = async (req, res) => {
       });
     }
 
-    // Validate sendAt
     if (!sendAt) {
       return res.status(400).json({
         code: 400,
@@ -425,8 +413,6 @@ exports.scheduleNotification = async (req, res) => {
     notification.status = "scheduled";
     await notification.save();
 
-    // TODO: Tích hợp với node-cron hoặc agenda để xử lý gửi thông báo theo lịch
-
     return res.status(200).json({
       code: 200,
       message: "Lên lịch gửi thông báo thành công",
@@ -440,8 +426,8 @@ exports.scheduleNotification = async (req, res) => {
   }
 };
 
-// Xóa một thông báo
-exports.deleteNotification = async (req, res) => {
+// [DELETE] /admin/notification/delete/:id - Xóa một thông báo
+exports.delete = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -481,12 +467,11 @@ exports.deleteNotification = async (req, res) => {
   }
 };
 
-// Xóa nhiều thông báo
-exports.deleteMultipleNotifications = async (req, res) => {
+// [DELETE] /admin/notification/delete-multi - Xóa nhiều thông báo
+exports.deleteMulti = async (req, res) => {
   try {
     const { ids } = req.body;
 
-    // Validate dữ liệu
     if (!Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({
         code: 400,
@@ -502,7 +487,7 @@ exports.deleteMultipleNotifications = async (req, res) => {
 
     const result = await Notification.deleteMany({
       _id: { $in: ids },
-      status: { $in: ["draft", "canceled"] }, // Chỉ xóa draft hoặc canceled
+      status: { $in: ["draft", "canceled"] },
     });
 
     if (result.deletedCount === 0) {
@@ -524,12 +509,11 @@ exports.deleteMultipleNotifications = async (req, res) => {
   }
 };
 
-// Lấy danh sách khách hàng đã đọc thông báo
-exports.getReadByUsers = async (req, res) => {
+// [GET] /admin/notification/read/:id - Lấy danh sách khách hàng đã đọc thông báo
+exports.read = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Validate ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         code: 400,
@@ -561,8 +545,8 @@ exports.getReadByUsers = async (req, res) => {
   }
 };
 
-// Xem thống kê thông báo
-exports.getNotificationStats = async (req, res) => {
+// [GET] /admin/notification/stats - Xem thống kê thông báo
+exports.stats = async (req, res) => {
   try {
     const stats = await Notification.aggregate([
       {

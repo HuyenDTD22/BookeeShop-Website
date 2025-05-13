@@ -47,7 +47,7 @@ const cartService = {
   // Cập nhật số lượng sách trong giỏ hàng
   updateQuantity: async (bookId, quantity) => {
     try {
-      const response = await axios.get(
+      const response = await axios.patch(
         `${API_URL}/cart/update/${bookId}/${quantity}`,
         { withCredentials: true }
       );

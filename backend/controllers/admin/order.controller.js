@@ -1,63 +1,21 @@
 const Order = require("../../models/order.model");
 const Notification = require("../../models/notification.model");
+
 const searchHelper = require("../../helpers/search");
+const orderHelper = require("../../helpers/order");
 
-// Hàm tạo thông báo trạng thái đơn hàng
-async function createOrderStatusNotification(order, status, createdBy) {
-  const statusMessages = {
-    pending: {
-      title: "Đơn hàng của bạn đang chờ xác nhận",
-      content: `<p>Đơn hàng #${order._id} đã được đặt thành công và đang chờ xác nhận.</p>`,
-    },
-    delivered: {
-      title: "Đơn hàng của bạn đang được giao",
-      content: `<p>Đơn hàng #${order._id} đã được xác nhận và đang được giao đến địa chỉ của bạn.</p>`,
-    },
-    completed: {
-      title: "Đơn hàng của bạn đã hoàn thành",
-      content: `<p>Đơn hàng #${order._id} đã hoàn thành. Hy vọng bạn hài lòng với sản phẩm!</p>`,
-    },
-    cancelled: {
-      title: "Đơn hàng của bạn đã bị hủy",
-      content: `<p>Đơn hàng #${order._id} đã bị hủy. Vui lòng liên hệ để biết thêm chi tiết.</p>`,
-    },
-  };
-
-  const message = statusMessages[status];
-  if (!message) return null;
-
-  const notification = new Notification({
-    title: message.title,
-    content: message.content,
-    type: "order_status",
-    status: "sent",
-    target: {
-      type: "specific",
-      userIds: [order.user_id],
-    },
-    createdBy,
-    sendAt: new Date(),
-    readBy: [],
-  });
-
-  await notification.save();
-  return notification;
-}
-
-// Lấy danh sách đơn hàng (hỗ trợ tìm kiếm và lọc, không phân trang)
+// [GET] /admin/order - Lấy danh sách đơn hàng
 exports.index = async (req, res) => {
   try {
     const { search = "", status, startDate, endDate } = req.query;
 
-    // Điều kiện tìm kiếm
     let query = { deleted: false };
 
-    // Sử dụng searchHelper để xử lý tìm kiếm
     const objectSearch = searchHelper({ keyword: search });
     if (objectSearch.keyword) {
       query.$or = [
-        { _id: objectSearch.keyword }, // Tìm kiếm theo mã đơn hàng
-        { "userInfo.fullName": objectSearch.regex }, // Tìm kiếm theo tên khách hàng
+        { _id: objectSearch.keyword },
+        { "userInfo.fullName": objectSearch.regex },
       ];
     }
 
@@ -73,10 +31,9 @@ exports.index = async (req, res) => {
       if (endDate) query.createdAt.$lte = new Date(endDate);
     }
 
-    // Lấy tất cả dữ liệu (không phân trang)
     const orders = await Order.find(query)
-      .populate("user_id", "fullName email") // Lấy thông tin user (tên, email)
-      .sort({ createdAt: -1 }); // Sắp xếp theo ngày tạo (mới nhất trước)
+      .populate("user_id", "fullName email")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -85,20 +42,19 @@ exports.index = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Đã xảy ra lỗi khi lấy danh sách đơn hàng!",
-      error: error.message,
+      message: error.message,
     });
   }
 };
 
-// Lấy chi tiết một đơn hàng
+// [GET] /admin/order/detail/:id - Lấy chi tiết một đơn hàng
 exports.detail = async (req, res) => {
   try {
     const orderId = req.params.id;
 
     const order = await Order.findOne({ _id: orderId, deleted: false })
       .populate("user_id", "fullName email phone")
-      .populate("books.book_id", "title thumbnail price"); // Lấy thông tin sách
+      .populate("books.book_id", "title thumbnail price");
 
     if (!order) {
       return res.status(404).json({
@@ -120,7 +76,7 @@ exports.detail = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái đơn hàng
+// [PATCH] /admin/order/change-status/:id - Cập nhật trạng thái đơn hàng
 exports.changeStatus = async (req, res) => {
   try {
     const orderId = req.params.id;
@@ -145,8 +101,7 @@ exports.changeStatus = async (req, res) => {
     order.status = status;
     await order.save();
 
-    // Tạo thông báo tự động
-    const notification = await createOrderStatusNotification(
+    const notification = await orderHelper.createOrderStatusNotification(
       order,
       status,
       res.locals.user._id
@@ -171,7 +126,7 @@ exports.changeStatus = async (req, res) => {
   }
 };
 
-// Cập nhật trạng thái của nhiều đơn hàng
+// [PATCH] /admin/order/change-multi - Cập nhật trạng thái của nhiều đơn hàng
 exports.changeMulti = async (req, res) => {
   try {
     const { orderIds, status } = req.body;
@@ -211,7 +166,7 @@ exports.changeMulti = async (req, res) => {
 
     // Tạo thông báo cho từng đơn hàng
     for (const order of orders) {
-      const notification = await createOrderStatusNotification(
+      const notification = await orderHelper.createOrderStatusNotification(
         order,
         status,
         res.locals.user._id
@@ -237,7 +192,7 @@ exports.changeMulti = async (req, res) => {
   }
 };
 
-// Xóa đơn hàng (xóa mềm)
+// [DELETE] /admin/order/delete/:id - Xóa đơn hàng
 exports.delete = async (req, res) => {
   try {
     const orderId = req.params.id;

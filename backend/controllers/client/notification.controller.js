@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Notification = require("../../models/notification.model");
 
-exports.getNotifications = async (req, res) => {
+//[GET] /notification - Lấy ra tất cả thông báo của khách hàng
+exports.index = async (req, res) => {
   try {
     const userId = req.user._id;
 
@@ -11,7 +12,6 @@ exports.getNotifications = async (req, res) => {
       { "target.type": "specific", "target.userIds": userId },
     ];
 
-    // Chỉ thêm điều kiện group nếu groupId tồn tại
     if (req.user.groupId) {
       conditions.push({
         "target.type": "group",
@@ -42,27 +42,19 @@ exports.getNotifications = async (req, res) => {
       data: formattedNotifications,
     });
   } catch (error) {
-    console.error("Error in getNotifications:", error);
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
-      data: null,
+      message: "Đã xảy ra lỗi khi lấy thông báo!",
+      error: error.message,
     });
   }
 };
 
-exports.getDetailNotification = async (req, res) => {
+//[GET] /notification/detail/:id - Lấy ra chi tiết 1 thông báo
+exports.detail = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        code: 400,
-        message: "ID thông báo không hợp lệ",
-        data: null,
-      });
-    }
 
     const notification = await Notification.findById(id)
       .select("title content type status sendAt createdAt readBy target")
@@ -78,7 +70,7 @@ exports.getDetailNotification = async (req, res) => {
 
     const isAccessible =
       notification.target.type === "all" ||
-      notification.type === "promotion" || // Cho phép tất cả người dùng xem thông báo promotion
+      notification.type === "promotion" ||
       (notification.target.type === "group" &&
         req.user.groupId &&
         String(notification.target.groupId) === String(req.user.groupId)) ||
@@ -115,27 +107,19 @@ exports.getDetailNotification = async (req, res) => {
       data: formattedNotification,
     });
   } catch (error) {
-    console.error("Error in getDetailNotification:", error);
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
-      data: null,
+      message: "Đã xảy ra lỗi!",
+      error: error.message,
     });
   }
 };
 
-exports.markAsRead = async (req, res) => {
+//[PATCH] /notification/:id/read - Đánh dấu thông báo đã đọc
+exports.read = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        code: 400,
-        message: "ID thông báo không hợp lệ",
-        data: null,
-      });
-    }
 
     const notification = await Notification.findById(id);
 
@@ -180,13 +164,14 @@ exports.markAsRead = async (req, res) => {
     console.error("Error in markAsRead:", error);
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
-      data: null,
+      message: "Đã xảy ra lỗi!",
+      error: error.message,
     });
   }
 };
 
-exports.getUnreadCount = async (req, res) => {
+//[GET] /notification/unread-count - Lấy ra số lượng thông báo chưa đọc
+exports.unreadCount = async (req, res) => {
   try {
     const userId = req.user._id;
 
@@ -221,8 +206,8 @@ exports.getUnreadCount = async (req, res) => {
     console.error("Error in getUnreadCount:", error);
     return res.status(500).json({
       code: 500,
-      message: `Lỗi server: ${error.message}`,
-      data: null,
+      message: "Đã xảy ra lỗi!",
+      error: error.message,
     });
   }
 };
