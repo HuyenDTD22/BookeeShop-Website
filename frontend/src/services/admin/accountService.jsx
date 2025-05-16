@@ -7,9 +7,7 @@ export const getAccounts = async (params = {}) => {
   try {
     const response = await axios.get(`${API_URL}/${ADMIN}/account`, {
       params,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -23,9 +21,6 @@ export const getAccountDetail = async (id) => {
     const response = await axios.get(
       `${API_URL}/${ADMIN}/account/detail/${id}`,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
         withCredentials: true,
       }
     );

@@ -7,9 +7,7 @@ export const getBooks = async (params = {}) => {
   try {
     const response = await axios.get(`${API_URL}/${ADMIN}/book`, {
       params,
-      headers: {
-        "Content-Type": "application/json",
-      },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -21,9 +19,7 @@ export const getBooks = async (params = {}) => {
 export const getBookDetail = async (id) => {
   try {
     const response = await axios.get(`${API_URL}/${ADMIN}/book/detail/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      withCredentials: true,
     });
     return response.data;
   } catch (error) {

@@ -5,7 +5,9 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getRoles = async () => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/role`);
+    const response = await axios.get(`${API_URL}/${ADMIN}/role`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching roles:", error);

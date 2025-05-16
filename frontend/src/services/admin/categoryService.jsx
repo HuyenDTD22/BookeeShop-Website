@@ -9,7 +9,6 @@ export const getCategory = async (params = {}) => {
       params,
       withCredentials: true,
     });
-    console.log("Categories response:", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -25,9 +24,7 @@ export const getCategoryDetail = async (id) => {
     const response = await axios.get(
       `${API_URL}/${ADMIN}/category/detail/${id}`,
       {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        withCredentials: true,
       }
     );
     return response.data;
