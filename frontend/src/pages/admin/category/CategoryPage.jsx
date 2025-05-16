@@ -118,7 +118,6 @@ const CategoriesPage = () => {
       return;
     }
 
-    // Hiển thị modal xác nhận
     if (
       window.confirm(
         `Bạn có chắc chắn muốn ${

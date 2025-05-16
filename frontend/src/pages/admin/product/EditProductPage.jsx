@@ -22,7 +22,6 @@ const EditProductPage = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastVariant, setToastVariant] = useState("success");
 
-  // Lấy dữ liệu sản phẩm để điền sẵn vào form
   useEffect(() => {
     const fetchBookDetail = async () => {
       try {

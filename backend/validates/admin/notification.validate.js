@@ -1,9 +1,3 @@
-module.exports.index = (req, res, next) => {
-  // Endpoint GET / không cần dữ liệu đầu vào từ body
-  // Không cần validate, chỉ gọi next()
-  next();
-};
-
 module.exports.detail = (req, res, next) => {
   let message = "";
 
@@ -282,8 +276,3 @@ module.exports.read = (req, res, next) => {
   next();
 };
 
-module.exports.stats = (req, res, next) => {
-  // Endpoint GET /stats không cần dữ liệu đầu vào từ body
-  // Không cần validate, chỉ gọi next()
-  next();
-};

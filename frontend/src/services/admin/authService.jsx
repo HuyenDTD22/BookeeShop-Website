@@ -29,7 +29,7 @@ const authService = {
   logout: async () => {
     try {
       const response = await axios.get(`${API_URL}/${ADMIN}/auth/logout`, {
-        withCredentials: true, // Gửi cookie trong request
+        withCredentials: true,
       });
       return response.data;
     } catch (error) {
