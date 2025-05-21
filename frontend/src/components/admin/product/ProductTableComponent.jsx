@@ -86,7 +86,7 @@ const ProductTableComponent = ({
             <th>Giá</th>
             <th>Vị trí</th>
             <th>Trạng thái</th>
-            <th>Người tạo</th>
+            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
@@ -109,7 +109,7 @@ const ProductTableComponent = ({
                 />
               </td>
               <td>{book.title}</td>
-              <td>{book.price}$</td>
+              <td>{book.price}đ</td>
               <td>{book.position}</td>
               <td>
                 <Button
@@ -133,7 +133,7 @@ const ProductTableComponent = ({
                   )}
                 </Button>
               </td>
-              <td>{book.accountFullName || "N/A"}</td>
+              {/* <td>{book.accountFullName || "N/A"}</td> */}
               <td>
                 {hasPermission("read_books") && (
                   <Link to={`/${ADMIN}/book/detail/${book._id}`}>

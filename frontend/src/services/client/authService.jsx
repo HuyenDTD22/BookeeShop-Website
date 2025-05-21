@@ -80,7 +80,7 @@ const authService = {
   verifyOtp: async (email, otp) => {
     try {
       const response = await axios.post(
-        `${API_URL}/user/password/opt`,
+        `${API_URL}/user/password/otp`,
         { email, otp },
         {
           headers: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Image } from "react-bootstrap";
 import userService from "../../../services/admin/userService";
 
 const UserDetailComponent = ({ show, handleClose, userId }) => {
@@ -35,9 +35,15 @@ const UserDetailComponent = ({ show, handleClose, userId }) => {
         {error && <p className="text-danger">{error}</p>}
         {user && (
           <div>
-            <p>
-              <strong>ID:</strong> {user._id}
-            </p>
+            <div className="text-center mb-4">
+              <Image
+                src={user.avatar || "https://via.placeholder.com/150"}
+                alt="Avatar"
+                roundedCircle
+                width={150}
+                height={150}
+              />
+            </div>
             <p>
               <strong>Tên:</strong> {user.fullName}
             </p>

@@ -88,7 +88,7 @@ const AccountTableComponent = ({
             <th>Email</th>
             <th>Số điện thoại</th>
             <th>Trạng thái</th>
-            <th>Người tạo</th>
+            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
@@ -144,7 +144,7 @@ const AccountTableComponent = ({
                   )}
                 </Button>
               </td>
-              <td>{account.accountFullName || "N/A"}</td>
+              {/* <td>{account.accountFullName || "N/A"}</td> */}
               <td>
                 {hasPermission("read_accounts") && (
                   <Link to={`/${ADMIN}/account/detail/${account._id}`}>

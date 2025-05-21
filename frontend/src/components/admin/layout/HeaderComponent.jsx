@@ -26,7 +26,20 @@ const HeaderComponent = ({ handleLogout }) => {
   const userAvatar = userInfo && userInfo.avatar ? userInfo.avatar : null;
 
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" className="px-3">
+    <Navbar
+      bg="dark"
+      variant="dark"
+      expand="lg"
+      className="px-3"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 250,
+        right: 0,
+        zIndex: 1001,
+        height: "60px",
+      }}
+    >
       <Nav className="ms-auto align-items-center">
         <Dropdown>
           <Dropdown.Toggle variant="dark" id="dropdown-basic">

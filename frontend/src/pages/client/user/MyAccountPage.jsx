@@ -211,7 +211,7 @@ const MyAccountPage = () => {
               <Card.Header className="bg-primary text-white">
                 <div className="d-flex align-items-center">
                   <FiSettings className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Cài đặt</h2>
+                  <h2 className="m-0 fs-4">Cài đặt tài khoản</h2>
                 </div>
               </Card.Header>
               <SettingsFormComponent

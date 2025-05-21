@@ -327,10 +327,10 @@ const ReviewDetailModal = ({ show, onHide, book }) => {
                     <div
                       className={`progress-bar ${
                         star >= 4
-                          ? "bg-success"
+                          ? "bg-warning"
                           : star === 3
                           ? "bg-warning"
-                          : "bg-danger"
+                          : "bg-warning"
                       }`}
                       role="progressbar"
                       style={{ width: `${ratingPercentages[5 - star]}%` }}

@@ -25,7 +25,15 @@ const AdminLayout = ({ children }) => {
       <SideComponent />
       <div className="flex-grow-1">
         <HeaderComponent handleLogout={handleLogout} />
-        {children}
+        <div
+          style={{
+            marginLeft: "250px",
+            padding: "20px",
+            paddingTop: "80px",
+          }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -140,7 +140,7 @@ const CategoryTableComponent = ({
                 )}
               </Button>
             </td>
-            <td>{category.accountFullName || "N/A"}</td>
+            {/* <td>{category.accountFullName || "N/A"}</td> */}
             <td>
               {hasPermission("update_categories") && (
                 <Link to={`/${ADMIN}/category/edit/${category._id}`}>
@@ -198,7 +198,7 @@ const CategoryTableComponent = ({
             <th>Hình ảnh</th>
             <th>Tiêu đề</th>
             <th>Trạng thái</th>
-            <th>Người tạo</th>
+            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>

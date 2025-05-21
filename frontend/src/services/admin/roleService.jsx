@@ -17,7 +17,9 @@ export const getRoles = async () => {
 
 export const getRoleDetail = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/role/detail/${id}`);
+    const response = await axios.get(`${API_URL}/${ADMIN}/role/detail/${id}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching role detail:", error);

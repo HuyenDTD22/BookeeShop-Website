@@ -81,7 +81,7 @@ const ProductTableComponent = ({
             <th>Nhóm quyền</th>
             <th>Mô tả</th>
             <th>Trạng thái</th>
-            <th>Người tạo</th>
+            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
@@ -120,7 +120,7 @@ const ProductTableComponent = ({
                   )}
                 </Button>
               </td>
-              <td>{role.accountFullName || "N/A"}</td>
+              {/* <td>{role.accountFullName || "N/A"}</td> */}
               <td>
                 {hasPermission("update_roles") && (
                   <Link to={`/${ADMIN}/role/edit/${role._id}`}>

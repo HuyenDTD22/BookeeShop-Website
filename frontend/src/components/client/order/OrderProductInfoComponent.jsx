@@ -9,8 +9,8 @@ const OrderProductInfoComponent = ({ book, quantity, setQuantity }) => {
           src={book.thumbnail}
           alt={book.title}
           style={{
-            width: "120px",
-            height: "60px",
+            width: "100px",
+            height: "90px",
             objectFit: "cover",
             borderRadius: "5px",
           }}

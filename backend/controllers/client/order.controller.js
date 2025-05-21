@@ -177,7 +177,8 @@ module.exports.getMyOrders = async (req, res) => {
 
     const orders = await Order.find({ user_id, deleted: false })
       .populate("user_id", "fullName email")
-      .populate("books.book_id", "title thumbnail");
+      .populate("books.book_id", "title thumbnail")
+      .sort({ createdAt: -1 });
 
     const totalOrders = orders.length;
     const totalSpent = orders.reduce((sum, order) => sum + order.totalPrice, 0);

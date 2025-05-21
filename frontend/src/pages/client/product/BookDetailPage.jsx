@@ -420,7 +420,7 @@ const BookDetailPage = () => {
                   </span>
                   <div className="progress" style={{ width: "300px" }}>
                     <div
-                      className="progress-bar bg-success"
+                      className="progress-bar bg-warning"
                       role="progressbar"
                       style={{ width: `${ratingPercentages[5]}%` }}
                       aria-valuenow={ratingPercentages[5]}
@@ -438,7 +438,7 @@ const BookDetailPage = () => {
                   </span>
                   <div className="progress" style={{ width: "300px" }}>
                     <div
-                      className="progress-bar bg-success"
+                      className="progress-bar bg-warning"
                       role="progressbar"
                       style={{ width: `${ratingPercentages[4]}%` }}
                       aria-valuenow={ratingPercentages[4]}
@@ -492,7 +492,7 @@ const BookDetailPage = () => {
                   </span>
                   <div className="progress" style={{ width: "300px" }}>
                     <div
-                      className="progress-bar bg-danger"
+                      className="progress-bar bg-warning"
                       role="progressbar"
                       style={{ width: `${ratingPercentages[1]}%` }}
                       aria-valuenow={ratingPercentages[1]}

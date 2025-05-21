@@ -103,7 +103,7 @@ const OrderPage = () => {
   }
 
   const subtotal = books.reduce(
-    (sum, book) => sum + book.priceNew * (quantities[book._id] || 1),
+    (sum, book) => sum + book.price * (quantities[book._id] || 1),
     0
   );
   const discount = books.reduce(
@@ -111,7 +111,11 @@ const OrderPage = () => {
       sum + (book.price - book.priceNew) * (quantities[book._id] || 1),
     0
   );
-  const total = subtotal;
+
+  const total = books.reduce(
+    (sum, book) => sum + book.priceNew * (quantities[book._id] || 1),
+    0
+  );
 
   const handleCheckout = async () => {
     setLoading(true);

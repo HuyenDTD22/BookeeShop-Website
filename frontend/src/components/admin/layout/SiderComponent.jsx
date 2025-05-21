@@ -22,7 +22,17 @@ const SiderComponent = () => {
   const { hasPermission } = useContext(AuthContext);
 
   return (
-    <div className="bg-dark text-white vh-100" style={{ width: "250px" }}>
+    <div
+      className="bg-dark text-white position-fixed"
+      style={{
+        width: "250px",
+        height: "100vh",
+        overflowY: "auto",
+        top: 0,
+        left: 0,
+        zIndex: 1000,
+      }}
+    >
       <div className="p-3">
         <Navbar.Brand
           href={`/${ADMIN}`}

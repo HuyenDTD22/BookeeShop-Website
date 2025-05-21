@@ -72,7 +72,6 @@ const NotificationsPage = ({ setNotificationCount }) => {
 
   return (
     <Container className="my-4">
-      <h1 className="fs-3 mb-4">Thông báo</h1>
       {loading ? (
         <Spinner animation="border" />
       ) : (

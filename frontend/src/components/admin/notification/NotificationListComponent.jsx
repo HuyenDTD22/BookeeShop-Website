@@ -221,7 +221,7 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
             <th>Loại</th>
             <th>Trạng thái</th>
             <th>Thời gian gửi</th>
-            <th>Người tạo</th>
+            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
@@ -250,7 +250,7 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
                   ? new Date(notification.sendAt).toLocaleString()
                   : "Chưa gửi"}
               </td>
-              <td>{notification.createdBy?.fullName || "N/A"}</td>
+              {/* <td>{notification.createdBy?.fullName || "N/A"}</td> */}
               <td>
                 <Dropdown>
                   <Dropdown.Toggle

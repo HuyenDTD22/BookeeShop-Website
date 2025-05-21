@@ -82,90 +82,101 @@ const ProductDetailComponent = ({ book }) => {
       </Card>
 
       <Row className="mb-5">
-        <Col md={5} className="mb-4 d-flex justify-content-center">
-          <Image
-            src={book.thumbnail || "https://via.placeholder.com/400"}
-            alt={book.title}
-            fluid
-            className="border rounded shadow-sm"
-            style={{
-              maxHeight: "450px",
-              maxWidth: "100%",
-              objectFit: "contain",
-            }}
-          />
-        </Col>
+        <Col>
+          <Card className="shadow-sm">
+            <Card.Body>
+              <h3 className="text-primary mb-3">Thông tin cơ bản</h3>
+              <Row>
+                <Col md={5} className="mb-4 d-flex justify-content-center">
+                  <Image
+                    src={book.thumbnail || "https://via.placeholder.com/400"}
+                    alt={book.title}
+                    fluid
+                    className="border rounded shadow-sm"
+                    style={{
+                      maxHeight: "450px",
+                      maxWidth: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </Col>
 
-        <Col md={7}>
-          <h1 className="text-primary mb-3">
-            {book.title || "Không có tiêu đề"}
-          </h1>
-          <div className="mb-3 d-flex align-items-center">
-            {renderStars(book.rating_mean || 5)}
-            <span className="text-muted ms-2">
-              ({book.rating_mean ? book.rating_mean.toFixed(1) : "5.0"})
-            </span>
-          </div>
+                <Col md={7}>
+                  <h1 className="text-primary mb-3">
+                    {book.title || "Không có tiêu đề"}
+                  </h1>
+                  <div className="mb-3 d-flex align-items-center">
+                    {renderStars(book.rating_mean || 5)}
+                    <span className="text-muted ms-2">
+                      ({book.rating_mean ? book.rating_mean.toFixed(1) : "5.0"})
+                    </span>
+                  </div>
 
-          <p className="text-muted mb-2">
-            <strong>Danh mục:</strong>{" "}
-            <span className="fw-semibold">
-              {findCategoryTitle(book.book_category_id)}
-            </span>
-          </p>
-          <p className="text-muted mb-2">
-            <strong>Tác giả:</strong>{" "}
-            <span className="fw-semibold">{book.author || "N/A"}</span>
-          </p>
+                  <p className="text-muted mb-2">
+                    <strong>Danh mục:</strong>{" "}
+                    <span className="fw-semibold">
+                      {findCategoryTitle(book.book_category_id)}
+                    </span>
+                  </p>
+                  <p className="text-muted mb-2">
+                    <strong>Tác giả:</strong>{" "}
+                    <span className="fw-semibold">{book.author || "N/A"}</span>
+                  </p>
 
-          <div className="mb-3">
-            {book.discountPercentage > 0 ? (
-              <>
-                <h3 className="text-danger d-inline me-3">
-                  {discountedPrice.toLocaleString()}đ
-                </h3>
-                <h4 className="text-muted d-inline text-decoration-line-through">
-                  {book.price.toLocaleString()}đ
-                </h4>
-                <Badge bg="danger" className="ms-3">
-                  Giảm {book.discountPercentage}%
-                </Badge>
-              </>
-            ) : (
-              <h3 className="text-danger">
-                {book.price?.toLocaleString() || 0}đ
-              </h3>
-            )}
-          </div>
+                  <div className="mb-3">
+                    {book.discountPercentage > 0 ? (
+                      <>
+                        <h3 className="text-danger d-inline me-3">
+                          {discountedPrice.toLocaleString()}đ
+                        </h3>
+                        <h4 className="text-muted d-inline text-decoration-line-through">
+                          {book.price.toLocaleString()}đ
+                        </h4>
+                        <Badge bg="danger" className="ms-3">
+                          Giảm {book.discountPercentage}%
+                        </Badge>
+                      </>
+                    ) : (
+                      <h3 className="text-danger">
+                        {book.price?.toLocaleString() || 0}đ
+                      </h3>
+                    )}
+                  </div>
 
-          <p className="mb-2">
-            <strong>Số lượng:</strong>{" "}
-            <span className="fw-semibold">{book.stock || 0}</span>
-          </p>
+                  <p className="mb-2">
+                    <strong>Số lượng:</strong>{" "}
+                    <span className="fw-semibold">{book.stock || 0}</span>
+                  </p>
 
-          <p className="mb-2">
-            <strong>Vị trí:</strong> <span>{book.position || 0}</span>
-          </p>
-          <p className="mb-2">
-            <strong>Trạng thái:</strong>{" "}
-            <Badge bg={book.status === "active" ? "success" : "danger"}>
-              {book.status === "active" ? "Hoạt động" : "Dừng hoạt động"}
-            </Badge>
-          </p>
-          <p className="mb-4">
-            <strong>Nổi bật:</strong>{" "}
-            <Badge bg={book.featured ? "primary" : "secondary"}>
-              {book.featured ? "Có" : "Không"}
-            </Badge>
-          </p>
+                  <p className="mb-2">
+                    <strong>Vị trí:</strong> <span>{book.position || 0}</span>
+                  </p>
+                  <p className="mb-2">
+                    <strong>Trạng thái:</strong>{" "}
+                    <Badge bg={book.status === "active" ? "success" : "danger"}>
+                      {book.status === "active"
+                        ? "Hoạt động"
+                        : "Dừng hoạt động"}
+                    </Badge>
+                  </p>
+                  <p className="mb-4">
+                    <strong>Nổi bật:</strong>{" "}
+                    <Badge bg={book.featured ? "primary" : "secondary"}>
+                      {book.featured ? "Có" : "Không"}
+                    </Badge>
+                  </p>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
 
       <Row className="mb-5">
         <Col>
-          <h3 className="text-primary mb-3">Thông tin chi tiết</h3>
           <Card className="shadow-sm">
             <Card.Body>
+              <h3 className="text-primary mb-3">Thông tin chi tiết</h3>
               <Row>
                 <Col md={6}>
                   <p>
@@ -206,9 +217,9 @@ const ProductDetailComponent = ({ book }) => {
       </Row>
       <Row className="mb-5">
         <Col>
-          <h3 className="text-primary mb-3">Mô tả chi tiết</h3>
           <Card className="shadow-sm">
             <Card.Body>
+              <h3 className="text-primary mb-3">Mô tả chi tiết</h3>
               {sanitizedDescription ? (
                 <div
                   dangerouslySetInnerHTML={{ __html: sanitizedDescription }}

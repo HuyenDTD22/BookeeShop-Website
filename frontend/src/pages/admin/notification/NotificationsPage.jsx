@@ -14,7 +14,7 @@ const NotificationsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const { hasPermission } = useContext(AuthContext);
-  const limit = 5;
+  const limit = 15;
 
   const fetchNotifications = async () => {
     setLoading(true);

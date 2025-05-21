@@ -34,47 +34,56 @@ const BookCardComponent = ({ book, link }) => {
       to={link || `/book/detail/${book.slug}`}
       className="text-decoration-none"
     >
-      <Card className="book-card shadow-sm border-0 h-100">
-        <Card.Img
-          variant="top"
-          src={book.thumbnail || "https://via.placeholder.com/200"}
-          alt={book.title}
-          className="book-card-img"
-        />
-        <Card.Body className="book-card-body">
-          <Card.Title className="text-primary book-card-title">
-            <Link
-              to={`/book/detail/${book.slug}`}
-              className="text-decoration-none"
-              onClick={handleButtonClick}
+      <Card
+        className="category-card shadow-sm"
+        style={{ border: "1px solid #ccc" }}
+      >
+        <Card className="book-card shadow-sm border-0 h-100">
+          <Card.Img
+            variant="top"
+            src={book.thumbnail || "https://via.placeholder.com/200"}
+            alt={book.title}
+            className="book-card-img"
+            style={{ height: "200px", objectFit: "contain", marginTop: "10px" }}
+          />
+          <Card.Body className="book-card-body">
+            <Card.Title
+              className="text-dark book-card-title"
+              style={{ fontSize: "1rem" }}
             >
-              {book.title}
-            </Link>
-          </Card.Title>
-          <div className="mb-2 book-card-price">
-            {book.discountPercentage > 0 ? (
-              <>
-                <span className="text-danger fw-bold me-2">
-                  {book.priceNew?.toLocaleString()}đ
-                </span>
-                <span className="text-muted text-decoration-line-through me-2">
+              <Link
+                to={`/book/detail/${book.slug}`}
+                className="text-decoration-none text-dark"
+                onClick={handleButtonClick}
+              >
+                {book.title}
+              </Link>
+            </Card.Title>
+            <div className="mb-2 book-card-price">
+              {book.discountPercentage > 0 ? (
+                <>
+                  <span className="text-danger fw-bold me-2">
+                    {book.priceNew?.toLocaleString()}đ
+                  </span>
+                  <span className="text-muted text-decoration-line-through me-2">
+                    {book.price?.toLocaleString()}đ
+                  </span>
+                  <Badge bg="danger">-{book.discountPercentage}%</Badge>
+                </>
+              ) : (
+                <span className="text-danger fw-bold">
                   {book.price?.toLocaleString()}đ
                 </span>
-                <Badge bg="danger">-{book.discountPercentage}%</Badge>
-              </>
-            ) : (
-              <span className="text-danger fw-bold">
-                {book.price?.toLocaleString()}đ
-              </span>
-            )}
-          </div>
-          <div className="mb-2 book-card-sold">
-            Đã bán: {book.soldCount || 0}
-          </div>
-          <div className="mb-2 book-card-rating">
-            {renderStars(book.rating_mean || 5)}
-          </div>
-        </Card.Body>
+              )}
+            </div>
+            <div className="mb-2 book-card-sold">
+              Đã bán: {book.soldCount || 0}
+            </div>
+            <div className="mb-2 book-card-rating">
+              {renderStars(book.rating_mean || 5)}
+            </div>
+          </Card.Body>
+        </Card>
       </Card>
     </Link>
   );

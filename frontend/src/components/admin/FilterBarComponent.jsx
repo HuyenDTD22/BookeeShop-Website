@@ -35,6 +35,23 @@ const FilterBarComponent = ({ onFilter, onSearch, onAddNew }) => {
           </Dropdown.Menu>
         </Dropdown>
 
+        {/* <Dropdown style={{ marginLeft: "15px" }}>
+          <Dropdown.Toggle variant="outline-primary" id="dropdown-status">
+            {status || "Sắp xếp"}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => handleStatusChange("")}>
+              Tất cả
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleStatusChange("active")}>
+              Hoạt động
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleStatusChange("inactive")}>
+              Dừng hoạt động
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown> */}
+
         <Form className="ms-3" onSubmit={handleSearch}>
           <Form.Group className="d-flex align-items-center">
             <Form.Control

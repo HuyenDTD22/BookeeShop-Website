@@ -6,6 +6,7 @@ import homeService from "../../../services/client/homeService";
 import bookService from "../../../services/client/bookService";
 import BookCardComponent from "../../../components/client/product/BookCardComponent";
 import CategoryCardComponent from "../../../components/client/category/CategoryCardComponent";
+import BookFilterSortComponent from "../../../components/client/product/BookFilterSortComponent";
 import ResetPasswordModal from "../../../components/common/ResetPasswordModal";
 import authService from "../../../services/client/authService";
 import "../../../styles/client/pages/HomePage.css";
@@ -29,6 +30,12 @@ const HomePage = () => {
 
   const [showResetModal, setShowResetModal] = useState(false);
   const [email, setEmail] = useState("");
+
+  const [filters, setFilters] = useState({
+    rating: "",
+    sortBy: "",
+    sortOrder: "",
+  });
 
   useEffect(() => {
     const { state } = location;
@@ -54,18 +61,30 @@ const HomePage = () => {
     fetchHomepageData();
   }, []);
 
+  //   useEffect(() => {
+  //     const fetchAllBooks = async () => {
+  //       try {
+  //         const data = await bookService.getAllBooks(currentPage, limit);
+  //         setAllBooks(data.books || []);
+  //         setTotalPages(Math.ceil(data.total / limit) || 1);
+  //       } catch (error) {
+  //         console.error("Failed to fetch all books:", error);
+  //       }
+  //     };
+  //     fetchAllBooks();
+  //   }, [currentPage]);
+
   useEffect(() => {
     const fetchAllBooks = async () => {
       try {
-        const data = await bookService.getAllBooks(currentPage, limit);
+        const data = await bookService.getAllBooks(filters);
         setAllBooks(data.books || []);
-        setTotalPages(Math.ceil(data.total / limit) || 1);
       } catch (error) {
         console.error("Failed to fetch all books:", error);
       }
     };
     fetchAllBooks();
-  }, [currentPage]);
+  }, [filters]);
 
   const handleCategoryPrev = () => {
     setCategoryIndex((prev) => Math.max(prev - 1, 0));
@@ -121,12 +140,14 @@ const HomePage = () => {
     <div className="homepage">
       <div className="banner position-relative mb-5">
         <img
-          src="https://res.cloudinary.com/dmmdzacfp/image/upload/v1744999124/ptlb7cxyr4rwvtnckvsc.jpg"
+          src="https://res.cloudinary.com/dmmdzacfp/image/upload/v1747543700/Violet_okr0ij.jpg"
           alt="Book Banner"
           style={{ width: "100%", height: "400px", objectFit: "cover" }}
         />
         <div className="banner-content position-absolute top-50 start-50 translate-middle text-center text-white">
-          <h1 className="display-4 fw-bold">Giảm giá 20% toàn bộ sách!</h1>
+          <h1 className="display-4 fw-bold">
+            Khuyến mãi khủng cho toàn bộ sách!
+          </h1>
           <p className="lead">Chỉ trong tháng này, nhanh tay mua ngay!</p>
           <Button variant="danger" size="lg" as={Link} to="/book">
             Mua ngay
@@ -279,6 +300,10 @@ const HomePage = () => {
         <section className="all-books mb-5">
           <div className="section-block">
             <h2 className="section-title">Tất cả sản phẩm</h2>
+            <BookFilterSortComponent
+              onFilterChange={(newFilters) => setFilters(newFilters)}
+              initialFilters={filters}
+            />
             {loading ? (
               <div className="text-center">Đang tải...</div>
             ) : (

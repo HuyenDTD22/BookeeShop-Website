@@ -309,11 +309,86 @@ module.exports.info = async (req, res) => {
   }
 };
 
+// // [PATCH] /user/update - Cập nhật thông tin cá nhân
+// module.exports.update = async (req, res) => {
+//   try {
+//     const user_id = req.user._id;
+//     const { fullName, phone, address, avatar } = req.body;
+
+//     const user = await User.findById(user_id);
+//     if (!user) {
+//       return res.status(404).json({
+//         code: 404,
+//         message: "Người dùng không tồn tại!",
+//       });
+//     }
+
+//     // if (password) {
+//     //   if (md5(oldPassword) !== user.password) {
+//     //     return res.json({
+//     //       code: 400,
+//     //       message: "Mật khẩu cũ không đúng!",
+//     //     });
+//     //   }
+//     //   user.password = md5(password);
+//     // }
+
+//     if (password) {
+//       if (!oldPassword) {
+//         return res.json({
+//           code: 400,
+//           message: "Vui lòng nhập mật khẩu cũ!",
+//         });
+//       }
+//       if (md5(oldPassword) !== user.password) {
+//         return res.json({
+//           code: 400,
+//           message: "Mật khẩu cũ không đúng!",
+//         });
+//       }
+//       if (md5(password) === user.password) {
+//         return res.json({
+//           code: 400,
+//           message: "Mật khẩu mới phải khác mật khẩu cũ!",
+//         });
+//       }
+//     }
+
+//     const updateData = {};
+//     if (fullName) updateData.fullName = fullName;
+//     if (phone) updateData.phone = phone;
+//     if (address) updateData.address = address;
+//     if (avatar) updateData.avatar = avatar;
+//     if (password) updateData.password = user.password;
+
+//     await User.updateOne({ _id: user_id }, updateData);
+
+//     const updatedUser = await User.findById(user_id).select(
+//       "-password -deleted"
+//     );
+
+//     res.json({
+//       code: 200,
+//       message: "Cập nhật thông tin thành công!",
+//       info: updatedUser,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       code: 500,
+//       message: "Đã xảy ra lỗi chỉnh sửa tài khoản!",
+//       error: error.message,
+//     });
+//   }
+// };
+
 // [PATCH] /user/update - Cập nhật thông tin cá nhân
 module.exports.update = async (req, res) => {
   try {
     const user_id = req.user._id;
-    const { fullName, phone, address, avatar } = req.body;
+    const { fullName, phone, address, password, oldPassword } = req.body;
+
+    console.log("Update request body:", req.body);
+    console.log("Uploaded file:", req.file);
 
     const user = await User.findById(user_id);
     if (!user) {
@@ -323,25 +398,48 @@ module.exports.update = async (req, res) => {
       });
     }
 
+    // Kiểm tra mật khẩu nếu có
     if (password) {
+      if (!oldPassword) {
+        return res.json({
+          code: 400,
+          message: "Vui lòng nhập mật khẩu cũ!",
+        });
+      }
       if (md5(oldPassword) !== user.password) {
         return res.json({
           code: 400,
           message: "Mật khẩu cũ không đúng!",
         });
       }
-      user.password = md5(password);
+      if (md5(password) === user.password) {
+        return res.json({
+          code: 400,
+          message: "Mật khẩu mới phải khác mật khẩu cũ!",
+        });
+      }
     }
 
+    // Chuẩn bị dữ liệu cập nhật
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
     if (phone) updateData.phone = phone;
     if (address) updateData.address = address;
-    if (avatar) updateData.avatar = avatar;
-    if (password) updateData.password = user.password;
+    if (password) updateData.password = md5(password);
+    if (req.body.avatar) updateData.avatar = req.body.avatar;
 
-    await User.updateOne({ _id: user_id }, updateData);
+    console.log("Update data:", updateData);
 
+    // Cập nhật người dùng
+    const updateResult = await User.updateOne({ _id: user_id }, updateData);
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy người dùng để cập nhật!",
+      });
+    }
+
+    // Lấy thông tin người dùng sau khi cập nhật
     const updatedUser = await User.findById(user_id).select(
       "-password -deleted"
     );
@@ -352,6 +450,7 @@ module.exports.update = async (req, res) => {
       info: updatedUser,
     });
   } catch (error) {
+    console.error("Error in update:", error);
     res.status(500).json({
       code: 500,
       message: "Đã xảy ra lỗi chỉnh sửa tài khoản!",
