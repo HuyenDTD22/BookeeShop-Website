@@ -3,9 +3,10 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
-export const getRoles = async () => {
+export const getRoles = async (params = {}) => {
   try {
     const response = await axios.get(`${API_URL}/${ADMIN}/role`, {
+      params,
       withCredentials: true,
     });
     return response.data;

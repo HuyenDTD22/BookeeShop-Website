@@ -1,16 +1,24 @@
 const Role = require("../../models/role.model");
 
 const systemConfig = require("../../config/system");
+const searchHelper = require("../../helpers/search");
 
-//[GET] /admin/role - Lấy ra tất cả các nhóm quyền
+// [GET] /admin/role - Lấy ra tất cả các nhóm quyền
 module.exports.index = async (req, res) => {
   try {
     let find = {
       deleted: false,
     };
 
+    // Bộ lọc trạng thái
     if (req.query.status) {
       find.status = req.query.status;
+    }
+
+    // Tìm kiếm theo tiêu đề
+    let objectSearch = searchHelper(req.query);
+    if (req.query.keyword) {
+      find.title = objectSearch.regex;
     }
 
     const roles = await Role.find(find);
@@ -22,7 +30,7 @@ module.exports.index = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: error.message || JSON.stringify(error) || "Đã xảy ra lỗi",
+      message: error.message || "Đã xảy ra lỗi khi lấy danh sách nhóm quyền!",
     });
   }
 };

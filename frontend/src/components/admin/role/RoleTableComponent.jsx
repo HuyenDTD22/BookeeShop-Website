@@ -7,12 +7,14 @@ import { AuthContext } from "../../../context/AuthContext";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
-const ProductTableComponent = ({
+const RoleTableComponent = ({
   roles,
   onStatusChange,
   onDelete,
   onSelect,
   selectedRoles,
+  currentPage,
+  limitItems,
 }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState(null);
@@ -59,7 +61,7 @@ const ProductTableComponent = ({
 
   return (
     <>
-      <Table bordered hover className="product-table">
+      <Table bordered hover className="role-table">
         <thead>
           <tr>
             <th>
@@ -81,7 +83,6 @@ const ProductTableComponent = ({
             <th>Nhóm quyền</th>
             <th>Mô tả</th>
             <th>Trạng thái</th>
-            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
@@ -95,9 +96,9 @@ const ProductTableComponent = ({
                   onChange={() => handleSelect(role._id)}
                 />
               </td>
-              <td>{index + 1}</td>
+              <td>{(currentPage - 1) * limitItems + index + 1}</td>
               <td>{role.title}</td>
-              <td>{role.description}</td>
+              <td>{role.description || "N/A"}</td>
               <td>
                 <Button
                   variant={role.status === "active" ? "success" : "danger"}
@@ -120,7 +121,6 @@ const ProductTableComponent = ({
                   )}
                 </Button>
               </td>
-              {/* <td>{role.accountFullName || "N/A"}</td> */}
               <td>
                 {hasPermission("update_roles") && (
                   <Link to={`/${ADMIN}/role/edit/${role._id}`}>
@@ -185,4 +185,4 @@ const ProductTableComponent = ({
   );
 };
 
-export default ProductTableComponent;
+export default RoleTableComponent;

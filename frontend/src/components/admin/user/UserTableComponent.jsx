@@ -118,8 +118,8 @@ const UserTableComponent = ({
                   alt={user.fullName}
                   roundedCircle
                   style={{
-                    width: "100px",
-                    height: "100px",
+                    width: "50px",
+                    height: "50px",
                     objectFit: "cover",
                   }}
                 />

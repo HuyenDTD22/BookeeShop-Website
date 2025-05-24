@@ -8,6 +8,7 @@ import {
 } from "react-bootstrap";
 import FilterBarComponent from "../../../components/admin/FilterBarComponent";
 import RoleTableComponent from "../../../components/admin/role/RoleTableComponent";
+import PaginationComponent from "../../../components/common/PaginationComponent";
 import {
   getRoles,
   deleteRole,
@@ -21,7 +22,11 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 
 const RolesPage = () => {
   const [roles, setRoles] = useState([]);
+  const [displayedRoles, setDisplayedRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
   const [multiLoading, setMultiLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -29,15 +34,27 @@ const RolesPage = () => {
   const [toastVariant, setToastVariant] = useState("success");
   const { hasPermission } = useContext(AuthContext);
   const navigate = useNavigate();
+  const limitItems = 4;
 
   const fetchRoles = async (params = {}) => {
     try {
       setLoading(true);
-      const response = await getRoles();
+      const response = await getRoles(params);
+      console.log("Fetch roles response:", response); // Debug
       if (response.code === 200) {
-        setRoles(response.roles);
+        const allRoles = response.roles;
+        setRoles(allRoles);
+        setTotalItems(allRoles.length);
+        setTotalPages(Math.ceil(allRoles.length / limitItems) || 1);
+
+        const startIndex = (currentPage - 1) * limitItems;
+        const endIndex = startIndex + limitItems;
+        setDisplayedRoles(allRoles.slice(startIndex, endIndex));
+      } else {
+        throw new Error(response.message || "Lỗi khi lấy danh sách nhóm quyền");
       }
     } catch (error) {
+      console.error("Fetch roles error:", error);
       setToastMessage(
         error.message || "Đã xảy ra lỗi khi tải danh sách nhóm quyền!"
       );
@@ -52,11 +69,19 @@ const RolesPage = () => {
     fetchRoles();
   }, []);
 
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * limitItems;
+    const endIndex = startIndex + limitItems;
+    setDisplayedRoles(roles.slice(startIndex, endIndex));
+  }, [currentPage, roles]);
+
   const handleFilter = (filters) => {
+    setCurrentPage(1);
     fetchRoles(filters);
   };
 
   const handleSearch = (keyword) => {
+    setCurrentPage(1);
     fetchRoles({ keyword });
   };
 
@@ -109,7 +134,7 @@ const RolesPage = () => {
   const handleChangeMulti = async (key, value) => {
     if (!selectedRoles || selectedRoles.length === 0) {
       setToastMessage(
-        "Vui lòng chọn ít nhất một sản phẩm để thực hiện hành động!"
+        "Vui lòng chọn ít nhất một nhóm quyền để thực hiện hành động!"
       );
       setToastVariant("warning");
       setShowToast(true);
@@ -123,7 +148,7 @@ const RolesPage = () => {
             : value === "active"
             ? "kích hoạt"
             : "dừng hoạt động"
-        } ${selectedRoles.length} sản phẩm đã chọn không?`
+        } ${selectedRoles.length} nhóm quyền đã chọn không?`
       )
     ) {
       try {
@@ -137,12 +162,12 @@ const RolesPage = () => {
           fetchRoles();
         } else {
           throw new Error(
-            response.message || "Lỗi khi thay đổi nhiều sản phẩm"
+            response.message || "Lỗi khi thay đổi nhiều nhóm quyền"
           );
         }
       } catch (error) {
         setToastMessage(
-          error.message || "Đã xảy ra lỗi khi thay đổi nhiều sản phẩm!"
+          error.message || "Đã xảy ra lỗi khi thay đổi nhiều nhóm quyền!"
         );
         setToastVariant("danger");
         setShowToast(true);
@@ -153,7 +178,7 @@ const RolesPage = () => {
   };
 
   return (
-    <Container fluid className="products-page">
+    <Container fluid className="roles-page">
       <h2 className="mb-4">Danh sách nhóm quyền</h2>
 
       <FilterBarComponent
@@ -209,15 +234,49 @@ const RolesPage = () => {
         <div className="text-center my-4">
           <Spinner animation="border" variant="primary" />
         </div>
+      ) : roles.length === 0 ? (
+        <div className="text-center my-4">
+          <p>Không có nhóm quyền nào để hiển thị.</p>
+        </div>
       ) : (
-        <RoleTableComponent
-          roles={roles}
-          onStatusChange={handleStatusChange}
-          onDelete={handleDelete}
-          onSelect={handleSelectRoles}
-          selectedRoles={selectedRoles}
-        />
+        <>
+          <RoleTableComponent
+            roles={displayedRoles}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            onSelect={handleSelectRoles}
+            selectedRoles={selectedRoles}
+            currentPage={currentPage}
+            limitItems={limitItems}
+          />
+          {totalPages > 1 && (
+            <PaginationComponent
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              loading={loading}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          )}
+        </>
       )}
+
+      <ToastContainer position="top-end" className="p-3">
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={3000}
+          autohide
+          bg={toastVariant}
+        >
+          <Toast.Header>
+            <strong className="me-auto">
+              {toastVariant === "success" ? "Thành công" : "Lỗi"}
+            </strong>
+          </Toast.Header>
+          <Toast.Body>{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </Container>
   );
 };

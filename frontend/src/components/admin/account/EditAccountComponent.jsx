@@ -137,7 +137,6 @@ const EditAccountComponent = ({ account, onSubmit }) => {
                     placeholder="Mật khẩu"
                     value={formData.password}
                     onChange={handleChange}
-                    required
                     className="shadow-sm"
                   />
 
@@ -148,7 +147,6 @@ const EditAccountComponent = ({ account, onSubmit }) => {
                     placeholder="Nhập lại mật khẩu"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    required
                     className="shadow-sm"
                   />
 

@@ -17,7 +17,7 @@ const UserPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
-  const limitItems = 5;
+  const limitItems = 10;
 
   useEffect(() => {
     fetchUsers();

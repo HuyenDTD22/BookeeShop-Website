@@ -115,7 +115,10 @@ export const editAccount = async (id, accountData) => {
 export const deleteAccount = async (id) => {
   try {
     const response = await axios.delete(
-      `${API_URL}/${ADMIN}/account/delete/${id}`
+      `${API_URL}/${ADMIN}/account/delete/${id}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   } catch (error) {

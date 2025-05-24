@@ -119,7 +119,10 @@ export const editCategory = async (id, categoryData) => {
 export const deleteCategory = async (id) => {
   try {
     const response = await axios.delete(
-      `${API_URL}/${ADMIN}/category/delete/${id}`
+      `${API_URL}/${ADMIN}/category/delete/${id}`,
+      {
+        withCredentials: true,
+      }
     );
     return response.data;
   } catch (error) {

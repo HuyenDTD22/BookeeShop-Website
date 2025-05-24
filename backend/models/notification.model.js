@@ -82,6 +82,6 @@ notificationSchema.index({ title: "text", content: "text" }); // Hỗ trợ tìm
 notificationSchema.index({ status: 1, sendAt: 1 }); // Tối ưu cho truy vấn trạng thái và lịch gửi
 notificationSchema.index({ createdAt: -1 });
 
-const Notification = mongoose.model("notification", notificationSchema);
+const Notification = mongoose.model("notifications", notificationSchema);
 
 module.exports = Notification;

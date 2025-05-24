@@ -13,14 +13,15 @@ const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [filterType, setFilterType] = useState("");
   const { hasPermission } = useContext(AuthContext);
   const limit = 15;
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (params = {}) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await notificationService.getAllNotifications();
+      const response = await notificationService.getAllNotifications(params);
       if (!Array.isArray(response.data)) {
         throw new Error("Dữ liệu thông báo không hợp lệ!");
       }
@@ -44,9 +45,9 @@ const NotificationsPage = () => {
 
   useEffect(() => {
     if (hasPermission("read_notifications")) {
-      fetchNotifications();
+      fetchNotifications({ type: filterType });
     }
-  }, []);
+  }, [filterType]);
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * limit;
@@ -77,7 +78,9 @@ const NotificationsPage = () => {
         <>
           <NotificationListComponent
             notifications={displayNotifications}
-            onRefresh={fetchNotifications}
+            onRefresh={() => fetchNotifications({ type: filterType })}
+            filterType={filterType}
+            setFilterType={setFilterType}
           />
           <PaginationComponent
             currentPage={currentPage}

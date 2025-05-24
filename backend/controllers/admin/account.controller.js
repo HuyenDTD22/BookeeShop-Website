@@ -21,7 +21,7 @@ module.exports.index = async (req, res) => {
     let objectSearch = searchHelper(req.query);
 
     if (req.query.keyword) {
-      find.title = objectSearch.regex;
+      find.fullName = objectSearch.regex;
     }
 
     //Sort

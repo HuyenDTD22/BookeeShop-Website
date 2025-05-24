@@ -1,5 +1,6 @@
 const Book = require("../../models/book.model");
 const Account = require("../../models/account.model");
+const Order = require("../../models/order.model");
 const Comment = require("../../models/comment.model");
 
 const searchHelper = require("../../helpers/search");
@@ -11,27 +12,26 @@ module.exports.index = async (req, res) => {
       deleted: false,
     };
 
-    //Bộ lọc trạng thái
+    // Bộ lọc trạng thái
     if (req.query.status) {
       find.status = req.query.status;
     }
 
-    //Search
+    // Search
     let objectSearch = searchHelper(req.query);
-
     if (req.query.keyword) {
       find.title = objectSearch.regex;
     }
 
-    //Sort
+    // Sort
     const sort = {};
-
     if (req.query.sortKey && req.query.sortValue) {
       sort[req.query.sortKey] = req.query.sortValue;
     }
 
     const books = await Book.find(find).sort(sort).lean();
 
+    // Tính số lượng bình luận
     const bookIds = books.map((book) => book._id);
     const commentCounts = await Comment.aggregate([
       { $match: { book_id: { $in: bookIds }, deleted: false } },
@@ -43,8 +43,23 @@ module.exports.index = async (req, res) => {
       commentCountMap[item._id.toString()] = item.commentCount;
     });
 
-    books.forEach((book, index) => {
+    // Tính số lượng bán (soldCount)
+    const orders = await Order.find({ status: "completed" })
+      .select("books")
+      .lean();
+    const soldCountMap = {};
+    orders.forEach((order) => {
+      order.books.forEach((book) => {
+        const bookId = book.book_id.toString();
+        soldCountMap[bookId] = (soldCountMap[bookId] || 0) + book.quantity;
+      });
+    });
+
+    // Thêm commentCount và soldCount vào books
+    books.forEach((book) => {
       book.commentCount = commentCountMap[book._id.toString()] || 0;
+      book.soldCount = soldCountMap[book._id.toString()] || 0;
+      book.rating_mean = Number(book.rating_mean) || 5;
     });
 
     res.json({

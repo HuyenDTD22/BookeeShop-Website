@@ -3,10 +3,22 @@ const Notification = require("../../models/notification.model");
 const User = require("../../models/user.model");
 const Account = require("../../models/account.model");
 
-// [GET] /admin/notification/ - Lấy ra tất cả thông báo
+// [GET] /admin/notification/ - Lấy ra tất cả thông báo (trừ order_status)
 exports.index = async (req, res) => {
   try {
-    const notifications = await Notification.find()
+    let query = {
+      type: { $ne: "order_status" }, // Loại bỏ thông báo order_status
+    };
+
+    // Bộ lọc theo type
+    if (
+      req.query.type &&
+      ["system", "promotion", "personal"].includes(req.query.type)
+    ) {
+      query.type = req.query.type;
+    }
+
+    const notifications = await Notification.find(query)
       .populate("createdBy", "fullName email")
       .sort({ createdAt: -1 });
 
@@ -446,13 +458,6 @@ exports.delete = async (req, res) => {
       });
     }
 
-    if (!["draft", "canceled"].includes(notification.status)) {
-      return res.status(400).json({
-        code: 400,
-        message: "Chỉ có thể xóa thông báo ở trạng thái nháp hoặc đã hủy",
-      });
-    }
-
     await Notification.deleteOne({ _id: id });
 
     return res.status(200).json({
@@ -487,7 +492,6 @@ exports.deleteMulti = async (req, res) => {
 
     const result = await Notification.deleteMany({
       _id: { $in: ids },
-      status: { $in: ["draft", "canceled"] },
     });
 
     if (result.deletedCount === 0) {

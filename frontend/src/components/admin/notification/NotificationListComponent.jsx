@@ -5,7 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import notificationService from "../../../services/admin/notificationService";
 
-const NotificationListComponent = ({ notifications, onRefresh }) => {
+const NotificationListComponent = ({
+  notifications,
+  onRefresh,
+  filterType,
+  setFilterType,
+}) => {
   const navigate = useNavigate();
   const { hasPermission } = useContext(AuthContext);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
@@ -55,8 +60,11 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
       setBulkStatus("");
       onRefresh();
     } catch (error) {
-      console.error("Error updating statuses:", error);
-      alert("Cập nhật trạng thái thất bại!");
+      console.error("Error updating statuses:", {
+        message: error.message,
+        response: error.response?.data,
+      });
+      alert(error.response?.data?.message || "Cập nhật trạng thái thất bại!");
     } finally {
       setActionLoading(false);
     }
@@ -70,15 +78,22 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
     if (window.confirm("Bạn có chắc muốn xóa các thông báo đã chọn?")) {
       setActionLoading(true);
       try {
-        await notificationService.deleteMultipleNotifications(
+        const response = await notificationService.deleteMultipleNotifications(
           selectedNotifications
         );
-        alert("Xóa thông báo thành công!");
+        alert(response.message || "Xóa thông báo thành công!");
         setSelectedNotifications([]);
         onRefresh();
       } catch (error) {
-        console.error("Error deleting notifications:", error);
-        alert("Xóa thông báo thất bại!");
+        console.error("Error deleting notifications:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        alert(
+          error.response?.data?.message ||
+            "Xóa thông báo thất bại! Vui lòng kiểm tra log console."
+        );
       } finally {
         setActionLoading(false);
       }
@@ -99,7 +114,10 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
           response: error.response?.data,
           status: error.response?.status,
         });
-        alert("Gửi thông báo thất bại! Vui lòng kiểm tra log console.");
+        alert(
+          error.response?.data?.message ||
+            "Gửi thông báo thất bại! Vui lòng kiểm tra log console."
+        );
       } finally {
         setActionLoading(false);
       }
@@ -115,8 +133,11 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
         alert("Lên lịch thông báo thành công!");
         onRefresh();
       } catch (error) {
-        console.error("Error scheduling notification:", error);
-        alert("Lên lịch thông báo thất bại!");
+        console.error("Error scheduling notification:", {
+          message: error.message,
+          response: error.response?.data,
+        });
+        alert(error.response?.data?.message || "Lên lịch thông báo thất bại!");
       } finally {
         setActionLoading(false);
       }
@@ -127,8 +148,8 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
     if (window.confirm("Bạn có chắc muốn xóa thông báo này?")) {
       setActionLoading(true);
       try {
-        await notificationService.deleteNotification(id);
-        alert("Xóa thông báo thành công!");
+        const response = await notificationService.deleteNotification(id);
+        alert(response.message || "Xóa thông báo thành công!");
         onRefresh();
       } catch (error) {
         console.error("Error deleting notification:", {
@@ -136,7 +157,10 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
           response: error.response?.data,
           status: error.response?.status,
         });
-        alert("Xóa thông báo thất bại! Vui lòng kiểm tra log console.");
+        alert(
+          error.response?.data?.message ||
+            "Xóa thông báo thất bại! Vui lòng kiểm tra log console."
+        );
       } finally {
         setActionLoading(false);
       }
@@ -148,9 +172,13 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
     navigate(path);
   };
 
+  const handleTypeFilterChange = (e) => {
+    setFilterType(e.target.value);
+  };
+
   return (
     <>
-      <div className="d-flex justify-content-between gap-3 mb-3">
+      <div className="d-flex justify-content-between align-items-center gap-3 mb-3">
         {hasPermission("create_notifications") && (
           <Button
             variant="primary"
@@ -162,6 +190,18 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
             Thêm thông báo
           </Button>
         )}
+        <Form.Group style={{ width: "250px" }}>
+          <Form.Select
+            value={filterType}
+            onChange={handleTypeFilterChange}
+            disabled={actionLoading}
+          >
+            <option value="">Lọc thông báo theo loại</option>
+            <option value="system">Hệ thống</option>
+            <option value="promotion">Khuyến mãi</option>
+            <option value="personal">Cá nhân</option>
+          </Form.Select>
+        </Form.Group>
         {hasPermission("update_notifications") && (
           <div className="d-flex align-items-center gap-2">
             <Form.Select
@@ -221,104 +261,110 @@ const NotificationListComponent = ({ notifications, onRefresh }) => {
             <th>Loại</th>
             <th>Trạng thái</th>
             <th>Thời gian gửi</th>
-            {/* <th>Người tạo</th> */}
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {notifications.map((notification) => (
-            <tr key={notification._id}>
-              <td>
-                <Form.Check
-                  type="checkbox"
-                  checked={selectedNotifications.includes(notification._id)}
-                  onChange={() => handleSelectNotification(notification._id)}
-                  disabled={actionLoading}
-                />
+          {notifications.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center">
+                Không có thông báo nào để hiển thị
               </td>
-              <td
-                dangerouslySetInnerHTML={{
-                  __html: notification.title || "N/A",
-                }}
-              />
-              <td>{typeLabels[notification.type] || notification.type}</td>
-              <td>
-                {statusLabels[notification.status] || notification.status}
-              </td>
-              <td>
-                {notification.sendAt
-                  ? new Date(notification.sendAt).toLocaleString()
-                  : "Chưa gửi"}
-              </td>
-              {/* <td>{notification.createdBy?.fullName || "N/A"}</td> */}
-              <td>
-                <Dropdown>
-                  <Dropdown.Toggle
-                    variant="secondary"
-                    size="sm"
+            </tr>
+          ) : (
+            notifications.map((notification) => (
+              <tr key={notification._id}>
+                <td>
+                  <Form.Check
+                    type="checkbox"
+                    checked={selectedNotifications.includes(notification._id)}
+                    onChange={() => handleSelectNotification(notification._id)}
                     disabled={actionLoading}
-                  >
-                    Hành động
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {hasPermission("read_notifications") && (
-                      <Dropdown.Item
-                        onClick={() =>
-                          handleNavigate(
-                            `/${process.env.REACT_APP_ADMIN}/notification/detail/${notification._id}`,
-                            notification._id
-                          )
-                        }
-                      >
-                        <FaEye className="me-2" /> Xem chi tiết
-                      </Dropdown.Item>
-                    )}
-                    {hasPermission("update_notifications") &&
-                      notification.status !== "sent" && (
+                  />
+                </td>
+                <td
+                  dangerouslySetInnerHTML={{
+                    __html: notification.title || "N/A",
+                  }}
+                />
+                <td>{typeLabels[notification.type] || notification.type}</td>
+                <td>
+                  {statusLabels[notification.status] || notification.status}
+                </td>
+                <td>
+                  {notification.sendAt
+                    ? new Date(notification.sendAt).toLocaleString()
+                    : "Chưa gửi"}
+                </td>
+                <td>
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      variant="secondary"
+                      size="sm"
+                      disabled={actionLoading}
+                    >
+                      Hành động
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {hasPermission("read_notifications") && (
                         <Dropdown.Item
                           onClick={() =>
                             handleNavigate(
-                              `/${process.env.REACT_APP_ADMIN}/notification/edit/${notification._id}`,
+                              `/${process.env.REACT_APP_ADMIN}/notification/detail/${notification._id}`,
                               notification._id
                             )
                           }
                         >
-                          <FaEdit className="me-2" /> Chỉnh sửa
+                          <FaEye className="me-2" /> Xem chi tiết
                         </Dropdown.Item>
                       )}
-                    {hasPermission("send_notifications") &&
-                      notification.status !== "sent" && (
-                        <>
+                      {hasPermission("update_notifications") &&
+                        notification.status !== "sent" && (
                           <Dropdown.Item
                             onClick={() =>
-                              handleSendNotification(notification._id)
+                              handleNavigate(
+                                `/${process.env.REACT_APP_ADMIN}/notification/edit/${notification._id}`,
+                                notification._id
+                              )
                             }
                           >
-                            <FaPaperPlane className="me-2" /> Gửi ngay
+                            <FaEdit className="me-2" /> Chỉnh sửa
                           </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              handleScheduleNotification(notification._id)
-                            }
-                          >
-                            <FaClock className="me-2" /> Lên lịch
-                          </Dropdown.Item>
-                        </>
+                        )}
+                      {hasPermission("send_notifications") &&
+                        notification.status !== "sent" && (
+                          <>
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleSendNotification(notification._id)
+                              }
+                            >
+                              <FaPaperPlane className="me-2" /> Gửi ngay
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                              onClick={() =>
+                                handleScheduleNotification(notification._id)
+                              }
+                            >
+                              <FaClock className="me-2" /> Lên lịch
+                            </Dropdown.Item>
+                          </>
+                        )}
+                      {hasPermission("delete_notifications") && (
+                        <Dropdown.Item
+                          onClick={() =>
+                            handleDeleteNotification(notification._id)
+                          }
+                        >
+                          <FaTrash className="me-2" /> Xóa
+                        </Dropdown.Item>
                       )}
-                    {hasPermission("delete_notifications") && (
-                      <Dropdown.Item
-                        onClick={() =>
-                          handleDeleteNotification(notification._id)
-                        }
-                      >
-                        <FaTrash className="me-2" /> Xóa
-                      </Dropdown.Item>
-                    )}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </td>
-            </tr>
-          ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </Table>
     </>

@@ -4,35 +4,59 @@ const systemConfig = require("../../config/system");
 const createTreeHelper = require("../../helpers/createTree");
 const searchHelper = require("../../helpers/search");
 
-//[GET] /admin/category/ - Lấy ra tất cả danh mục
+// [GET] /admin/category/ - Lấy ra tất cả danh mục
 module.exports.index = async (req, res) => {
   try {
     let find = {
       deleted: false,
     };
 
-    //Bộ lọc trạng thái
+    // Bộ lọc trạng thái
     if (req.query.status) {
       find.status = req.query.status;
     }
 
-    //Search
+    // Search
     let objectSearch = searchHelper(req.query);
-
     if (req.query.keyword) {
       find.title = objectSearch.regex;
     }
 
-    //Sort
-    const sort = {};
+    // Lấy tất cả danh mục
+    const records = await Category.find(find).sort({ position: 1 });
 
-    if (req.query.sortKey && req.query.sortValue) {
-      sort[req.query.sortKey] = req.query.sortValue;
+    // Lấy danh mục liên quan (cha hoặc con) nếu có keyword hoặc status
+    let allRecords = records;
+    if (req.query.keyword || req.query.status) {
+      const relatedIds = new Set(
+        records.map((record) => record._id.toString())
+      );
+
+      // Tìm danh mục cha
+      const parentIds = new Set(
+        records
+          .filter((record) => record.parent_id)
+          .map((record) => record.parent_id.toString())
+      );
+
+      // Tìm danh mục con
+      const childIds = await Category.find({
+        parent_id: { $in: records.map((record) => record._id) },
+        deleted: false,
+      }).distinct("_id");
+
+      // Thêm tất cả ID liên quan
+      parentIds.forEach((id) => relatedIds.add(id));
+      childIds.forEach((id) => relatedIds.add(id.toString()));
+
+      // Lấy tất cả danh mục liên quan
+      allRecords = await Category.find({
+        _id: { $in: Array.from(relatedIds) },
+        deleted: false,
+      }).sort({ position: 1 });
     }
 
-    const records = await Category.find(find).sort(sort);
-
-    const newRecords = createTreeHelper.tree(records);
+    const newRecords = createTreeHelper.tree(allRecords);
 
     res.json({
       code: 200,
@@ -185,28 +209,48 @@ module.exports.edit = async (req, res) => {
   }
 };
 
-//[DELETE] /admin/category/delete/:id - Tính năng xoá 1 danh mục
+// [DELETE] /admin/category/delete/:id - Tính năng xóa 1 danh mục
 module.exports.deleteItem = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Category.updateOne(
-      {
-        _id: id,
-      },
+    // Kiểm tra xem danh mục có danh mục con không
+    const hasChildren = await Category.findOne({
+      parent_id: id,
+      deleted: false,
+    });
+
+    if (hasChildren) {
+      return res.json({
+        code: 400,
+        message:
+          "Không thể xóa danh mục có danh mục con. Vui lòng xóa danh mục con trước!",
+      });
+    }
+
+    const result = await Category.updateOne(
+      { _id: id },
       {
         deleted: true,
         deletedAt: new Date(),
       }
     );
+
+    if (result.modifiedCount === 0) {
+      return res.json({
+        code: 404,
+        message: "Danh mục không tồn tại hoặc đã bị xóa!",
+      });
+    }
+
     res.json({
       code: 200,
-      message: "Đã xoá thành công danh mục sản phẩm!",
+      message: "Đã xóa thành công danh mục sản phẩm!",
     });
   } catch (error) {
     res.json({
-      code: 200,
-      message: error,
+      code: 400,
+      message: error.message || "Lỗi khi xóa danh mục!",
     });
   }
 };

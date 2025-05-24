@@ -24,7 +24,7 @@ const FeaturedBooksPage = () => {
         setLoading(true);
         const response = await bookService.getFeaturedBooks(filters);
         setBooks(response.books || []);
-        setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc
+        setCurrentPage(1);
       } catch (err) {
         setError("Không thể tải danh sách sách nổi bật. Vui lòng thử lại sau.");
       } finally {
