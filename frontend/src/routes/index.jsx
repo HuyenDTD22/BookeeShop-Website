@@ -7,6 +7,8 @@ import ForgotPasswordPage from "../pages/client/auth/ForgotPasswordPage";
 import OTPVertificationPage from "../pages/client/auth/OTPVertificationPage";
 import BookDetailPage from "../pages/client/product/BookDetailPage";
 import CategoryBooksPage from "../pages/client/category/CategoryBooksPage";
+import FeaturedBooksPage from "../pages/client/product/FeaturedBooksPage";
+import NewBooksPage from "../pages/client/product/NewBooksPage";
 import OrderPage from "../pages/client/order/OrderPage";
 import CartPage from "../pages/client/cart/CartPage";
 import MyAccountPage from "../pages/client/user/MyAccountPage";
@@ -58,6 +60,16 @@ export const routes = [
   {
     path: "/book/:slugCategory",
     page: CategoryBooksPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/book/featured",
+    page: FeaturedBooksPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/book/new",
+    page: NewBooksPage,
     isShowHeader: true,
   },
   {

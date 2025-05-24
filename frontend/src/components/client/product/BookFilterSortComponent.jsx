@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Form, Dropdown, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Form, Button } from "react-bootstrap";
 
 const BookFilterSortComponent = ({ onFilterChange, initialFilters = {} }) => {
   const [filters, setFilters] = useState({
@@ -8,16 +8,26 @@ const BookFilterSortComponent = ({ onFilterChange, initialFilters = {} }) => {
     sortOrder: initialFilters.sortOrder || "",
   });
 
-  const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+  // Đồng bộ filters với initialFilters
+  useEffect(() => {
+    setFilters(initialFilters);
+  }, [initialFilters]);
+
+  const handleFilterChange = (key, value, additionalUpdates = {}) => {
+    setFilters((prevFilters) => {
+      const newFilters = { ...prevFilters, [key]: value, ...additionalUpdates };
+      if (key === "sortBy" && value && !newFilters.sortOrder) {
+        newFilters.sortOrder = "asc";
+      }
+      onFilterChange(newFilters);
+      return newFilters;
+    });
   };
 
   return (
     <div className="book-filter-sort mb-4">
       <div className="d-flex align-items-center gap-3 flex-wrap">
-        {/* Lọc theo sao */}
+        {/* Cột lọc theo sao */}
         <Form.Group className="d-flex align-items-center">
           <Form.Label className="me-2 mb-0">Lọc theo sao:</Form.Label>
           <Form.Select
@@ -34,59 +44,39 @@ const BookFilterSortComponent = ({ onFilterChange, initialFilters = {} }) => {
           </Form.Select>
         </Form.Group>
 
-        {/* Sắp xếp */}
-        <Dropdown>
-          <Dropdown.Toggle variant="outline-primary" id="dropdown-sort">
-            {filters.sortBy
-              ? `Sắp xếp: ${
-                  filters.sortBy === "price"
-                    ? `Giá ${
-                        filters.sortOrder === "asc"
-                          ? "thấp đến cao"
-                          : "cao đến thấp"
-                      }`
-                    : filters.sortBy === "soldCount"
-                    ? "Bán chạy"
-                    : "Đánh giá cao"
-                }`
-              : "Sắp xếp"}
-          </Dropdown.Toggle>
-
-          <Dropdown.Menu>
-            <Dropdown.Item
-              onClick={() => {
-                handleFilterChange("sortBy", "price");
-                handleFilterChange("sortOrder", "asc");
-              }}
-            >
-              Giá: Thấp đến cao
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                handleFilterChange("sortBy", "price");
-                handleFilterChange("sortOrder", "desc");
-              }}
-            >
-              Giá: Cao đến thấp
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                handleFilterChange("sortBy", "soldCount");
-                handleFilterChange("sortOrder", "desc");
-              }}
-            >
-              Bán chạy
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                handleFilterChange("sortBy", "rating_mean");
-                handleFilterChange("sortOrder", "desc");
-              }}
-            >
-              Đánh giá sao
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        {/* Cột sắp xếp */}
+        <Form.Group className="d-flex align-items-center">
+          <Form.Label className="me-2 mb-0">Sắp xếp:</Form.Label>
+          <Form.Select
+            style={{ width: "200px" }}
+            value={
+              filters.sortBy ? `${filters.sortBy}_${filters.sortOrder}` : ""
+            }
+            onChange={(e) => {
+              const value = e.target.value;
+              console.log("Sort select changed:", value);
+              if (value === "") {
+                handleFilterChange("sortBy", "", { sortOrder: "" });
+              } else {
+                // Xử lý đặc biệt cho rating_mean_desc
+                if (value === "rating_mean_desc") {
+                  handleFilterChange("sortBy", "rating_mean", {
+                    sortOrder: "desc",
+                  });
+                } else {
+                  const [sortBy, sortOrder] = value.split("_");
+                  handleFilterChange("sortBy", sortBy, { sortOrder });
+                }
+              }
+            }}
+          >
+            <option value="">Chọn tiêu chí</option>
+            <option value="priceNew_asc">Giá: Thấp đến cao</option>
+            <option value="priceNew_desc">Giá: Cao đến thấp</option>
+            <option value="soldCount_desc">Bán chạy</option>
+            <option value="rating_mean_desc">Đánh giá cao</option>
+          </Form.Select>
+        </Form.Group>
 
         {/* Reset filters */}
         <Button
@@ -94,6 +84,7 @@ const BookFilterSortComponent = ({ onFilterChange, initialFilters = {} }) => {
           onClick={() => {
             const resetFilters = { rating: "", sortBy: "", sortOrder: "" };
             setFilters(resetFilters);
+            console.log("Reset filters:", resetFilters);
             onFilterChange(resetFilters);
           }}
         >

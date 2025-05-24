@@ -5,8 +5,9 @@ const Notification = require("../../models/notification.model");
 exports.index = async (req, res) => {
   try {
     const userId = req.user._id;
+    const userCreatedAt = req.user.createdAt; // Thời điểm tạo tài khoản
 
-    // Điều kiện lọc thông báo
+    // Điều kiện lọc thông báo dành cho người dùng hiện tại
     const conditions = [
       { "target.type": "all" },
       { "target.type": "specific", "target.userIds": userId },
@@ -24,8 +25,16 @@ exports.index = async (req, res) => {
     }
 
     const notifications = await Notification.find({
-      $or: conditions,
-      status: "sent",
+      $and: [
+        { $or: conditions },
+        { status: "sent" },
+        {
+          $or: [
+            { sendAt: { $gte: userCreatedAt } }, // Gửi sau khi tạo tài khoản
+            { createdAt: { $gte: userCreatedAt } }, // Hoặc tạo sau khi tạo tài khoản
+          ],
+        },
+      ],
     })
       .select("title content type status sendAt createdAt readBy")
       .populate("createdBy", "fullName email")
@@ -70,7 +79,6 @@ exports.detail = async (req, res) => {
 
     const isAccessible =
       notification.target.type === "all" ||
-      notification.type === "promotion" ||
       (notification.target.type === "group" &&
         req.user.groupId &&
         String(notification.target.groupId) === String(req.user.groupId)) ||
@@ -96,9 +104,15 @@ exports.detail = async (req, res) => {
       });
     }
 
+    // Đánh dấu đã đọc khi xem chi tiết
+    if (!notification.readBy.includes(userId)) {
+      notification.readBy.push(userId);
+      await notification.save();
+    }
+
     const formattedNotification = {
       ...notification.toObject(),
-      isRead: notification.readBy.includes(userId),
+      isRead: true, // Đảm bảo isRead: true sau khi đánh dấu
     };
 
     return res.status(200).json({
@@ -174,10 +188,11 @@ exports.read = async (req, res) => {
 exports.unreadCount = async (req, res) => {
   try {
     const userId = req.user._id;
+    const userCreatedAt = req.user.createdAt; // Thời điểm tạo tài khoản
 
     const conditions = [
-      { "target.type": "all" },
-      { "target.type": "specific", "target.userIds": userId },
+      { "target.type": "all" }, // Thông báo hệ thống
+      { "target.type": "specific", "target.userIds": userId }, // Thông báo cá nhân
     ];
 
     if (req.user.groupId) {
@@ -192,9 +207,17 @@ exports.unreadCount = async (req, res) => {
     }
 
     const unreadCount = await Notification.countDocuments({
-      $or: conditions,
-      status: "sent",
-      readBy: { $ne: userId },
+      $and: [
+        { $or: conditions }, // Thông báo nhắm đến người dùng
+        { status: "sent" }, // Đã gửi
+        { readBy: { $ne: userId } }, // Chưa đọc
+        {
+          $or: [
+            { sendAt: { $gte: userCreatedAt } },
+            { createdAt: { $gte: userCreatedAt } },
+          ],
+        },
+      ],
     });
 
     return res.status(200).json({

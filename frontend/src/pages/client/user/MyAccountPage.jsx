@@ -70,159 +70,146 @@ const MyAccountPage = () => {
 
   return (
     <Container fluid className="p-0">
-      <Row>
-        <Col
-          md={3}
-          className="ms-0 ps-0"
-          style={{ paddingTop: 0, marginTop: 0 }}
-        >
-          <ListGroup
-            variant="flush"
-            className="bg-dark"
-            style={{ minHeight: "calc(100vh - 100px)" }}
+      <div className="sidebar bg-dark text-white position-fixed">
+        <ListGroup variant="flush">
+          <ListGroup.Item
+            action
+            active={activeTab === "pending"}
+            onClick={() => setActiveTab("pending")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "pending" ? "custom-active" : ""
+            }`}
           >
-            <ListGroup.Item
-              action
-              active={activeTab === "pending"}
-              onClick={() => setActiveTab("pending")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "pending" ? "custom-active" : ""
-              }`}
-            >
-              <div className="d-flex align-items-center w-100">
-                <div>
-                  <FiCheckCircle className="me-2" /> Chờ xác nhận
-                </div>
-                {pending.length > 0 && (
-                  <Badge bg="danger" pill className="ms-auto">
-                    {pending.length}
-                  </Badge>
-                )}
+            <div className="d-flex align-items-center w-100">
+              <div>
+                <FiCheckCircle className="me-2" /> Chờ xác nhận
               </div>
-            </ListGroup.Item>
-            <ListGroup.Item
-              action
-              active={activeTab === "delivered"}
-              onClick={() => setActiveTab("delivered")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "delivered" ? "custom-active" : ""
-              }`}
-            >
-              <div className="d-flex align-items-center w-100">
-                <div>
-                  <FiTruck className="me-2" /> Chờ giao hàng
-                </div>
-                {delivered.length > 0 && (
-                  <Badge bg="danger" pill className="ms-auto">
-                    {delivered.length}
-                  </Badge>
-                )}
+              {pending.length > 0 && (
+                <Badge bg="danger" pill className="ms-auto">
+                  {pending.length}
+                </Badge>
+              )}
+            </div>
+          </ListGroup.Item>
+          <ListGroup.Item
+            action
+            active={activeTab === "delivered"}
+            onClick={() => setActiveTab("delivered")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "delivered" ? "custom-active" : ""
+            }`}
+          >
+            <div className="d-flex align-items-center w-100">
+              <div>
+                <FiTruck className="me-2" /> Chờ giao hàng
               </div>
-            </ListGroup.Item>
-            <ListGroup.Item
-              action
-              active={activeTab === "history"}
-              onClick={() => setActiveTab("history")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "history" ? "custom-active" : ""
-              }`}
-            >
-              <FiClock className="me-2" /> Lịch sử mua hàng
-            </ListGroup.Item>
-            <ListGroup.Item
-              action
-              active={activeTab === "cancelled"}
-              onClick={() => setActiveTab("cancelled")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "cancelled" ? "custom-active" : ""
-              }`}
-            >
-              <FiXCircle className="me-2" /> Đơn đã huỷ
-            </ListGroup.Item>
-            <ListGroup.Item
-              action
-              active={activeTab === "rated-reviews"}
-              onClick={() => setActiveTab("rated-reviews")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "rated-reviews" ? "custom-active" : ""
-              }`}
-            >
-              <FaStar className="me-2" /> Đã đánh giá
-            </ListGroup.Item>
-            <ListGroup.Item
-              action
-              active={activeTab === "settings"}
-              onClick={() => setActiveTab("settings")}
-              className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
-                activeTab === "settings" ? "custom-active" : ""
-              }`}
-            >
-              <FiSettings className="me-2" /> Cài đặt tài khoản
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-        <Col md={9} className="pe-4">
-          {activeTab === "pending" && (
-            <Card className="shadow-lg border-0">
-              <Card.Header className="bg-primary text-white">
-                <div className="d-flex align-items-center">
-                  <FiCheckCircle className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Chờ xác nhận</h2>
-                </div>
-              </Card.Header>
-              <OrderListComponent orders={pending} />
-            </Card>
-          )}
-          {activeTab === "delivered" && (
-            <Card className="shadow-lg border-0">
-              <Card.Header className="bg-primary text-white">
-                <div className="d-flex align-items-center">
-                  <FiTruck className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Chờ giao hàng</h2>
-                </div>
-              </Card.Header>
-              <OrderListComponent orders={delivered} />
-            </Card>
-          )}
-          {activeTab === "history" && (
-            <Card className="shadow-lg border-0">
-              <Card.Header className="bg-primary text-white">
-                <div className="d-flex align-items-center">
-                  <FiClock className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Lịch sử mua hàng</h2>
-                </div>
-              </Card.Header>
-              <OrderListComponent orders={history} />
-            </Card>
-          )}
-          {activeTab === "cancelled" && (
-            <Card className="shadow-lg border-0">
-              <Card.Header className="bg-primary text-white">
-                <div className="d-flex align-items-center">
-                  <FiXCircle className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Đơn đã huỷ</h2>
-                </div>
-              </Card.Header>
-              <OrderListComponent orders={cancelled} />
-            </Card>
-          )}
-          {activeTab === "settings" && (
-            <Card className="shadow-lg border-0">
-              <Card.Header className="bg-primary text-white">
-                <div className="d-flex align-items-center">
-                  <FiSettings className="me-2" size={24} />
-                  <h2 className="m-0 fs-4">Cài đặt tài khoản</h2>
-                </div>
-              </Card.Header>
-              <SettingsFormComponent
-                user={userInfo}
-                setUserInfo={setUserInfo}
-              />
-            </Card>
-          )}
-          {activeTab === "rated-reviews" && <RatedReviewsComponent />}
-        </Col>
-      </Row>
+              {delivered.length > 0 && (
+                <Badge bg="danger" pill className="ms-auto">
+                  {delivered.length}
+                </Badge>
+              )}
+            </div>
+          </ListGroup.Item>
+          <ListGroup.Item
+            action
+            active={activeTab === "history"}
+            onClick={() => setActiveTab("history")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "history" ? "custom-active" : ""
+            }`}
+          >
+            <FiClock className="me-2" /> Lịch sử mua hàng
+          </ListGroup.Item>
+          <ListGroup.Item
+            action
+            active={activeTab === "cancelled"}
+            onClick={() => setActiveTab("cancelled")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "cancelled" ? "custom-active" : ""
+            }`}
+          >
+            <FiXCircle className="me-2" /> Đơn đã huỷ
+          </ListGroup.Item>
+          <ListGroup.Item
+            action
+            active={activeTab === "rated-reviews"}
+            onClick={() => setActiveTab("rated-reviews")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "rated-reviews" ? "custom-active" : ""
+            }`}
+          >
+            <FaStar className="me-2" /> Đã đánh giá
+          </ListGroup.Item>
+          <ListGroup.Item
+            action
+            active={activeTab === "settings"}
+            onClick={() => setActiveTab("settings")}
+            className={`text-white bg-dark border-0 d-flex align-items-center ps-4 ${
+              activeTab === "settings" ? "custom-active" : ""
+            }`}
+          >
+            <FiSettings className="me-2" /> Cài đặt tài khoản
+          </ListGroup.Item>
+        </ListGroup>
+      </div>
+      <Container className="main-content">
+        {activeTab === "pending" && (
+          <Card className="shadow-lg border-0">
+            <Card.Header className="bg-primary text-white">
+              <div className="d-flex align-items-center">
+                <FiCheckCircle className="me-2" size={24} />
+                <h2 className="m-0 fs-4">Chờ xác nhận</h2>
+              </div>
+            </Card.Header>
+            <OrderListComponent orders={pending} />
+          </Card>
+        )}
+        {activeTab === "delivered" && (
+          <Card className="shadow-lg border-0">
+            <Card.Header className="bg-primary text-white">
+              <div className="d-flex align-items-center">
+                <FiTruck className="me-2" size={24} />
+                <h2 className="m-0 fs-4">Chờ giao hàng</h2>
+              </div>
+            </Card.Header>
+            <OrderListComponent orders={delivered} />
+          </Card>
+        )}
+        {activeTab === "history" && (
+          <Card className="shadow-lg border-0">
+            <Card.Header className="bg-primary text-white">
+              <div className="d-flex align-items-center">
+                <FiClock className="me-2" size={24} />
+                <h2 className="m-0 fs-4">Lịch sử mua hàng</h2>
+              </div>
+            </Card.Header>
+            <OrderListComponent orders={history} />
+          </Card>
+        )}
+        {activeTab === "cancelled" && (
+          <Card className="shadow-lg border-0">
+            <Card.Header className="bg-primary text-white">
+              <div className="d-flex align-items-center">
+                <FiXCircle className="me-2" size={24} />
+                <h2 className="m-0 fs-4">Đơn đã huỷ</h2>
+              </div>
+            </Card.Header>
+            <OrderListComponent orders={cancelled} />
+          </Card>
+        )}
+        {activeTab === "settings" && (
+          <Card className="shadow-lg border-0">
+            <Card.Header className="bg-primary text-white">
+              <div className="d-flex align-items-center">
+                <FiSettings className="me-2" size={24} />
+                <h2 className="m-0 fs-4">Cài đặt tài khoản</h2>
+              </div>
+            </Card.Header>
+            <SettingsFormComponent user={userInfo} setUserInfo={setUserInfo} />
+          </Card>
+        )}
+        {activeTab === "rated-reviews" && <RatedReviewsComponent />}
+      </Container>
     </Container>
   );
 };

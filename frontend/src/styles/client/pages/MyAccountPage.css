@@ -87,3 +87,67 @@
     font-size: 0.9rem;
     padding: 5px 10px;
 }
+
+.custom-active {
+    background-color: #343a40 !important;
+    font-weight: bold;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 250px;
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    z-index: 1000;
+    background-color: #212529;
+}
+
+/* ListGroup styles */
+.sidebar .list-group-item {
+    background-color: transparent;
+    color: #ffffff;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.sidebar .list-group-item:hover {
+    background-color: #343a40;
+}
+
+/* Main content */
+.main-content {
+    margin-left: 260px !important;
+    padding: 20px !important;
+    padding-left: 20px !important;
+    padding-bottom: 160px;
+    min-height: calc(100vh - 70px) !important;
+    position: relative !important;
+    z-index: 1010 !important;
+    max-width: calc(100% - 270px) !important;
+}
+
+.main-content .card,
+.main-content .list-group {
+    max-width: 100% !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        top: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 10px;
+        padding-bottom: 20px;
+        min-height: auto;
+        z-index: auto;
+    }
+}

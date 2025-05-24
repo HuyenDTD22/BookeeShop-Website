@@ -121,3 +121,8 @@
     margin-bottom: 15px;
     text-align: left;
 }
+
+.pagination-centered {
+    display: flex;
+    justify-content: center;
+}

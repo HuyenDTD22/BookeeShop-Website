@@ -20,7 +20,6 @@ const NotificationsPage = ({ setNotificationCount }) => {
     try {
       const response = await notificationService.getNotifications();
       const data = response.data || [];
-      console.log("Notifications data:", data);
       if (!Array.isArray(data)) {
         throw new Error("Dữ liệu thông báo không hợp lệ!");
       }
@@ -79,6 +78,7 @@ const NotificationsPage = ({ setNotificationCount }) => {
           <NotificationListComponent
             notifications={displayNotifications}
             onRefresh={fetchNotifications}
+            setNotifications={setNotifications}
           />
           <PaginationComponent
             currentPage={currentPage}

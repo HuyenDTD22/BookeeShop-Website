@@ -22,7 +22,7 @@ const DefaultComponent = ({ children }) => {
   }, []);
 
   return (
-    <>
+    <div className="default-layout">
       <HeaderComponent
         cartItemCount={cartItemCount}
         setCartItemCount={setCartItemCount}
@@ -33,7 +33,7 @@ const DefaultComponent = ({ children }) => {
       />
       <main>{React.cloneElement(children, { setNotificationCount })}</main>
       <FooterComponent />
-    </>
+    </div>
   );
 };
 

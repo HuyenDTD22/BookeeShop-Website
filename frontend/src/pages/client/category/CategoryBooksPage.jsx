@@ -1,9 +1,9 @@
 // import React, { useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
-// import { Container, Alert } from "react-bootstrap";
+// import { Container, Alert, Row, Col } from "react-bootstrap";
 // import bookService from "../../../services/client/bookService";
 // import BookCardComponent from "../../../components/client/product/BookCardComponent";
-// import PaginationComponent from "../../../components/common/PaginationComponent";
+// import BookFilterSortComponent from "../../../components/client/product/BookFilterSortComponent";
 // import "../../../styles/client/pages/HomePage.css";
 
 // const CategoryBooksPage = () => {
@@ -12,29 +12,22 @@
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
 //   const [categoryTitle, setCategoryTitle] = useState("");
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [totalPages, setTotalPages] = useState(1);
-//   const [totalItems, setTotalItems] = useState(0);
-
-//   const limit = 10;
+//   const [filters, setFilters] = useState({
+//     rating: "",
+//     sortBy: "",
+//     sortOrder: "",
+//   });
 
 //   useEffect(() => {
 //     const fetchBooks = async () => {
 //       try {
 //         setLoading(true);
-//         const response = await bookService.getCategoryBooks(slugCategory);
-//         const totalItemsCount = response.newBooks.length;
-//         const totalPagesCount = Math.ceil(totalItemsCount / limit);
-
-//         setBooks(
-//           response.newBooks.slice(
-//             (currentPage - 1) * limit,
-//             currentPage * limit
-//           )
+//         const response = await bookService.getCategoryBooks(
+//           slugCategory,
+//           filters
 //         );
-//         setTotalItems(totalItemsCount);
-//         setTotalPages(totalPagesCount);
-//         setCategoryTitle(response.category.title || "Danh mục");
+//         setBooks(response.books || []);
+//         setCategoryTitle(response.category?.title || "Danh mục");
 //       } catch (err) {
 //         setError("Không thể tải danh sách sách. Vui lòng thử lại sau.");
 //       } finally {
@@ -43,10 +36,10 @@
 //     };
 
 //     fetchBooks();
-//   }, [slugCategory, currentPage]);
+//   }, [slugCategory, filters]);
 
-//   const handlePageChange = (page) => {
-//     setCurrentPage(page);
+//   const handleFilterChange = (newFilters) => {
+//     setFilters(newFilters);
 //   };
 
 //   return (
@@ -57,6 +50,12 @@
 //             Sách thuộc danh mục {categoryTitle}
 //           </h2>
 
+//           {/* Thanh lọc và sắp xếp */}
+//           <BookFilterSortComponent
+//             onFilterChange={handleFilterChange}
+//             initialFilters={filters}
+//           />
+
 //           {loading && <div className="text-center">Đang tải...</div>}
 
 //           {error && <Alert variant="danger">{error}</Alert>}
@@ -66,34 +65,24 @@
 //           )}
 
 //           {!loading && !error && books.length > 0 && (
-//             <div className="d-flex flex-wrap">
+//             <Row>
 //               {books.map((book) => (
-//                 <div
+//                 <Col
 //                   key={book._id}
-//                   style={{
-//                     width: "20%",
-//                     padding: "0 8px",
-//                     marginBottom: "1.5rem",
-//                   }}
+//                   xs={6}
+//                   sm={4}
+//                   md={3}
+//                   lg={2.4}
+//                   className="mb-4"
 //                 >
 //                   <BookCardComponent
 //                     book={book}
 //                     link={`/book/detail/${book.slug}`}
 //                   />
-//                 </div>
+//                 </Col>
 //               ))}
-//             </div>
+//             </Row>
 //           )}
-
-//           <div className="d-flex justify-content-center mt-4">
-//             <PaginationComponent
-//               currentPage={currentPage}
-//               totalPages={totalPages}
-//               totalItems={totalItems}
-//               loading={loading}
-//               onPageChange={handlePageChange}
-//             />
-//           </div>
 //         </div>
 //       </section>
 //     </Container>
@@ -117,30 +106,25 @@ const CategoryBooksPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categoryTitle, setCategoryTitle] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [filters, setFilters] = useState({
     rating: "",
     sortBy: "",
     sortOrder: "",
   });
-
-  const limit = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 12; // Số sách mỗi trang
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         setLoading(true);
-        const response = await bookService.getCategoryBooks(slugCategory, {
-          ...filters,
-          page: currentPage,
-          limit,
-        });
+        const response = await bookService.getCategoryBooks(
+          slugCategory,
+          filters
+        );
         setBooks(response.books || []);
-        setTotalItems(response.total || 0);
-        setTotalPages(Math.ceil(response.total / limit));
         setCategoryTitle(response.category?.title || "Danh mục");
+        setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc hoặc danh mục
       } catch (err) {
         setError("Không thể tải danh sách sách. Vui lòng thử lại sau.");
       } finally {
@@ -149,16 +133,22 @@ const CategoryBooksPage = () => {
     };
 
     fetchBooks();
-  }, [slugCategory, currentPage, filters]);
+  }, [slugCategory, filters]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+
+  // Tính toán sách hiển thị trên trang hiện tại
+  const totalBooks = books.length;
+  const totalPages = Math.ceil(totalBooks / booksPerPage);
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = books.slice(indexOfFirstBook, indexOfLastBook);
 
   return (
     <Container className="my-5">
@@ -183,34 +173,34 @@ const CategoryBooksPage = () => {
           )}
 
           {!loading && !error && books.length > 0 && (
-            <Row>
-              {books.map((book) => (
-                <Col
-                  key={book._id}
-                  xs={6}
-                  sm={4}
-                  md={3}
-                  lg={2.4}
-                  className="mb-4"
-                >
-                  <BookCardComponent
-                    book={book}
-                    link={`/book/detail/${book.slug}`}
-                  />
-                </Col>
-              ))}
-            </Row>
+            <>
+              <Row>
+                {currentBooks.map((book) => (
+                  <Col
+                    key={book._id}
+                    xs={6}
+                    sm={4}
+                    md={3}
+                    lg={2.4}
+                    className="mb-4"
+                  >
+                    <BookCardComponent
+                      book={book}
+                      link={`/book/detail/${book.slug}`}
+                    />
+                  </Col>
+                ))}
+              </Row>
+              <PaginationComponent
+                className="pagination-centered"
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalBooks}
+                loading={loading}
+                onPageChange={handlePageChange}
+              />
+            </>
           )}
-
-          <div className="d-flex justify-content-center mt-4">
-            <PaginationComponent
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              loading={loading}
-              onPageChange={handlePageChange}
-            />
-          </div>
         </div>
       </section>
     </Container>
