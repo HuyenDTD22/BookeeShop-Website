@@ -18,9 +18,9 @@
 // import ratingService from "../../../services/client/ratingService";
 // import StarRatingComponent from "../../../components/common/StarRatingComponent";
 // import CommentsSectionComponent from "../../../components/client/comment/CommentsSectionComponent";
-// import PaginationComponent from "../../../components/common/PaginationComponent";
 // import BookCardComponent from "../../../components/client/product/BookCardComponent";
 // import BookFilterSortComponent from "../../../components/client/product/BookFilterSortComponent";
+// import PaginationComponent from "../../../components/common/PaginationComponent";
 // import authService from "../../../services/client/authService";
 // import "../../../styles/client/pages/BookDetailPage.css";
 
@@ -52,7 +52,7 @@
 //     sortOrder: "",
 //   });
 //   const [currentPage, setCurrentPage] = useState(1);
-//   const booksPerPage = 10;
+//   const booksPerPage = 8;
 
 //   useEffect(() => {
 //     const fetchBookData = async () => {
@@ -65,7 +65,7 @@
 //             bookData.book.category.slug,
 //             filters
 //           );
-//           setRelatedBooks(related.newBooks || []);
+//           setRelatedBooks(related.books || []);
 //         }
 
 //         const commentData = await commentService.getComments(bookData.book._id);
@@ -140,7 +140,7 @@
 
 //   const handleFilterChange = (newFilters) => {
 //     setFilters(newFilters);
-//     setCurrentPage(1);
+//     setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc
 //   };
 
 //   const handlePageChange = (page) => {
@@ -674,7 +674,7 @@ const BookDetailPage = () => {
     sortOrder: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const booksPerPage = 8; // Số sách mỗi trang, giống các trang khác
+  const booksPerPage = 8;
 
   useEffect(() => {
     const fetchBookData = async () => {
@@ -762,14 +762,13 @@ const BookDetailPage = () => {
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(1); // Reset về trang 1 khi thay đổi bộ lọc
+    setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Tính toán sách gợi ý hiển thị trên trang hiện tại
   const totalBooks = relatedBooks.length;
   const totalPages = Math.ceil(totalBooks / booksPerPage);
   const indexOfLastBook = currentPage * booksPerPage;
@@ -1176,6 +1175,7 @@ const BookDetailPage = () => {
             initialComments={comments}
             initialTotal={totalComments}
             onCommentsUpdated={handleCommentsUpdated}
+            setShowLoginModal={setShowLoginModal}
           />
         </Card.Body>
       </Card>
@@ -1222,7 +1222,7 @@ const BookDetailPage = () => {
           <Modal.Title>Thông báo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Bạn cần đăng nhập hoặc đăng ký tài khoản để mua sắm!
+          Bạn cần đăng nhập hoặc đăng ký tài khoản để thực hiện hành động này!
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => navigate("/user/login")}>

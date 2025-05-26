@@ -7,12 +7,10 @@ const createTreeHelper = require("../../helpers/createTree");
 
 //[GET] / - Hiển thị dữ liệu ở trang HomePage
 module.exports.index = async (req, res) => {
-  // Lấy ra danh mục
   const category = await Category.find({ deleted: false });
 
   const newCategory = createTreeHelper.tree(category);
 
-  //Lấy ra sản phẩm nổi bật
   const booksFeatured = await Book.find({
     feature: "1",
     status: "active",
@@ -23,7 +21,6 @@ module.exports.index = async (req, res) => {
 
   newBooksFeatured = await bookHelper.soldCountBooks(booksFeatured);
 
-  //Lấy ra sản phẩm mới nhất
   const booksNew = await Book.find({
     status: "active",
     deleted: false,

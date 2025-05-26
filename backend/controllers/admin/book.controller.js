@@ -43,7 +43,7 @@ module.exports.index = async (req, res) => {
       commentCountMap[item._id.toString()] = item.commentCount;
     });
 
-    // Tính số lượng bán (soldCount)
+    // Tính số lượng bán
     const orders = await Order.find({ status: "completed" })
       .select("books")
       .lean();
@@ -55,7 +55,6 @@ module.exports.index = async (req, res) => {
       });
     });
 
-    // Thêm commentCount và soldCount vào books
     books.forEach((book) => {
       book.commentCount = commentCountMap[book._id.toString()] || 0;
       book.soldCount = soldCountMap[book._id.toString()] || 0;

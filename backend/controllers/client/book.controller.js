@@ -24,7 +24,6 @@ module.exports.index = async (req, res) => {
       }
     }
 
-    // Chỉ lấy các trường cần thiết
     const selectFields = {
       _id: 1,
       title: 1,
@@ -35,7 +34,6 @@ module.exports.index = async (req, res) => {
       slug: 1,
     };
 
-    // Lấy toàn bộ sách, sắp xếp theo rating_mean nếu cần
     const sort = {};
     const validSortFields = ["rating_mean"];
     const validSortOrders = ["asc", "desc"];
@@ -50,10 +48,8 @@ module.exports.index = async (req, res) => {
 
     let books = await Book.find(query).select(selectFields).sort(sort).lean();
 
-    // Tính priceNew
     books = bookHelper.priceNewBooks(books);
 
-    // Tính soldCount từ orders
     const orders = await Order.find({ status: "completed" })
       .select("books")
       .lean();
@@ -70,7 +66,6 @@ module.exports.index = async (req, res) => {
       soldCount: soldCountMap[book._id.toString()] || 0,
     }));
 
-    // Sắp xếp theo priceNew hoặc soldCount trong JavaScript nếu cần
     if (sortBy && validSortOrders.includes(sortOrder)) {
       if (sortBy === "priceNew") {
         books.sort((a, b) => {

@@ -33,7 +33,6 @@ module.exports.soldCountBook = async (book) => {
     { $group: { _id: null, totalSold: { $sum: "$books.quantity" } } },
   ]);
 
-  // Nếu có đơn hàng đã hoàn tất hoặc đã giao, lấy số lượng đã bán
   book.soldCount = soldCount.length > 0 ? soldCount[0].totalSold : 0;
 };
 
@@ -52,7 +51,6 @@ module.exports.soldCountBooks = async (books) => {
         { $group: { _id: null, totalSold: { $sum: "$books.quantity" } } },
       ]);
 
-      // Nếu có đơn hàng đã hoàn tất hoặc đã giao, lấy số lượng đã bán
       item.soldCount = soldCount.length > 0 ? soldCount[0].totalSold : 0;
       return item;
     })
