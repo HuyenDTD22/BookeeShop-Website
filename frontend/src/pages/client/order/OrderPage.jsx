@@ -77,7 +77,7 @@ const OrderPage = () => {
         setQuantities(initialQuantities);
       } catch (error) {
         setError(
-          error.response?.data?.message || "Đã xảy ra lỗi khi tải dữ liệu!"
+          error.response?.data?.message || "Đã xảy ra lỗi khi tải dữ liệu!",
         );
       } finally {
         setLoading(false);
@@ -104,17 +104,17 @@ const OrderPage = () => {
 
   const subtotal = books.reduce(
     (sum, book) => sum + book.price * (quantities[book._id] || 1),
-    0
+    0,
   );
   const discount = books.reduce(
     (sum, book) =>
       sum + (book.price - book.priceNew) * (quantities[book._id] || 1),
-    0
+    0,
   );
 
   const total = books.reduce(
     (sum, book) => sum + book.priceNew * (quantities[book._id] || 1),
-    0
+    0,
   );
 
   const handleCheckout = async () => {
@@ -134,21 +134,34 @@ const OrderPage = () => {
         quantity: quantities[book._id] || 1,
       }));
 
-      const response = await orderService.buyNow({
+      const orderData = {
         items: orderItems,
         fullName: shippingData.fullName,
         phone: shippingData.phone,
         address: shippingData.address,
         paymentMethod: paymentData.paymentMethod,
-      });
+      };
 
+      // Nếu chọn VNPay thì redirect sang trang thanh toán VNPay
+      if (paymentData.paymentMethod === "vnpay") {
+        const response = await orderService.createVnpayOrder(orderData);
+        if (response.code === 200 && response.paymentUrl) {
+          window.location.href = response.paymentUrl; // redirect sang VNPay
+        } else {
+          setError("Không thể tạo liên kết thanh toán VNPay.");
+        }
+        return;
+      }
+
+      // Các phương thức khác (COD, bank_transfer, momo)
+      const response = await orderService.buyNow(orderData);
       if (response.code === 200) {
         setSuccess(true);
-        setTimeout(() => navigate(`/user`), 2000);
+        setTimeout(() => navigate("/user"), 2000);
       }
     } catch (error) {
       setError(
-        error.response?.data?.message || "Đã xảy ra lỗi khi thanh toán!"
+        error.response?.data?.message || "Đã xảy ra lỗi khi thanh toán!",
       );
     } finally {
       setLoading(false);

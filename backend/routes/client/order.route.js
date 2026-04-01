@@ -8,17 +8,26 @@ const orderValidate = require("../../validates/client/order.validate");
 router.get("/", authMiddleware.requireAuth, controller.index);
 
 router.post(
+  "/create-vnpay",
+  authMiddleware.requireAuth,
+  orderValidate.create,
+  controller.createVnpay,
+);
+
+router.get("/vnpay-return", controller.vnpayReturn);
+
+router.post(
   "/create",
   authMiddleware.requireAuth,
   orderValidate.create,
-  controller.create
+  controller.create,
 );
 
 router.get(
   "/success/:orderId",
   authMiddleware.requireAuth,
   orderValidate.success,
-  controller.success
+  controller.success,
 );
 
 router.get("/my-orders", authMiddleware.requireAuth, controller.getMyOrders);
@@ -27,14 +36,14 @@ router.get(
   "/detail/:orderId",
   authMiddleware.requireAuth,
   orderValidate.detail,
-  controller.detail
+  controller.detail,
 );
 
 router.patch(
   "/cancel/:orderId",
   authMiddleware.requireAuth,
   orderValidate.cancel,
-  controller.cancel
+  controller.cancel,
 );
 
 module.exports = router;

@@ -5,6 +5,7 @@ const Order = require("../../models/order.model");
 
 const bookHelper = require("../../helpers/book");
 const orderHelper = require("../../helpers/order");
+const vnpayHelper = require("../../helpers/vnpay");
 
 // [GET] /order/ - Lấy ra tất cả các đơn hàng
 module.exports.index = async (req, res) => {
@@ -50,6 +51,118 @@ module.exports.index = async (req, res) => {
       code: 400,
       message: error.message || "Đã xảy ra lỗi",
     });
+  }
+};
+
+// [POST] /order/create-vnpay - Tạo đơn hàng và redirect sang VNPay
+module.exports.createVnpay = async (req, res) => {
+  // Thêm tạm vào đầu createVnpay controller để debug
+  console.log("=== VNPAY CONFIG ===");
+  console.log("TMN_CODE:", process.env.VNPAY_TMN_CODE);
+  console.log("SECRET length:", process.env.VNPAY_HASH_SECRET?.length);
+  console.log("RETURN_URL:", process.env.VNPAY_RETURN_URL);
+  try {
+    const { items, fullName, phone, address } = req.body;
+    const user_id = req.user._id;
+
+    let books = [];
+    let totalPrice = 0;
+
+    for (const item of items) {
+      const { book_id, quantity } = item;
+      const book = await Book.findOne({ _id: book_id }).lean();
+      if (!book) {
+        return res.json({
+          code: 404,
+          message: `Không tìm thấy sách: ${book_id}`,
+        });
+      }
+      bookHelper.priceNewBook(book);
+      totalPrice += Number(book.priceNew) * quantity;
+      books.push({
+        book_id,
+        price: book.price,
+        discountPercentage: book.discountPercentage || 0,
+        quantity,
+      });
+    }
+
+    // Tạo đơn hàng với status pending, paymentStatus pending
+    const order = new Order({
+      user_id,
+      userInfo: { fullName, phone, address },
+      books,
+      totalPrice,
+      paymentMethod: "vnpay",
+      status: "pending",
+      paymentStatus: "pending",
+    });
+    await order.save();
+
+    // Lấy IP của client
+    const ipAddr =
+      req.headers["x-forwarded-for"] ||
+      req.connection.remoteAddress ||
+      "127.0.0.1";
+
+    const orderInfo = `Thanh toan don hang ${order._id.toString()}`;
+
+    const paymentUrl = vnpayHelper.createPaymentUrl(
+      order._id.toString(),
+      totalPrice,
+      orderInfo,
+      ipAddr,
+    );
+
+    res.json({ code: 200, paymentUrl });
+  } catch (error) {
+    res.json({ code: 500, message: error.message || "Đã xảy ra lỗi" });
+  }
+};
+
+// [GET] /order/vnpay-return - VNPay callback sau khi thanh toán
+module.exports.vnpayReturn = async (req, res) => {
+  try {
+    const isValid = vnpayHelper.verifyReturnUrl(req.query);
+
+    if (!isValid) {
+      return res.redirect(
+        `${process.env.VNPAY_FRONTEND_RETURN_URL}?status=error&message=Chữ ký không hợp lệ`,
+      );
+    }
+
+    const { vnp_TxnRef, vnp_ResponseCode, vnp_TransactionNo } = req.query;
+
+    const order = await Order.findById(vnp_TxnRef);
+    if (!order) {
+      return res.redirect(
+        `${process.env.VNPAY_FRONTEND_RETURN_URL}?status=error&message=Không tìm thấy đơn hàng`,
+      );
+    }
+
+    if (vnp_ResponseCode === "00") {
+      // Thanh toán thành công
+      order.paymentStatus = "paid";
+      order.vnpayTransactionId = vnp_TransactionNo;
+      await order.save();
+
+      return res.redirect(
+        `${process.env.VNPAY_FRONTEND_RETURN_URL}?status=success&orderId=${order._id}`,
+      );
+    } else {
+      // Thanh toán thất bại - xóa đơn hàng hoặc đánh dấu failed
+      order.paymentStatus = "failed";
+      order.status = "cancelled";
+      await order.save();
+
+      return res.redirect(
+        `${process.env.VNPAY_FRONTEND_RETURN_URL}?status=failed&orderId=${order._id}`,
+      );
+    }
+  } catch (error) {
+    return res.redirect(
+      `${process.env.VNPAY_FRONTEND_RETURN_URL}?status=error&message=${error.message}`,
+    );
   }
 };
 
@@ -103,11 +216,11 @@ module.exports.create = async (req, res) => {
     const notification = await orderHelper.createOrderStatusNotification(
       order,
       "pending",
-      user_id
+      user_id,
     );
     if (!notification) {
       console.warn(
-        `Không tạo được thông báo cho đơn hàng ${order._id}, trạng thái pending`
+        `Không tạo được thông báo cho đơn hàng ${order._id}, trạng thái pending`,
       );
     }
 
@@ -208,7 +321,7 @@ module.exports.detail = async (req, res) => {
       .populate("user_id", "fullName email")
       .populate(
         "books.book_id",
-        "title price discountPercentage thumbnail slug"
+        "title price discountPercentage thumbnail slug",
       )
       .lean();
 

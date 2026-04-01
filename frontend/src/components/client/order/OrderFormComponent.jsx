@@ -78,13 +78,22 @@ const OrderFormComponent = ({ onSubmit, section = "shipping", data }) => {
               />
               <Form.Check
                 type="radio"
-                label="Thanh toán qua ví Momo"
+                label="Thanh toán qua VNPay"
                 name="paymentMethod"
-                value="momo"
-                checked={data.paymentMethod === "momo"}
+                value="vnpay"
+                checked={data.paymentMethod === "vnpay"}
                 onChange={handleChange}
                 className="mb-2"
               />
+              {data.paymentMethod === "vnpay" && (
+                <Col md={6} className="d-flex align-items-center">
+                  <img
+                    src="https://sandbox.vnpayment.vn/paymentv2/images/img/logo-vnpay.svg"
+                    alt="VNPay"
+                    style={{ width: "150px" }}
+                  />
+                </Col>
+              )}
             </Form.Group>
           </Col>
           <Col md={6} className="d-flex align-items-center">

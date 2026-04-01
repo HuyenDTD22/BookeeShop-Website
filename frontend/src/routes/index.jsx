@@ -42,6 +42,7 @@ import CreateNotificationPage from "../pages/admin/notification/CreateNotificati
 import EditNotificationPage from "../pages/admin/notification/EditNotificationPage";
 import NotificationDetailPage from "../pages/admin/notification/NotificationDetailPage";
 import NotificationStatsPage from "../pages/admin/notification/NotificationStatsPage";
+import VnpayResultPage from "../pages/client/order/VnpayResultPage";
 
 const ADMIN = process.env.REACT_APP_ADMIN;
 
@@ -75,6 +76,11 @@ export const routes = [
   {
     path: "/order",
     page: OrderPage,
+    isShowHeader: true,
+  },
+  {
+    path: "/order/vnpay-result",
+    page: VnpayResultPage,
     isShowHeader: true,
   },
   {

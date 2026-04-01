@@ -40,10 +40,10 @@ module.exports.create = (req, res, next) => {
 
   if (
     !req.body.paymentMethod ||
-    !["cod", "bank_transfer", "momo"].includes(req.body.paymentMethod)
+    !["cod", "bank_transfer", "vnpay"].includes(req.body.paymentMethod)
   ) {
     message =
-      "Phương thức thanh toán không hợp lệ! Phải là 'cod', 'bank_transfer' hoặc 'momo'.";
+      "Phương thức thanh toán không hợp lệ! Phải là 'cod', 'bank_transfer' hoặc 'vnpay'.";
   }
 
   if (message.length > 0) {

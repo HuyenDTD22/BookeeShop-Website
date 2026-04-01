@@ -30,6 +30,19 @@ const orderService = {
     }
   },
 
+  createVnpayOrder: async (data) => {
+    try {
+      const response = await axios.post(`${API_URL}/order/create-vnpay`, data, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating VNPay order:", error);
+      throw error;
+    }
+  },
+
   getOrderSuccess: async (orderId) => {
     try {
       const response = await axios.get(`${API_URL}/order/success/${orderId}`, {
@@ -73,7 +86,7 @@ const orderService = {
         {},
         {
           withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {

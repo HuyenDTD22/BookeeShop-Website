@@ -239,7 +239,7 @@ module.exports.resetPassword = async (req, res) => {
 
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "your-secret-key"
+      process.env.JWT_SECRET || "your-secret-key",
     );
     const user = await User.findById(decoded._id);
 
@@ -261,7 +261,7 @@ module.exports.resetPassword = async (req, res) => {
       { _id: user._id },
       {
         password: md5(password),
-      }
+      },
     );
 
     res.json({
@@ -368,9 +368,8 @@ module.exports.update = async (req, res) => {
     }
 
     // Lấy thông tin người dùng sau khi cập nhật
-    const updatedUser = await User.findById(user_id).select(
-      "-password -deleted"
-    );
+    const updatedUser =
+      await User.findById(user_id).select("-password -deleted");
 
     res.json({
       code: 200,

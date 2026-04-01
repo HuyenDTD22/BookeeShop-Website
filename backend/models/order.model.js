@@ -45,8 +45,17 @@ const orderSchema = new mongoose.Schema(
     ],
     paymentMethod: {
       type: String,
-      enum: ["cod", "bank_transfer", "momo"],
+      enum: ["cod", "bank_transfer", "vnpay"],
       default: "cod",
+    },
+    vnpayTransactionId: {
+      type: String,
+      default: null,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed"],
+      default: "pending",
     },
     totalPrice: {
       type: Number,
@@ -62,7 +71,7 @@ const orderSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Order = mongoose.model("Order", orderSchema, "order");
