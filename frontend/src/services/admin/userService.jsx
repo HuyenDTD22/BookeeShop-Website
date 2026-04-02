@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
@@ -6,9 +6,8 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 const userService = {
   getUsers: async (params = {}) => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/user`, {
+      const response = await axiosAdmin.get(`${API_URL}/${ADMIN}/user`, {
         params,
-        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -19,11 +18,9 @@ const userService = {
 
   getUserDetail: async (userId) => {
     try {
-      const response = await axios.get(
+      const response = await axiosAdmin.get(
         `${API_URL}/${ADMIN}/user/detail/${userId}`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {
@@ -34,15 +31,14 @@ const userService = {
 
   changeStatus: async (userId, status) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/user/change-status/${userId}`,
         { status },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -53,15 +49,14 @@ const userService = {
 
   changeMultiStatus: async (userIds, status) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/user/change-multi`,
         { userIds, status },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -72,11 +67,9 @@ const userService = {
 
   deleteUser: async (userId) => {
     try {
-      const response = await axios.delete(
+      const response = await axiosAdmin.delete(
         `${API_URL}/${ADMIN}/user/delete/${userId}`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {

@@ -1,13 +1,12 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getBooks = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/book`, {
+    const response = await axiosAdmin.get(`${API_URL}/${ADMIN}/book`, {
       params,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -18,9 +17,10 @@ export const getBooks = async (params = {}) => {
 
 export const getBookDetail = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/book/detail/${id}`, {
-      withCredentials: true,
-    });
+    const response = await axiosAdmin.get(
+      `${API_URL}/${ADMIN}/book/detail/${id}`,
+      {},
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching book detail:", error);
@@ -30,7 +30,7 @@ export const getBookDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/book/change-status/${id}`,
       {
         status,
@@ -39,8 +39,7 @@ export const changeStatus = async (id, status) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -51,15 +50,14 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/book/change-multi`,
       { ids, key, value },
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -70,21 +68,20 @@ export const changeMulti = async (ids, key, value) => {
 
 export const createBook = async (bookData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosAdmin.post(
       `${API_URL}/${ADMIN}/book/create`,
       bookData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     console.error(
       "Error creating book:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -92,15 +89,14 @@ export const createBook = async (bookData) => {
 
 export const editBook = async (id, bookData) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/book/edit/${id}`,
       bookData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -111,14 +107,13 @@ export const editBook = async (id, bookData) => {
 
 export const deleteBook = async (id) => {
   try {
-    const response = await axios.delete(
+    const response = await axiosAdmin.delete(
       `${API_URL}/${ADMIN}/book/delete/${id}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {

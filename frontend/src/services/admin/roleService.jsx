@@ -1,13 +1,12 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getRoles = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/role`, {
+    const response = await axiosAdmin.get(`${API_URL}/${ADMIN}/role`, {
       params,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -18,9 +17,10 @@ export const getRoles = async (params = {}) => {
 
 export const getRoleDetail = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/role/detail/${id}`, {
-      withCredentials: true,
-    });
+    const response = await axiosAdmin.get(
+      `${API_URL}/${ADMIN}/role/detail/${id}`,
+      {},
+    );
     return response.data;
   } catch (error) {
     console.error("Error fetching role detail:", error);
@@ -30,7 +30,7 @@ export const getRoleDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/role/change-status/${id}`,
       {
         status,
@@ -39,8 +39,7 @@ export const changeStatus = async (id, status) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -51,7 +50,7 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/role/change-multi`,
       {
         ids,
@@ -62,8 +61,7 @@ export const changeMulti = async (ids, key, value) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -74,21 +72,20 @@ export const changeMulti = async (ids, key, value) => {
 
 export const createRole = async (roleData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosAdmin.post(
       `${API_URL}/${ADMIN}/role/create`,
       roleData,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     console.error(
       "Error creating role:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -96,15 +93,14 @@ export const createRole = async (roleData) => {
 
 export const editRole = async (id, roleData) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/role/edit/${id}`,
       roleData,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -115,14 +111,13 @@ export const editRole = async (id, roleData) => {
 
 export const deleteRole = async (id) => {
   try {
-    const response = await axios.delete(
+    const response = await axiosAdmin.delete(
       `${API_URL}/${ADMIN}/role/delete/${id}`,
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -133,7 +128,7 @@ export const deleteRole = async (id) => {
 
 export const updatePermissions = async (permissions) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/role/permissions`,
       {
         permissions,
@@ -142,8 +137,7 @@ export const updatePermissions = async (permissions) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {

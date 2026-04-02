@@ -1,11 +1,11 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const homeService = {
   getHomepage: async () => {
     try {
-      const response = await axios.get(`${API_URL}/`);
+      const response = await axiosClient.get(`${API_URL}/`);
       return response.data;
     } catch (error) {
       console.error("Error fetching homepage data:", error);
@@ -15,7 +15,7 @@ const homeService = {
 
   searchBooks: async (keyword) => {
     try {
-      const response = await axios.get(`${API_URL}/search`, {
+      const response = await axiosClient.get(`${API_URL}/search`, {
         params: { keyword },
       });
       return response.data;

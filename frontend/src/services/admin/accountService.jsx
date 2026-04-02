@@ -1,13 +1,12 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getAccounts = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/account`, {
+    const response = await axiosAdmin.get(`${API_URL}/${ADMIN}/account`, {
       params,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
@@ -18,11 +17,9 @@ export const getAccounts = async (params = {}) => {
 
 export const getAccountDetail = async (id) => {
   try {
-    const response = await axios.get(
+    const response = await axiosAdmin.get(
       `${API_URL}/${ADMIN}/account/detail/${id}`,
-      {
-        withCredentials: true,
-      }
+      {},
     );
     return response.data;
   } catch (error) {
@@ -33,7 +30,7 @@ export const getAccountDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/account/change-status/${id}`,
       {
         status,
@@ -42,8 +39,7 @@ export const changeStatus = async (id, status) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -54,15 +50,14 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/account/change-multi`,
       { ids, key, value },
       {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -73,21 +68,20 @@ export const changeMulti = async (ids, key, value) => {
 
 export const createAccount = async (accountData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosAdmin.post(
       `${API_URL}/${ADMIN}/account/create`,
       accountData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     console.error(
       "Error creating account:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -95,15 +89,14 @@ export const createAccount = async (accountData) => {
 
 export const editAccount = async (id, accountData) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/account/edit/${id}`,
       accountData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -114,11 +107,9 @@ export const editAccount = async (id, accountData) => {
 
 export const deleteAccount = async (id) => {
   try {
-    const response = await axios.delete(
+    const response = await axiosAdmin.delete(
       `${API_URL}/${ADMIN}/account/delete/${id}`,
-      {
-        withCredentials: true,
-      }
+      {},
     );
     return response.data;
   } catch (error) {
@@ -129,15 +120,14 @@ export const deleteAccount = async (id) => {
 
 export const editMyAccount = async (id, formData) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/account/my-account/${id}`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {

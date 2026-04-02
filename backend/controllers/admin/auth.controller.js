@@ -55,13 +55,6 @@ module.exports.login = async (req, res) => {
       expiresIn: "1d",
     });
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
     res.json({
       code: 200,
       message: "Đăng nhập thành công!",
@@ -79,30 +72,17 @@ module.exports.login = async (req, res) => {
 
 //[GET] /admin/auth/logout - Đăng xuất
 module.exports.logout = (req, res) => {
-  try {
-    res.clearCookie("jwt", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    });
-    res.json({
-      code: 200,
-      message: "Đăng xuất thành công!",
-    });
-  } catch (error) {
-    res.json({
-      code: 400,
-      message: "Đã xảy ra lỗi khi đăng xuất!",
-      error: error.message,
-    });
-  }
+  res.json({
+    code: 200,
+    message: "Đăng xuất thành công!",
+  });
 };
 
 //[GET] /admin/auth/info - Lấy thông tin của 1 tài khoản
 module.exports.getAuthInfo = async (req, res) => {
   try {
     const user = await Account.findById(res.locals.user.id).select(
-      "-password -token"
+      "-password -token",
     );
     const role = await Role.findById(res.locals.role.id);
     res.json({
@@ -203,13 +183,6 @@ module.exports.otpPassword = async (req, res) => {
       expiresIn: "1d",
     });
 
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
-
     res.json({
       code: 200,
       message: "Xác thực thành công!",
@@ -227,11 +200,9 @@ module.exports.otpPassword = async (req, res) => {
 // [POST] /admin/auth/password/reset - Đổi mật khẩu
 module.exports.resetPassword = async (req, res) => {
   try {
-    const token = req.cookies.jwt;
     const password = req.body.password;
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const account = await Account.findById(decoded.id);
+    const account = await Account.findById(res.locals.user._id);
 
     if (!account) {
       return res.json({
@@ -251,7 +222,7 @@ module.exports.resetPassword = async (req, res) => {
       { _id: account._id },
       {
         password: md5(password),
-      }
+      },
     );
 
     res.json({

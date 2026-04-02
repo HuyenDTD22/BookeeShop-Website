@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
@@ -6,12 +6,11 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 const commentService = {
   getComments: async (bookId, params = {}) => {
     try {
-      const response = await axios.get(
+      const response = await axiosAdmin.get(
         `${API_URL}/${ADMIN}/comment/${bookId}`,
         {
           params,
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -22,15 +21,14 @@ const commentService = {
 
   replyComment: async (commentId, replyContent) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/comment/reply/${commentId}`,
         { replyContent },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -41,11 +39,9 @@ const commentService = {
 
   deleteComment: async (commentId) => {
     try {
-      const response = await axios.delete(
+      const response = await axiosAdmin.delete(
         `${API_URL}/${ADMIN}/comment/delete/${commentId}`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {
@@ -56,15 +52,14 @@ const commentService = {
 
   deleteMultipleComments: async (commentIds) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/comment/delete-multi`,
         { commentIds },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -75,12 +70,10 @@ const commentService = {
 
   deleteAllComments: async (bookId) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/comment/delete-all/${bookId}`,
         {},
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {

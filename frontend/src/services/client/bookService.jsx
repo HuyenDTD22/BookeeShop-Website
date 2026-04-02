@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -10,12 +10,12 @@ const bookService = {
         sortBy: filters.sortBy || undefined,
         sortOrder: filters.sortOrder || undefined,
       };
-      const response = await axios.get(`${API_URL}/book`, { params });
+      const response = await axiosClient.get(`${API_URL}/book`, { params });
       return response.data;
     } catch (error) {
       console.error(
         "Error fetching books:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -28,14 +28,17 @@ const bookService = {
         sortBy: filters.sortBy || undefined,
         sortOrder: filters.sortOrder || undefined,
       };
-      const response = await axios.get(`${API_URL}/book/${slugCategory}`, {
-        params,
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/book/${slugCategory}`,
+        {
+          params,
+        },
+      );
       return response.data;
     } catch (error) {
       console.error(
         `Error fetching books for category ${slugCategory}:`,
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       throw error;
     }
@@ -43,7 +46,9 @@ const bookService = {
 
   getBookDetail: async (slugBook) => {
     try {
-      const response = await axios.get(`${API_URL}/book/detail/${slugBook}`);
+      const response = await axiosClient.get(
+        `${API_URL}/book/detail/${slugBook}`,
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching book details for ${slugBook}:`, error);
@@ -53,7 +58,7 @@ const bookService = {
 
   getFeaturedBooks: async (filters = {}) => {
     try {
-      const response = await axios.get(`${API_URL}/book/featured`, {
+      const response = await axiosClient.get(`${API_URL}/book/featured`, {
         params: filters,
       });
       return response.data;
@@ -65,7 +70,7 @@ const bookService = {
 
   getNewBooks: async (filters = {}) => {
     try {
-      const response = await axios.get(`${API_URL}/book/new`, {
+      const response = await axiosClient.get(`${API_URL}/book/new`, {
         params: filters,
       });
       return response.data;

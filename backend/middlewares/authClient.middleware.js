@@ -3,8 +3,11 @@ const User = require("../models/user.model");
 
 module.exports.requireAuth = async (req, res, next) => {
   try {
-    // Lấy token từ cookie
-    const token = req.cookies.token;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+
     if (!token) {
       return res.status(401).json({
         code: 401,

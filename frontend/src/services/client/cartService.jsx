@@ -1,13 +1,11 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const cartService = {
   getCart: async () => {
     try {
-      const response = await axios.get(`${API_URL}/cart`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(`${API_URL}/cart`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching cart details:", error);
@@ -17,10 +15,10 @@ const cartService = {
 
   addToCart: async (slug, quantity) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/cart/add/${slug}`,
         { quantity },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       return response.data;
     } catch (error) {
@@ -31,9 +29,10 @@ const cartService = {
 
   deleteFromCart: async (bookId) => {
     try {
-      const response = await axios.get(`${API_URL}/cart/delete/${bookId}`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/cart/delete/${bookId}`,
+        {},
+      );
       return response.data;
     } catch (error) {
       console.error(`Error deleting book ${bookId} from cart:`, error);
@@ -43,10 +42,10 @@ const cartService = {
 
   updateQuantity: async (bookId, quantity) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosClient.patch(
         `${API_URL}/cart/update/${bookId}`,
         { quantity },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       return response.data;
     } catch (error) {

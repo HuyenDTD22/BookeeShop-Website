@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setRole(null);
       setPermissions([]);
+      localStorage.removeItem("adminToken");
       navigate("/admin/auth/login");
     } catch (error) {
       console.error("Logout error:", error);

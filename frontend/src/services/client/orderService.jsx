@@ -1,13 +1,11 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const orderService = {
   getCartForCheckout: async () => {
     try {
-      const response = await axios.get(`${API_URL}/order`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(`${API_URL}/order`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching cart for order:", error);
@@ -17,11 +15,10 @@ const orderService = {
 
   buyNow: async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/order/create`, data, {
+      const response = await axiosClient.post(`${API_URL}/order/create`, data, {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
       });
       return response.data;
     } catch (error) {
@@ -32,10 +29,13 @@ const orderService = {
 
   createVnpayOrder: async (data) => {
     try {
-      const response = await axios.post(`${API_URL}/order/create-vnpay`, data, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+      const response = await axiosClient.post(
+        `${API_URL}/order/create-vnpay`,
+        data,
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
       return response.data;
     } catch (error) {
       console.error("Error creating VNPay order:", error);
@@ -45,9 +45,10 @@ const orderService = {
 
   getOrderSuccess: async (orderId) => {
     try {
-      const response = await axios.get(`${API_URL}/order/success/${orderId}`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/order/success/${orderId}`,
+        {},
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching order success ${orderId}:`, error);
@@ -57,9 +58,7 @@ const orderService = {
 
   getMyOrders: async () => {
     try {
-      const response = await axios.get(`${API_URL}/order/my-orders`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(`${API_URL}/order/my-orders`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching my orders:", error);
@@ -69,9 +68,10 @@ const orderService = {
 
   getOrderDetail: async (orderId) => {
     try {
-      const response = await axios.get(`${API_URL}/order/detail/${orderId}`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/order/detail/${orderId}`,
+        {},
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching order detail ${orderId}:`, error);
@@ -81,12 +81,10 @@ const orderService = {
 
   cancelOrder: async (orderId) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosClient.patch(
         `${API_URL}/order/cancel/${orderId}`,
         {},
-        {
-          withCredentials: true,
-        },
+        {},
       );
       return response.data;
     } catch (error) {

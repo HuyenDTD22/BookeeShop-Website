@@ -1,19 +1,18 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 export const getCategory = async (params = {}) => {
   try {
-    const response = await axios.get(`${API_URL}/${ADMIN}/category`, {
+    const response = await axiosAdmin.get(`${API_URL}/${ADMIN}/category`, {
       params,
-      withCredentials: true,
     });
     return response.data;
   } catch (error) {
     console.error(
       "Failed to fetch categories:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     throw error;
   }
@@ -21,11 +20,9 @@ export const getCategory = async (params = {}) => {
 
 export const getCategoryDetail = async (id) => {
   try {
-    const response = await axios.get(
+    const response = await axiosAdmin.get(
       `${API_URL}/${ADMIN}/category/detail/${id}`,
-      {
-        withCredentials: true,
-      }
+      {},
     );
     return response.data;
   } catch (error) {
@@ -36,7 +33,7 @@ export const getCategoryDetail = async (id) => {
 
 export const changeStatus = async (id, status) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/category/change-status/${id}`,
       {
         status,
@@ -45,8 +42,7 @@ export const changeStatus = async (id, status) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -57,7 +53,7 @@ export const changeStatus = async (id, status) => {
 
 export const changeMulti = async (ids, key, value) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/category/change-multi`,
       {
         ids,
@@ -68,8 +64,7 @@ export const changeMulti = async (ids, key, value) => {
         headers: {
           "Content-Type": "application/json",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -80,15 +75,14 @@ export const changeMulti = async (ids, key, value) => {
 
 export const createCategory = async (categoryData) => {
   try {
-    const response = await axios.post(
+    const response = await axiosAdmin.post(
       `${API_URL}/${ADMIN}/category/create`,
       categoryData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -99,15 +93,14 @@ export const createCategory = async (categoryData) => {
 
 export const editCategory = async (id, categoryData) => {
   try {
-    const response = await axios.patch(
+    const response = await axiosAdmin.patch(
       `${API_URL}/${ADMIN}/category/edit/${id}`,
       categoryData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-        withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -118,11 +111,9 @@ export const editCategory = async (id, categoryData) => {
 
 export const deleteCategory = async (id) => {
   try {
-    const response = await axios.delete(
+    const response = await axiosAdmin.delete(
       `${API_URL}/${ADMIN}/category/delete/${id}`,
-      {
-        withCredentials: true,
-      }
+      {},
     );
     return response.data;
   } catch (error) {

@@ -1,10 +1,10 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 const API_URL = process.env.REACT_APP_API_URL;
 
 const authService = {
   login: async (email, password) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/user/login`,
         {
           email,
@@ -14,9 +14,12 @@ const authService = {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
+
+      if (response.data.code === 200) {
+        localStorage.setItem("clientToken", response.data.token);
+      }
 
       return response.data;
     } catch (error) {
@@ -32,7 +35,7 @@ const authService = {
     confirmPassword,
     phone,
     gender,
-    address
+    address,
   ) => {
     try {
       const payload = {
@@ -44,12 +47,19 @@ const authService = {
         gender,
         address,
       };
-      const response = await axios.post(`${API_URL}/user/register`, payload, {
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axiosClient.post(
+        `${API_URL}/user/register`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-        withCredentials: true,
-      });
+      );
+
+      if (response.data.code === 200) {
+        localStorage.setItem("clientToken", response.data.token);
+      }
 
       return response.data;
     } catch (error) {
@@ -60,53 +70,53 @@ const authService = {
 
   forgotPassword: async (email) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/user/password/forgot`,
         { email },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
-      console.error("Auth service register error:", error);
+      console.error("Auth service forgot password error:", error);
       throw error;
     }
   },
 
   verifyOtp: async (email, otp) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/user/password/otp`,
         { email, otp },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
+      if (response.data.code === 200) {
+        localStorage.setItem("clientToken", response.data.token);
+      }
       return response.data;
     } catch (error) {
-      console.error("Auth service register error:", error);
+      console.error("Auth service verify OTP error:", error);
       throw error;
     }
   },
 
   resetPassword: async (password) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/user/password/reset`,
         { password },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -117,13 +127,8 @@ const authService = {
 
   logout: async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/user/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axiosClient.post(`${API_URL}/user/logout`, {}, {});
+      localStorage.removeItem("clientToken");
       return response.data;
     } catch (error) {
       console.error("Auth service logout error:", error);
@@ -133,9 +138,7 @@ const authService = {
 
   getUserInfo: async () => {
     try {
-      const response = await axios.get(`${API_URL}/user/info`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(`${API_URL}/user/info`, {});
       return response.data;
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -145,10 +148,13 @@ const authService = {
 
   updateUserInfo: async (formData) => {
     try {
-      const response = await axios.patch(`${API_URL}/user/update`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
+      const response = await axiosClient.patch(
+        `${API_URL}/user/update`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        },
+      );
       return response.data;
     } catch (error) {
       console.error("Error updating user info:", error);
@@ -158,9 +164,7 @@ const authService = {
 
   checkAuth: async () => {
     try {
-      const response = await axios.get(`${API_URL}/user/info`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(`${API_URL}/user/info`, {});
       return {
         isAuthenticated: response.data.code === 200,
         user: response.data.info,

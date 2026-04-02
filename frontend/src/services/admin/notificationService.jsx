@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
@@ -6,10 +6,12 @@ const ADMIN = process.env.REACT_APP_ADMIN;
 const notificationService = {
   getAllNotifications: async (params = {}) => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/notification`, {
-        params,
-        withCredentials: true,
-      });
+      const response = await axiosAdmin.get(
+        `${API_URL}/${ADMIN}/notification`,
+        {
+          params,
+        },
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -19,11 +21,9 @@ const notificationService = {
 
   getNotificationById: async (id) => {
     try {
-      const response = await axios.get(
+      const response = await axiosAdmin.get(
         `${API_URL}/${ADMIN}/notification/detail/${id}`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {
@@ -34,15 +34,14 @@ const notificationService = {
 
   createNotification: async (data) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/notification/create`,
         data,
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -53,15 +52,14 @@ const notificationService = {
 
   updateNotification: async (id, data) => {
     try {
-      const response = await axios.put(
+      const response = await axiosAdmin.put(
         `${API_URL}/${ADMIN}/notification/edit/${id}`,
         data,
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -72,15 +70,14 @@ const notificationService = {
 
   updateNotificationStatus: async (id, status) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/notification/change-status/${id}`,
         { status },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -91,15 +88,14 @@ const notificationService = {
 
   updateMultipleStatuses: async (ids, status) => {
     try {
-      const response = await axios.patch(
+      const response = await axiosAdmin.patch(
         `${API_URL}/${ADMIN}/notification/change-multi`,
         { ids, status },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -110,15 +106,14 @@ const notificationService = {
 
   sendNotification: async (id) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/notification/send/${id}`,
         {},
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -129,15 +124,14 @@ const notificationService = {
 
   scheduleNotification: async (id, sendAt) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/notification/schedule/${id}`,
         { sendAt },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -148,14 +142,13 @@ const notificationService = {
 
   deleteNotification: async (id) => {
     try {
-      const response = await axios.delete(
+      const response = await axiosAdmin.delete(
         `${API_URL}/${ADMIN}/notification/delete/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -166,15 +159,14 @@ const notificationService = {
 
   deleteMultipleNotifications: async (ids) => {
     try {
-      const response = await axios.delete(
+      const response = await axiosAdmin.delete(
         `${API_URL}/${ADMIN}/notification/delete-multi`,
         {
           data: { ids },
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -185,11 +177,9 @@ const notificationService = {
 
   getReadByUsers: async (id) => {
     try {
-      const response = await axios.get(
+      const response = await axiosAdmin.get(
         `${API_URL}/${ADMIN}/notification/read/${id}`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {
@@ -200,11 +190,9 @@ const notificationService = {
 
   getNotificationStats: async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosAdmin.get(
         `${API_URL}/${ADMIN}/notification/stats`,
-        {
-          withCredentials: true,
-        }
+        {},
       );
       return response.data;
     } catch (error) {

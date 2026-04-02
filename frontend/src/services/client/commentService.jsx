@@ -1,13 +1,14 @@
-import axios from "axios";
+import axiosClient from "../../utils/axiosClient";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const commentService = {
   getComments: async (bookId) => {
     try {
-      const response = await axios.get(`${API_URL}/comment/${bookId}`, {
-        withCredentials: true,
-      });
+      const response = await axiosClient.get(
+        `${API_URL}/comment/${bookId}`,
+        {},
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching comments for book ${bookId}:`, error);
@@ -17,15 +18,14 @@ const commentService = {
 
   createComment: async (commentData) => {
     try {
-      const response = await axios.post(
+      const response = await axiosClient.post(
         `${API_URL}/comment/create`,
         commentData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -36,12 +36,11 @@ const commentService = {
 
   deleteComment: async (commentId, bookId) => {
     try {
-      const response = await axios.delete(
+      const response = await axiosClient.delete(
         `${API_URL}/comment/delete/${commentId}`,
         {
           params: { bookId },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {

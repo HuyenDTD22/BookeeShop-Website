@@ -8,8 +8,10 @@ const systemConfig = require("../config/system");
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 module.exports.requireAuthAdmin = async (req, res, next) => {
-  // Lấy JWT từ cookie
-  const token = req.cookies.jwt;
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : null;
 
   if (!token) {
     return res.status(401).json({
@@ -32,7 +34,7 @@ module.exports.requireAuthAdmin = async (req, res, next) => {
     }
 
     const role = await Role.findOne({ _id: user.role_id }).select(
-      "title permissions"
+      "title permissions",
     );
     if (!role) {
       return res.status(400).json({

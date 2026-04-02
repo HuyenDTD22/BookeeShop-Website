@@ -1,11 +1,11 @@
-import axios from "axios";
+import axiosAdmin from "../../utils/axiosAdmin";
 const API_URL = process.env.REACT_APP_API_URL;
 const ADMIN = process.env.REACT_APP_ADMIN;
 
 const authService = {
   login: async (email, password) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/auth/login`,
         {
           email,
@@ -15,9 +15,11 @@ const authService = {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
+      if (response.data.code === 200) {
+        localStorage.setItem("adminToken", response.data.token);
+      }
 
       return response.data;
     } catch (error) {
@@ -28,9 +30,11 @@ const authService = {
 
   logout: async () => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/auth/logout`, {
-        withCredentials: true,
-      });
+      const response = await axiosAdmin.get(
+        `${API_URL}/${ADMIN}/auth/logout`,
+        {},
+      );
+      localStorage.removeItem("adminToken");
       return response.data;
     } catch (error) {
       console.error("Auth service logout error:", error);
@@ -40,9 +44,10 @@ const authService = {
 
   getAuthInfo: async () => {
     try {
-      const response = await axios.get(`${API_URL}/${ADMIN}/auth/info`, {
-        withCredentials: true,
-      });
+      const response = await axiosAdmin.get(
+        `${API_URL}/${ADMIN}/auth/info`,
+        {},
+      );
       return response.data;
     } catch (error) {
       throw error;
@@ -51,15 +56,14 @@ const authService = {
 
   forgotPassword: async (email) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/auth/password/forgot`,
         { email },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {
@@ -69,16 +73,18 @@ const authService = {
 
   verifyOtp: async (email, otp) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/auth/password/otp`,
         { email, otp },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
+      if (response.data.code === 200) {
+        localStorage.setItem("adminToken", response.data.token);
+      }
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: "Đã xảy ra lỗi" };
@@ -87,15 +93,14 @@ const authService = {
 
   resetPassword: async (password) => {
     try {
-      const response = await axios.post(
+      const response = await axiosAdmin.post(
         `${API_URL}/${ADMIN}/auth/password/reset`,
         { password },
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
-        }
+        },
       );
       return response.data;
     } catch (error) {

@@ -119,24 +119,7 @@ module.exports.login = async (req, res) => {
 
 // [POST] /user/logout - Đăng xuất
 module.exports.logout = (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    res.json({
-      code: 200,
-      message: "Đăng xuất thành công!",
-    });
-  } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Đã xảy ra lỗi khi đăng xuất!",
-      error: error.message,
-    });
-  }
+  res.json({ code: 200, message: "Đăng xuất thành công!" });
 };
 
 // [POST] /user/password/forgot - Quên mật khẩu
@@ -234,14 +217,8 @@ module.exports.otpPassword = async (req, res) => {
 // [POST] /user/password/reset - reset lại mật khẩu
 module.exports.resetPassword = async (req, res) => {
   try {
-    const token = req.cookies.token;
     const password = req.body.password;
-
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "your-secret-key",
-    );
-    const user = await User.findById(decoded._id);
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.json({
